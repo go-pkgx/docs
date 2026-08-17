@@ -524,7 +524,7 @@ and <code>pkgm</code> import performs verification at install time:</p>
 <li>Setting <strong><code>PKGX_VERIFY=1</code></strong> makes verification <strong>fail-closed</strong>: a package with no
   signature, or one that does not verify, is <strong>refused</strong> rather than installed.</li>
 </ul>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># refuses to install anything that isn&#39;t validly signed by the pinned key</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># refuses to install anything that isn't validly signed by the pinned key</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nv">PKGX_DIST</span><span class="o">=</span>oci://ghcr.io/go-pkgx/packages<span class="w"> </span><span class="nv">PKGX_VERIFY</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>pkgm<span class="w"> </span>install<span class="w"> </span>lz4.org
 </code></pre></div>
 <p>This closes the loop end to end: the factory signs and attests at publish time, and
