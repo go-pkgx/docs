@@ -364,6 +364,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#environments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Environments
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -387,6 +398,33 @@
     
   
     FROM scratch
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Environments and HPC
   
 
     
@@ -566,6 +604,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#environments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Environments
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -593,17 +642,26 @@ own.</p>
 closure just to install a package. go-pkgx replaces all of it with one static
 ~9 MB binary.</p>
 <h2 id="install">Install<a class="headerlink" href="#install" title="Permanent link">&para;</a></h2>
-<p><strong>Linux / macOS</strong> — one line:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>curl<span class="w"> </span>-fsSL<span class="w"> </span>https://go-pkgx.github.io/install.sh<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh
+<p><strong>Linux / macOS</strong> — one line, naming the release you want:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>curl<span class="w"> </span>-fsSL<span class="w"> </span>https://go-pkgx.github.io/install.sh<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh<span class="w"> </span>-s<span class="w"> </span>--<span class="w"> </span>pkgm<span class="w"> </span>v0.1.1
 </code></pre></div>
-<p><strong>Windows</strong> — one line (PowerShell):</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nb">irm </span><span class="n">https</span><span class="p">://</span><span class="n">go-pkgx</span><span class="p">.</span><span class="n">github</span><span class="p">.</span><span class="n">io</span><span class="p">/</span><span class="n">install</span><span class="p">.</span><span class="n">ps1</span> <span class="p">|</span> <span class="nb">iex</span>
+<p><strong>Windows</strong> (PowerShell) — <code>irm | iex</code> passes no arguments, so the version goes
+in the environment:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nv">$env:PKGM_VERSION</span><span class="p">=</span><span class="s1">'v0.1.1'</span><span class="p">;</span> <span class="nb">irm </span><span class="n">https</span><span class="p">://</span><span class="n">go-pkgx</span><span class="p">.</span><span class="n">github</span><span class="p">.</span><span class="n">io</span><span class="p">/</span><span class="n">install</span><span class="p">.</span><span class="n">ps1</span> <span class="p">|</span> <span class="nb">iex</span>
 </code></pre></div>
-<p>The installer downloads the static binary for your os/arch from the latest
-<a href="https://github.com/go-pkgx/pkgm/releases/latest">release</a>, verifies it against
-the release <code>SHA256SUMS</code>, and puts <code>pkgm</code> on your <code>PATH</code> (<code>$HOME/.local/bin</code>, or
+<p>The installer downloads the static binary for your os/arch from that
+<a href="https://github.com/go-pkgx/pkgm/releases">release</a>, verifies it against the
+release <code>SHA256SUMS</code>, and puts <code>pkgm</code> on your <code>PATH</code> (<code>$HOME/.local/bin</code>, or
 <code>%LOCALAPPDATA%\Programs\go-pkgx</code> on Windows; set <code>PKGM_INSTALL</code> to override on
 Unix).</p>
+<p>The version is named on purpose: this line copied today and the same line
+copied in six months install the same bytes, and a bad release does not reach
+everyone who happens to install that hour. To track releases instead, say so —
+<code>sh -s -- pkgm latest</code>, or <code>PKGM_VERSION=latest</code>, which is also what a bare
+<code>| sh</code> has always done. Re-running is the updater; it skips the download when
+the target version is already installed.</p>
+<p>To install <code>pkgx</code> (the runtime) or <code>mirror</code> instead, name it:
+<code>sh -s -- pkgx v0.1.2</code>, <code>sh -s -- mirror v0.1.2</code>.</p>
 <p><strong>Go users</strong>:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>go<span class="w"> </span>install<span class="w"> </span>github.com/go-pkgx/pkgm@latest
 </code></pre></div>
@@ -620,8 +678,10 @@ registry by default.</p>
 <a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>pkgm run|x        &lt;pkg&gt; [-- args...]    run a pkg (works FROM scratch)
 <a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>
 <a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>flags: -h/--help  -v/--version  -p/--pin  -P/--prefix DIR  -s/--from-scratch
-<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>env:   PKGX_DIR   package store (default: ~/.pkgx)
-<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>       PKGM_PREFIX default install prefix (ideal for FROM scratch)
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>env:   PKGX_DIR     package store (default: ~/.pkgx)
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>       PKGX_DIST    package source (default: oci://ghcr.io/go-pkgx/packages, signed)
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>       PKGX_VERIFY  verify signatures, fail-closed (default: on)
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>       PKGM_PREFIX  default install prefix (ideal for FROM scratch)
 </code></pre></div>
 <p>The <code>install</code>/<code>uninstall</code>/<code>shim</code>/<code>list</code>/<code>outdated</code>/<code>update</code>/<code>pin</code> command
 surface and the <code>~/.local</code> vs <code>/usr/local</code> prefix logic mirror the reference
@@ -639,6 +699,14 @@ packages, with no system libc:</p>
 </code></pre></div>
 <p>See <a href="from-scratch/">FROM scratch</a> for how the closure is resolved, the
 conformance matrix, and the pantry-wide audit.</p>
+<h2 id="environments">Environments<a class="headerlink" href="#environments" title="Permanent link">&para;</a></h2>
+<p><code>pkgx</code> also carries <code>pkge</code>, a module system: named environments declared in
+HCL2, <code>load</code>/<code>unload</code>/<code>purge</code> that are exact rather than incremental, and a
+converter that reads a site's existing Lmod and Environment Modules files.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="gp">$ </span><span class="nb">eval</span><span class="w"> </span><span class="s2">"</span><span class="k">$(</span>pkgx<span class="w"> </span>env<span class="w"> </span>init<span class="k">)</span><span class="s2">"</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="gp">$ </span>pkge<span class="w"> </span>load<span class="w"> </span>cfd
+</code></pre></div>
+<p>See <a href="environments/">Environments and HPC</a>.</p>
 
 
 
