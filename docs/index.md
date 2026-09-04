@@ -12,23 +12,34 @@ closure just to install a package. go-pkgx replaces all of it with one static
 
 ## Install
 
-**Linux / macOS** — one line:
+**Linux / macOS** — one line, naming the release you want:
 
 ```sh
-curl -fsSL https://go-pkgx.github.io/install.sh | sh
+curl -fsSL https://go-pkgx.github.io/install.sh | sh -s -- pkgm v0.1.1
 ```
 
-**Windows** — one line (PowerShell):
+**Windows** (PowerShell) — `irm | iex` passes no arguments, so the version goes
+in the environment:
 
 ```powershell
-irm https://go-pkgx.github.io/install.ps1 | iex
+$env:PKGM_VERSION='v0.1.1'; irm https://go-pkgx.github.io/install.ps1 | iex
 ```
 
-The installer downloads the static binary for your os/arch from the latest
-[release](https://github.com/go-pkgx/pkgm/releases/latest), verifies it against
-the release `SHA256SUMS`, and puts `pkgm` on your `PATH` (`$HOME/.local/bin`, or
+The installer downloads the static binary for your os/arch from that
+[release](https://github.com/go-pkgx/pkgm/releases), verifies it against the
+release `SHA256SUMS`, and puts `pkgm` on your `PATH` (`$HOME/.local/bin`, or
 `%LOCALAPPDATA%\Programs\go-pkgx` on Windows; set `PKGM_INSTALL` to override on
 Unix).
+
+The version is named on purpose: this line copied today and the same line
+copied in six months install the same bytes, and a bad release does not reach
+everyone who happens to install that hour. To track releases instead, say so —
+`sh -s -- pkgm latest`, or `PKGM_VERSION=latest`, which is also what a bare
+`| sh` has always done. Re-running is the updater; it skips the download when
+the target version is already installed.
+
+To install `pkgx` (the runtime) or `mirror` instead, name it:
+`sh -s -- pkgx v0.1.2`, `sh -s -- mirror v0.1.2`.
 
 **Go users**:
 
@@ -52,8 +63,10 @@ pkgm pin          <pkg>@version ...     install pinned to an exact version
 pkgm run|x        <pkg> [-- args...]    run a pkg (works FROM scratch)
 
 flags: -h/--help  -v/--version  -p/--pin  -P/--prefix DIR  -s/--from-scratch
-env:   PKGX_DIR   package store (default: ~/.pkgx)
-       PKGM_PREFIX default install prefix (ideal for FROM scratch)
+env:   PKGX_DIR     package store (default: ~/.pkgx)
+       PKGX_DIST    package source (default: oci://ghcr.io/go-pkgx/packages, signed)
+       PKGX_VERIFY  verify signatures, fail-closed (default: on)
+       PKGM_PREFIX  default install prefix (ideal for FROM scratch)
 ```
 
 The `install`/`uninstall`/`shim`/`list`/`outdated`/`update`/`pin` command
@@ -79,3 +92,16 @@ GNU bash, version 5.3.0(1)-release (aarch64-unknown-linux-gnu)
 
 See [FROM scratch](from-scratch.md) for how the closure is resolved, the
 conformance matrix, and the pantry-wide audit.
+
+## Environments
+
+`pkgx` also carries `pkge`, a module system: named environments declared in
+HCL2, `load`/`unload`/`purge` that are exact rather than incremental, and a
+converter that reads a site's existing Lmod and Environment Modules files.
+
+```console
+$ eval "$(pkgx env init)"
+$ pkge load cfd
+```
+
+See [Environments and HPC](environments.md).
