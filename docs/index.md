@@ -15,14 +15,14 @@ closure just to install a package. go-pkgx replaces all of it with one static
 **Linux / macOS** — one line, naming the release you want:
 
 ```sh
-curl -fsSL https://go-pkgx.github.io/install.sh | sh -s -- pkgm v0.1.2
+curl -fsSL https://go-pkgx.github.io/install.sh | sh -s -- pkgm v0.1.3
 ```
 
 **Windows** (PowerShell) — `irm | iex` passes no arguments, so the version goes
 in the environment:
 
 ```powershell
-$env:PKGM_VERSION='v0.1.2'; irm https://go-pkgx.github.io/install.ps1 | iex
+$env:PKGM_VERSION='v0.1.3'; irm https://go-pkgx.github.io/install.ps1 | iex
 ```
 
 The installer downloads the static binary for your os/arch from that
@@ -39,7 +39,7 @@ everyone who happens to install that hour. To track releases instead, say so —
 the target version is already installed.
 
 To install `pkgx` (the runtime) or `mirror` instead, name it:
-`sh -s -- pkgx v0.1.3`, `sh -s -- mirror v0.1.3`.
+`sh -s -- pkgx v0.1.4`, `sh -s -- mirror v0.1.4`.
 
 **Go users**:
 
