@@ -54,6 +54,31 @@ not the full catalog):
 | `gnu.org/tar` | 1.35 |
 | `sourceware.org/bzip2` | 1.0.8 |
 
+## Trees the pantry does not have
+
+Most of the catalog is a pkgx pantry recipe built here. These are projects
+upstream does not carry at all — the HPC and GPU floor an MPI actually needs,
+which the pantry stops just above:
+
+| project | | |
+| --- | --- | --- |
+| `openucx.org` | 1.22.0 | the transport OpenMPI, MPICH and OpenSHMEM reach shared memory and RDMA through — built `--with-verbs`, so `libuct_ib`, `libuct_ib_mlx5` and `libuct_ib_efa` are there rather than TCP alone |
+| `github.com/linux-rdma/rdma-core` | 65.0 | `libibverbs`, which is what makes the line above more than a configure flag |
+| `github.com/ROCm/ROCR-Runtime` | 7.2.4 | the HSA runtime an AMD GPU is driven through, **built from NCSA source**; linux/x86-64 only, because upstream's `utils.h` calls an x86 intrinsic unguarded |
+| `nvidia.com/cuda-cudart` | 13.3.1 | the CUDA runtime, from NVIDIA's redistributable set, verified against the sha256 in their own manifest |
+| `kernel.org/linux` | 6.19.14 | the microVM kernel, with `INFINIBAND_USER_ACCESS`, `RDMA_RXE`, `RDMA_SIW`, `MLX5_*`, `VFIO_*`, hugepages and `PCI_P2PDMA` — the devices `libibverbs` opens, and GPUDirect |
+| `github.com/containers/crun` | 1.29.1 | the runtime that closes the microVM boot loop |
+
+The two GPU rows differ in kind, and the recipes say so: ROCm is source we
+compile, CUDA is an archive we fetch under a licence that names which files may
+travel.
+
+Nothing here needs a GPU or a fabric to **build**. What a build machine can
+honestly check is that a runtime links, loads and answers — `hsa_init()`
+returning "out of resources" with no `/dev/kfd` is a pass — and that a transport
+module was compiled at all, since a silently declined `--with-verbs` looks
+exactly like a missing `libuct_ib.so`.
+
 ## Consuming
 
 Point the go-pkgx tools at the registry and verify against the pinned key:
