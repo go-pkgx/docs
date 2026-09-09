@@ -54,6 +54,46 @@ not the full catalog):
 | `gnu.org/tar` | 1.35 |
 | `sourceware.org/bzip2` | 1.0.8 |
 
+## A bottle that runs somewhere else
+
+`$PKGX_DIR` is wherever you put it. A package that records where it was *built*
+is not a package, it is a souvenir — so every binary is normalised before it is
+signed, and the two platforms need different work.
+
+**Linux.** A `DT_RUNPATH` naming the build machine is rewritten `$ORIGIN`-relative,
+so a library found beside the binary is found beside it anywhere. The entry can
+be rewritten in place, because the replacement is shorter than what it replaces.
+
+**macOS.** Two things have to be right at once, and each fails silently on its
+own.
+
+A Mach-O names its dependencies by the *install name* the dependency was built
+with. Two forms of that name cannot work here:
+
+| install name | why it fails |
+| --- | --- |
+| `/Users/runner/.pkgx/…/libssh2.1.dylib` | absolute — **an absolute reference never consults an rpath**, so no rpath rescues it |
+| `@rpath/libzstd.1.dylib` | bare — a consumer's rpath reaches `$PKGX_DIR`, not the library's own `lib/`, so it resolves nowhere |
+
+The second is CMake's default (`MACOSX_RPATH`) and is the more insidious of the
+two: the package that carries it works perfectly, because its own binaries reach
+its libraries through `@loader_path/../lib`. Only *other* packages break.
+
+Both are normalised to `@rpath/<project>/v<version>/lib/<file>`, with a
+dependency's version reduced to its major so that a dependency's minor upgrade
+does not orphan its dependents.
+
+And the binary must carry an rpath that actually reaches `$PKGX_DIR` from where
+it installs. That one is linked in at build time rather than repaired
+afterwards: its value is how deep the package installs, which is a fact about
+the recipe and cannot be recovered from the binary. A bottle whose references to
+other packages resolve only through the builder's own absolute rpath is
+**refused**, not published.
+
+Every Mach-O the factory edits is re-signed. On Apple silicon a binary whose
+signature describes the old bytes is not stale — it is killed on sight, with no
+message.
+
 ## Trees the pantry does not have
 
 Most of the catalog is a pkgx pantry recipe built here. These are projects
