@@ -442,6 +442,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#what-went-in-not-only-what-came-out" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What went IN, not only what came out
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#the-pinned-key" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -552,6 +563,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#what-went-in-not-only-what-came-out" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What went IN, not only what came out
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#the-pinned-key" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -601,9 +623,29 @@ referrers</strong>, so they travel with the image and are discoverable from its 
 <li>a <strong>cosign-style + minisign signature</strong> over the package
   (<a href="https://github.com/go-attest/sign"><code>go-attest/sign</code></a>).</li>
 </ul>
+<h2 id="what-went-in-not-only-what-came-out">What went IN, not only what came out<a class="headerlink" href="#what-went-in-not-only-what-came-out" title="Permanent link">&para;</a></h2>
+<p>Those three describe the <strong>output</strong>. Until recently nothing recorded the input:
+of 1858 recipes with a source URL, exactly one declared a checksum, and none was
+verified. A source tarball that changed upstream produced a different package,
+correctly signed, attesting a URL rather than the bytes that came back from it.</p>
+<p>The provenance now carries the source as a SLSA <code>resolvedDependency</code> — the
+archive's SHA-256, or a git checkout's commit:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">"resolvedDependencies"</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">"uri"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://github.com/ROCm/ROCR-Runtime/archive/refs/tags/rocm-7.2.4.tar.gz"</span><span class="p">,</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span><span class="nt">"digest"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"sha256"</span><span class="p">:</span><span class="w"> </span><span class="s2">"60532cd86edce5a603aa18df406ec1f5a3d18f0663d79b3b7822ff721c5a04ec"</span><span class="p">}</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="p">}]</span>
+</code></pre></div>
+<p>It records the candidate URL that <strong>answered</strong>, which for a recipe listing
+mirrors is not always the first one — a build that fell through to a mirror and
+one that did not are different builds.</p>
+<p>And where a recipe declares a <code>sha:</code> URL — the form the pkgx format already had
+and nothing read — the digest is verified. A mismatch fails the build rather
+than falling through to the next mirror: a build that quietly succeeded from a
+second host after the first served unexpected bytes would hide the one event
+that check exists to surface.</p>
 <h2 id="the-pinned-key">The pinned key<a class="headerlink" href="#the-pinned-key" title="Permanent link">&para;</a></h2>
 <p>Signatures verify against a single pinned public key:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>RWQ+rmH+fXy2iYr+gReQAOQtYWtH0A7UlxcAa2hpr+txNBwGqtpFsR6L
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>RWQ+rmH+fXy2iYr+gReQAOQtYWtH0A7UlxcAa2hpr+txNBwGqtpFsR6L
 </code></pre></div>
 <p>The factory signs with the matching private key (held only as a CI secret); every
 consumer checks against this exact public key.</p>
@@ -615,8 +657,8 @@ and <code>pkgm</code> import performs verification at install time:</p>
 <li>Setting <strong><code>PKGX_VERIFY=1</code></strong> makes verification <strong>fail-closed</strong>: a package with no
   signature, or one that does not verify, is <strong>refused</strong> rather than installed.</li>
 </ul>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># refuses to install anything that isn't validly signed by the pinned key</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nv">PKGX_DIST</span><span class="o">=</span>oci://ghcr.io/go-pkgx/packages<span class="w"> </span><span class="nv">PKGX_VERIFY</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>pkgm<span class="w"> </span>install<span class="w"> </span>lz4.org
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># refuses to install anything that isn't validly signed by the pinned key</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nv">PKGX_DIST</span><span class="o">=</span>oci://ghcr.io/go-pkgx/packages<span class="w"> </span><span class="nv">PKGX_VERIFY</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>pkgm<span class="w"> </span>install<span class="w"> </span>lz4.org
 </code></pre></div>
 <p>This closes the loop end to end: the factory signs and attests at publish time, and
 the consumer refuses to run anything it cannot verify.</p>

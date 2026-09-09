@@ -448,6 +448,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#trees-the-pantry-does-not-have" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trees the pantry does not have
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#consuming" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -607,6 +618,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#trees-the-pantry-does-not-have" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trees the pantry does not have
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#consuming" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -705,6 +727,59 @@ not the full catalog):</p>
 </tr>
 </tbody>
 </table>
+<h2 id="trees-the-pantry-does-not-have">Trees the pantry does not have<a class="headerlink" href="#trees-the-pantry-does-not-have" title="Permanent link">&para;</a></h2>
+<p>Most of the catalog is a pkgx pantry recipe built here. These are projects
+upstream does not carry at all — the HPC and GPU floor an MPI actually needs,
+which the pantry stops just above:</p>
+<table>
+<thead>
+<tr>
+<th>project</th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>openucx.org</code></td>
+<td>1.22.0</td>
+<td>the transport OpenMPI, MPICH and OpenSHMEM reach shared memory and RDMA through — built <code>--with-verbs</code>, so <code>libuct_ib</code>, <code>libuct_ib_mlx5</code> and <code>libuct_ib_efa</code> are there rather than TCP alone</td>
+</tr>
+<tr>
+<td><code>github.com/linux-rdma/rdma-core</code></td>
+<td>65.0</td>
+<td><code>libibverbs</code>, which is what makes the line above more than a configure flag</td>
+</tr>
+<tr>
+<td><code>github.com/ROCm/ROCR-Runtime</code></td>
+<td>7.2.4</td>
+<td>the HSA runtime an AMD GPU is driven through, <strong>built from NCSA source</strong>; linux/x86-64 only, because upstream's <code>utils.h</code> calls an x86 intrinsic unguarded</td>
+</tr>
+<tr>
+<td><code>nvidia.com/cuda-cudart</code></td>
+<td>13.3.1</td>
+<td>the CUDA runtime, from NVIDIA's redistributable set, verified against the sha256 in their own manifest</td>
+</tr>
+<tr>
+<td><code>kernel.org/linux</code></td>
+<td>6.19.14</td>
+<td>the microVM kernel, with <code>INFINIBAND_USER_ACCESS</code>, <code>RDMA_RXE</code>, <code>RDMA_SIW</code>, <code>MLX5_*</code>, <code>VFIO_*</code>, hugepages and <code>PCI_P2PDMA</code> — the devices <code>libibverbs</code> opens, and GPUDirect</td>
+</tr>
+<tr>
+<td><code>github.com/containers/crun</code></td>
+<td>1.29.1</td>
+<td>the runtime that closes the microVM boot loop</td>
+</tr>
+</tbody>
+</table>
+<p>The two GPU rows differ in kind, and the recipes say so: ROCm is source we
+compile, CUDA is an archive we fetch under a licence that names which files may
+travel.</p>
+<p>Nothing here needs a GPU or a fabric to <strong>build</strong>. What a build machine can
+honestly check is that a runtime links, loads and answers — <code>hsa_init()</code>
+returning "out of resources" with no <code>/dev/kfd</code> is a pass — and that a transport
+module was compiled at all, since a silently declined <code>--with-verbs</code> looks
+exactly like a missing <code>libuct_ib.so</code>.</p>
 <h2 id="consuming">Consuming<a class="headerlink" href="#consuming" title="Permanent link">&para;</a></h2>
 <p>Point the go-pkgx tools at the registry and verify against the pinned key:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nv">PKGX_DIST</span><span class="o">=</span>oci://ghcr.io/go-pkgx/packages<span class="w"> </span><span class="nv">PKGX_VERIFY</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>pkgm<span class="w"> </span>install<span class="w"> </span>lz4.org
