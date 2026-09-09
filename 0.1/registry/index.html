@@ -448,6 +448,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#a-bottle-that-runs-somewhere-else" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A bottle that runs somewhere else
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#trees-the-pantry-does-not-have" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -618,6 +629,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#a-bottle-that-runs-somewhere-else" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A bottle that runs somewhere else
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#trees-the-pantry-does-not-have" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -727,6 +749,50 @@ not the full catalog):</p>
 </tr>
 </tbody>
 </table>
+<h2 id="a-bottle-that-runs-somewhere-else">A bottle that runs somewhere else<a class="headerlink" href="#a-bottle-that-runs-somewhere-else" title="Permanent link">&para;</a></h2>
+<p><code>$PKGX_DIR</code> is wherever you put it. A package that records where it was <em>built</em>
+is not a package, it is a souvenir — so every binary is normalised before it is
+signed, and the two platforms need different work.</p>
+<p><strong>Linux.</strong> A <code>DT_RUNPATH</code> naming the build machine is rewritten <code>$ORIGIN</code>-relative,
+so a library found beside the binary is found beside it anywhere. The entry can
+be rewritten in place, because the replacement is shorter than what it replaces.</p>
+<p><strong>macOS.</strong> Two things have to be right at once, and each fails silently on its
+own.</p>
+<p>A Mach-O names its dependencies by the <em>install name</em> the dependency was built
+with. Two forms of that name cannot work here:</p>
+<table>
+<thead>
+<tr>
+<th>install name</th>
+<th>why it fails</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/Users/runner/.pkgx/…/libssh2.1.dylib</code></td>
+<td>absolute — <strong>an absolute reference never consults an rpath</strong>, so no rpath rescues it</td>
+</tr>
+<tr>
+<td><code>@rpath/libzstd.1.dylib</code></td>
+<td>bare — a consumer's rpath reaches <code>$PKGX_DIR</code>, not the library's own <code>lib/</code>, so it resolves nowhere</td>
+</tr>
+</tbody>
+</table>
+<p>The second is CMake's default (<code>MACOSX_RPATH</code>) and is the more insidious of the
+two: the package that carries it works perfectly, because its own binaries reach
+its libraries through <code>@loader_path/../lib</code>. Only <em>other</em> packages break.</p>
+<p>Both are normalised to <code>@rpath/&lt;project&gt;/v&lt;version&gt;/lib/&lt;file&gt;</code>, with a
+dependency's version reduced to its major so that a dependency's minor upgrade
+does not orphan its dependents.</p>
+<p>And the binary must carry an rpath that actually reaches <code>$PKGX_DIR</code> from where
+it installs. That one is linked in at build time rather than repaired
+afterwards: its value is how deep the package installs, which is a fact about
+the recipe and cannot be recovered from the binary. A bottle whose references to
+other packages resolve only through the builder's own absolute rpath is
+<strong>refused</strong>, not published.</p>
+<p>Every Mach-O the factory edits is re-signed. On Apple silicon a binary whose
+signature describes the old bytes is not stale — it is killed on sight, with no
+message.</p>
 <h2 id="trees-the-pantry-does-not-have">Trees the pantry does not have<a class="headerlink" href="#trees-the-pantry-does-not-have" title="Permanent link">&para;</a></h2>
 <p>Most of the catalog is a pkgx pantry recipe built here. These are projects
 upstream does not carry at all — the HPC and GPU floor an MPI actually needs,
