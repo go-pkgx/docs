@@ -94,6 +94,28 @@ Every Mach-O the factory edits is re-signed. On Apple silicon a binary whose
 signature describes the old bytes is not stale — it is killed on sight, with no
 message.
 
+### Except what was mirrored
+
+Not every package here was built here. Where a bottle already exists upstream
+and rebuilding it would buy nothing, the factory **copies** it and republishes
+it with our own signature, SBOM and provenance. Those attestations are ours and
+mean what they say: this is the artefact we published, and this is where it came
+from.
+
+What they do **not** mean is that the normalisation above was applied. A
+mirrored bottle is republished byte-for-byte; nothing unpacks it, so nothing
+rewrites its install names and no guard refuses it. It carries whatever the
+upstream build produced — including, in at least one published case, a RUNPATH
+naming absolute paths under `/opt` that exist on nobody's machine.
+
+You can tell which is which by looking:
+
+| | linux `DT_RUNPATH` | macOS `LC_RPATH` |
+| --- | --- | --- |
+| built here | `$ORIGIN`-relative | several `@loader_path/..` depths **and** the builder's absolute path |
+| mirrored | whatever upstream wrote | one `@loader_path` entry, or an absolute path |
+
+
 ## Trees the pantry does not have
 
 Most of the catalog is a pkgx pantry recipe built here. These are projects
