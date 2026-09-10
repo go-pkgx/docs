@@ -456,6 +456,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="A bottle that runs somewhere else">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#except-what-was-mirrored" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Except what was mirrored
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -637,6 +654,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="A bottle that runs somewhere else">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#except-what-was-mirrored" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Except what was mirrored
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -793,6 +827,39 @@ other packages resolve only through the builder's own absolute rpath is
 <p>Every Mach-O the factory edits is re-signed. On Apple silicon a binary whose
 signature describes the old bytes is not stale — it is killed on sight, with no
 message.</p>
+<h3 id="except-what-was-mirrored">Except what was mirrored<a class="headerlink" href="#except-what-was-mirrored" title="Permanent link">&para;</a></h3>
+<p>Not every package here was built here. Where a bottle already exists upstream
+and rebuilding it would buy nothing, the factory <strong>copies</strong> it and republishes
+it with our own signature, SBOM and provenance. Those attestations are ours and
+mean what they say: this is the artefact we published, and this is where it came
+from.</p>
+<p>What they do <strong>not</strong> mean is that the normalisation above was applied. A
+mirrored bottle is republished byte-for-byte; nothing unpacks it, so nothing
+rewrites its install names and no guard refuses it. It carries whatever the
+upstream build produced — including, in at least one published case, a RUNPATH
+naming absolute paths under <code>/opt</code> that exist on nobody's machine.</p>
+<p>You can tell which is which by looking:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>linux <code>DT_RUNPATH</code></th>
+<th>macOS <code>LC_RPATH</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>built here</td>
+<td><code>$ORIGIN</code>-relative</td>
+<td>several <code>@loader_path/..</code> depths <strong>and</strong> the builder's absolute path</td>
+</tr>
+<tr>
+<td>mirrored</td>
+<td>whatever upstream wrote</td>
+<td>one <code>@loader_path</code> entry, or an absolute path</td>
+</tr>
+</tbody>
+</table>
 <h2 id="trees-the-pantry-does-not-have">Trees the pantry does not have<a class="headerlink" href="#trees-the-pantry-does-not-have" title="Permanent link">&para;</a></h2>
 <p>Most of the catalog is a pkgx pantry recipe built here. These are projects
 upstream does not carry at all — the HPC and GPU floor an MPI actually needs,
