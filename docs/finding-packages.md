@@ -4,6 +4,9 @@ A package manager you cannot browse is a package manager you have to already
 know. `pkgx ls` walks the tree; `<TAB>` completes into it.
 
 ```console
+$ pkgx catalog update
+1907 project(s) → /home/you/.pkgx/catalog/linux-x86-64.json
+
 $ pkgx ls
 curl.se                                  8.17.0, 3 under
 github.com                               452 under
@@ -57,7 +60,8 @@ the first level is what a person reads. A diamond is expanded once and named
 once — and the one expanded is the **direct** dependency, because that is the
 one a reader came for.
 
-**It needs no network.** `pkgx --graph` answers the same question by
+**It needs no network** — not once `pkgx catalog update` has run, and never
+again until you run it. `pkgx --graph` answers the same question by
 resolving against the registry, which is the better answer when you have one
 and no answer at all in a `FROM scratch` image that has not fetched anything
 yet.
@@ -119,29 +123,71 @@ other, fetched in one pull — and it is published **per platform**, because
 what is available differs by architecture and a single list would tell most
 readers that packages are available which, for them, are not.
 
+Signed, and **checked**: forging a catalogue does not get an unsigned bottle
+installed, because the install path verifies anyway. It gets a near-miss
+name offered at your prompt, which is the whole of a typosquat. The attack
+is on the reader.
+
+## One command fetches it
+
+`pkgx catalog update` is the **only** thing that asks the registry what
+exists. `ls` and `<TAB>` read the file it wrote, and nothing on that path
+opens a socket.
+
+That line is the difference between a completion you leave switched on and
+one you turn off. A `<TAB>` is a fresh process — there is no state between
+two presses — so a fetch on the read path is paid again on every press, in
+full. Measured, one press of `<TAB>` on `gnu.o`:
+
+| | median | answer |
+| --- | --- | --- |
+| fetching on every press | 295 ms | nothing |
+| reading the file | **7.6 ms** | `gnu.org/` |
+
+`guix pull` and `nix-channel --update` put the line in the same place.
+
+The price is that the index goes stale and nothing tells you by magic, so
+every command that reads it says how old it is:
+
+```console
+$ pkgx catalog
+/home/you/.pkgx/catalog/linux-x86-64.json
+1907 project(s), 905 with dependencies, 2 hour(s) old
+```
+
 ## Shipping a catalogue with the image
 
-`PKGX_CATALOG=<file>` reads one from disk instead of the registry — for an
-air-gapped image, or to inspect a catalogue before publishing it.
+`PKGX_CATALOG=<file>` reads one from somewhere else entirely — for an
+air-gapped image, or to inspect a catalogue before publishing it. An image
+that ships one can also simply drop the file at the path `pkgx catalog`
+prints, and never fetch at all.
 
 Set and unreadable is a **refusal**, not a quiet fall back to the local
 store: somebody who names a file means that file, and answering from
 somewhere else under a header blaming the registry would be three wrong
 things in one line.
 
-## When it cannot be read
+## When there is none
 
-`pkgx ls` falls back to **what is installed**, and says so in its header:
+`pkgx ls` falls back to **what is installed**, and says so in its header —
+with the sentence that fits the case it is actually in:
 
 ```console
-$ pkgx ls
-pkgx: showing what is INSTALLED — the registry catalogue could not be read
+$ pkgx ls                      # never fetched one
+pkgx: showing what is INSTALLED — no catalogue yet; run: pkgx catalog update
+
+$ pkgx ls                      # one is there and will not parse
+pkgx: showing what is INSTALLED — /home/you/.pkgx/catalog/linux-x86-64.json could not be read
 ```
 
-Offline, and in a fresh scratch image before the first fetch, that is not a
-lesser answer: it is the only true one available, and it is often the one
-wanted, because completing onto something already installed costs nothing to
-run.
+Those two are not the same state, and "run `pkgx catalog update`" is the fix
+for the first and no help at all for the second. Sending somebody to a
+command that cannot work is worse than saying nothing.
+
+Offline, and in a fresh scratch image before the first fetch, the fallback
+is not a lesser answer: it is the only true one available, and it is often
+the one wanted, because completing onto something already installed costs
+nothing to run.
 
 The two lists are **never merged**. "Available" about a mix of a registry and
 a local store is a word with no meaning, and a header cannot be honest about
