@@ -453,6 +453,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#and-where-a-recipe-declares-nothing-which-is-903-of-904" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        And where a recipe declares nothing, which is 903 of 904
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#the-pinned-key" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -574,6 +585,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#and-where-a-recipe-declares-nothing-which-is-903-of-904" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        And where a recipe declares nothing, which is 903 of 904
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#the-pinned-key" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -625,8 +647,9 @@ referrers</strong>, so they travel with the image and are discoverable from its 
 </ul>
 <h2 id="what-went-in-not-only-what-came-out">What went IN, not only what came out<a class="headerlink" href="#what-went-in-not-only-what-came-out" title="Permanent link">&para;</a></h2>
 <p>Those three describe the <strong>output</strong>. Until recently nothing recorded the input:
-of 1858 recipes with a source URL, exactly one declared a checksum, and none was
-verified. A source tarball that changed upstream produced a different package,
+of 1858 recipes with a source URL (measured 2026-09; re-counted 2026-10-05 as
+<strong>1874 distributable URLs across 1899 recipes</strong>, reaching <strong>233 distinct
+upstream hosts</strong>), exactly one declared a checksum, and none was verified. A source tarball that changed upstream produced a different package,
 correctly signed, attesting a URL rather than the bytes that came back from it.</p>
 <p>The provenance now carries the source as a SLSA <code>resolvedDependency</code> — the
 archive's SHA-256, or a git checkout's commit:</p>
@@ -643,9 +666,42 @@ and nothing read — the digest is verified. A mismatch fails the build rather
 than falling through to the next mirror: a build that quietly succeeded from a
 second host after the first served unexpected bytes would hide the one event
 that check exists to surface.</p>
+<h2 id="and-where-a-recipe-declares-nothing-which-is-903-of-904">And where a recipe declares nothing, which is 903 of 904<a class="headerlink" href="#and-where-a-recipe-declares-nothing-which-is-903-of-904" title="Permanent link">&para;</a></h2>
+<p>Verifying a declared <code>sha:</code> is worth having and reaches almost nothing. Measured
+on 2026-10-05 against a fresh <code>pkgxdev/pantry</code>: <strong>one recipe of 904</strong> carries a
+<code>sha:</code> at all, and that one — <code>openssl.org</code> — points at <code>${{url}}.sha256</code>, a file
+served by the <strong>same host</strong> as the tarball. It catches corruption in transit,
+which TLS already catches. It does not catch substitution: a host serving
+different bytes serves a matching <code>.sha256</code> beside them.</p>
+<p>So the source mirror grew a second job. It already kept every archive a build
+downloads, addressed by its SHA-256; it now also records <strong>which digest each URL
+served</strong>, and a later fetch that disagrees is refused:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>fetch: this URL has served different bytes before:
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>  https://…/x-1.2.tar.gz now serves 2c26b4…, and served 9f86d0… before
+</code></pre></div>
+<p>Trust on first use. It does not make an upstream trustworthy — it makes a
+<strong>change</strong> visible, which is the part nobody had.</p>
+<p>A <strong>version bump is a first use</strong>, because the version is in the URL: a new
+release asks a question never asked before and is recorded rather than refused.
+That is why there is no <code>--no-pin</code> escape; the case it would serve does not
+arise.</p>
+<p>The uncomfortable case is a mirror that cannot be <strong>asked</strong>. That is not an
+absent pin, and treating the two alike is how trust-on-first-use quietly becomes
+trust-every-time. They are distinguished, said out loud, and
+<code>--source-pin-strict</code> chooses which is fatal — warn and continue by default,
+because an unreachable registry is not evidence of tampering.</p>
+<p>It is <strong>opt-in</strong>: <code>--source-mirror</code> is empty unless a run asks for it. Turning it
+on is safe rather than risky — the mirror's existing contents carry only content
+tags, so the first pass records and only the second enforces.</p>
+<p><strong>Still missing</strong>, and it is a decision rather than a patch: <code>openssl.org</code> also
+declares <code>sig: ${{url}}.asc</code>, and nothing reads that field. It is the only
+control in the recipe format a compromised host could not forge — the signing
+key is not on <code>www.openssl.org</code> — and honouring it needs a key policy: whose
+key, pinned where, and what happens when a release is signed by a new one. A
+verifier that accepts any key proves only that somebody signed something.</p>
 <h2 id="the-pinned-key">The pinned key<a class="headerlink" href="#the-pinned-key" title="Permanent link">&para;</a></h2>
 <p>Signatures verify against a single pinned public key:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>RWQ+rmH+fXy2iYr+gReQAOQtYWtH0A7UlxcAa2hpr+txNBwGqtpFsR6L
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>RWQ+rmH+fXy2iYr+gReQAOQtYWtH0A7UlxcAa2hpr+txNBwGqtpFsR6L
 </code></pre></div>
 <p>The factory signs with the matching private key (held only as a CI secret); every
 consumer checks against this exact public key.</p>
@@ -657,8 +713,8 @@ and <code>pkgm</code> import performs verification at install time:</p>
 <li>Setting <strong><code>PKGX_VERIFY=1</code></strong> makes verification <strong>fail-closed</strong>: a package with no
   signature, or one that does not verify, is <strong>refused</strong> rather than installed.</li>
 </ul>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># refuses to install anything that isn't validly signed by the pinned key</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nv">PKGX_DIST</span><span class="o">=</span>oci://ghcr.io/go-pkgx/packages<span class="w"> </span><span class="nv">PKGX_VERIFY</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>pkgm<span class="w"> </span>install<span class="w"> </span>lz4.org
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># refuses to install anything that isn't validly signed by the pinned key</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nv">PKGX_DIST</span><span class="o">=</span>oci://ghcr.io/go-pkgx/packages<span class="w"> </span><span class="nv">PKGX_VERIFY</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>pkgm<span class="w"> </span>install<span class="w"> </span>lz4.org
 </code></pre></div>
 <p>This closes the loop end to end: the factory signs and attests at publish time, and
 the consumer refuses to run anything it cannot verify.</p>
