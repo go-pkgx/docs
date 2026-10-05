@@ -4,6 +4,9 @@ A package manager you cannot browse is a package manager you have to already
 know. `pkgx ls` walks the tree; `<TAB>` completes into it.
 
 ```console
+$ pkgx catalog update
+1907 project(s) → /home/you/.pkgx/catalog/linux-x86-64.json
+
 $ pkgx ls
 curl.se                                  8.17.0, 3 under
 github.com                               452 under
@@ -16,13 +19,56 @@ gnu.org/bash                             5.3
 gnu.org/gcc                              16.2.0, 1 under
 …
 
-$ pkgx ls zlib.net
-zlib.net is a package, not a namespace — 1.3.2 1.3.1
+$ pkgx ls curl.se
+curl.se — 8.17.0
+  curl.se/ca-certs
+  nghttp2.org
+  openssl.org
+  zlib.net
+
+also a namespace, 3 under it: pkgx ls curl.se/
 ```
 
-A node can be **both** a package and a namespace. `curl.se` is one — it is a
-package, and `curl.se/ca-certs` lives under it — so the listing says both
-rather than picking one.
+## A node has two kinds of thing under it
+
+`gnu.org` has `gnu.org/bash` under it because of how it is **named**.
+`curl.se` has `openssl.org` under it because of what it **needs**.
+
+The same words — "what is available under this node" — mean *containment*
+at a namespace and *dependency* at a package, and `ls` answers whichever
+the node is. Nix, Guix and Spack keep the two in separate commands
+(`guix graph`, `nix-tree`); here the node decides, because the person
+typing already knows which kind of thing they named.
+
+A node can be **both**, and `curl.se` is. A **trailing slash** asks for the
+namespace — the only way to reach `curl.se/ca-certs` from `curl.se` — and a
+node that is both says where its other half is rather than hiding it.
+
+```console
+$ pkgx ls --tree curl.se
+curl.se — 8.17.0
+  curl.se/ca-certs
+  nghttp2.org
+  openssl.org
+    curl.se/ca-certs  (shown above)
+  zlib.net
+```
+
+`--depth N` bounds the descent. `guix graph --max-depth` exists for the same
+reason: the full transitive graph of anything interesting is pages long, and
+the first level is what a person reads. A diamond is expanded once and named
+once — and the one expanded is the **direct** dependency, because that is the
+one a reader came for.
+
+**It needs no network** — not once `pkgx catalog update` has run, and never
+again until you run it. `pkgx --graph` answers the same question by
+resolving against the registry, which is the better answer when you have one
+and no answer at all in a `FROM scratch` image that has not fetched anything
+yet.
+
+What it shows is what recipes **declare**. It is not the installed closure:
+`bottle` also pulls providers by soname that no recipe names, so a real
+install can hold more than this tree does.
 
 ## Completion
 
@@ -77,19 +123,71 @@ other, fetched in one pull — and it is published **per platform**, because
 what is available differs by architecture and a single list would tell most
 readers that packages are available which, for them, are not.
 
-## When it cannot be read
+Signed, and **checked**: forging a catalogue does not get an unsigned bottle
+installed, because the install path verifies anyway. It gets a near-miss
+name offered at your prompt, which is the whole of a typosquat. The attack
+is on the reader.
 
-`pkgx ls` falls back to **what is installed**, and says so in its header:
+## One command fetches it
+
+`pkgx catalog update` is the **only** thing that asks the registry what
+exists. `ls` and `<TAB>` read the file it wrote, and nothing on that path
+opens a socket.
+
+That line is the difference between a completion you leave switched on and
+one you turn off. A `<TAB>` is a fresh process — there is no state between
+two presses — so a fetch on the read path is paid again on every press, in
+full. Measured, one press of `<TAB>` on `gnu.o`:
+
+| | median | answer |
+| --- | --- | --- |
+| fetching on every press | 295 ms | nothing |
+| reading the file | **7.6 ms** | `gnu.org/` |
+
+`guix pull` and `nix-channel --update` put the line in the same place.
+
+The price is that the index goes stale and nothing tells you by magic, so
+every command that reads it says how old it is:
 
 ```console
-$ pkgx ls
-pkgx: showing what is INSTALLED — the registry catalogue could not be read
+$ pkgx catalog
+/home/you/.pkgx/catalog/linux-x86-64.json
+1907 project(s), 905 with dependencies, 2 hour(s) old
 ```
 
-Offline, and in a fresh scratch image before the first fetch, that is not a
-lesser answer: it is the only true one available, and it is often the one
-wanted, because completing onto something already installed costs nothing to
-run.
+## Shipping a catalogue with the image
+
+`PKGX_CATALOG=<file>` reads one from somewhere else entirely — for an
+air-gapped image, or to inspect a catalogue before publishing it. An image
+that ships one can also simply drop the file at the path `pkgx catalog`
+prints, and never fetch at all.
+
+Set and unreadable is a **refusal**, not a quiet fall back to the local
+store: somebody who names a file means that file, and answering from
+somewhere else under a header blaming the registry would be three wrong
+things in one line.
+
+## When there is none
+
+`pkgx ls` falls back to **what is installed**, and says so in its header —
+with the sentence that fits the case it is actually in:
+
+```console
+$ pkgx ls                      # never fetched one
+pkgx: showing what is INSTALLED — no catalogue yet; run: pkgx catalog update
+
+$ pkgx ls                      # one is there and will not parse
+pkgx: showing what is INSTALLED — /home/you/.pkgx/catalog/linux-x86-64.json could not be read
+```
+
+Those two are not the same state, and "run `pkgx catalog update`" is the fix
+for the first and no help at all for the second. Sending somebody to a
+command that cannot work is worse than saying nothing.
+
+Offline, and in a fresh scratch image before the first fetch, the fallback
+is not a lesser answer: it is the only true one available, and it is often
+the one wanted, because completing onto something already installed costs
+nothing to run.
 
 The two lists are **never merged**. "Available" about a mix of a registry and
 a local store is a word with no meaning, and a header cannot be honest about
