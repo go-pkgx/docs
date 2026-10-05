@@ -42,6 +42,7 @@ nav:
   - Home: index.md
   - FROM scratch: from-scratch.md
   - Environments and HPC: environments.md
+  - Sets and locks: sets-and-locks.md
   - Package registry: registry.md
   - Supply chain: supply-chain.md
   - Build isolation: build-isolation.md
