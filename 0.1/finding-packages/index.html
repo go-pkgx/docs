@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://go-pkgx.github.io/docs/0.1/supply-chain/">
+        <link rel="canonical" href="https://go-pkgx.github.io/docs/0.1/finding-packages/">
       
       
-        <link rel="prev" href="../registry/">
+        <link rel="prev" href="../environments/">
       
       
-        <link rel="next" href="../build-isolation/">
+        <link rel="next" href="../sets-and-locks/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>Supply chain - go-pkgx docs</title>
+        <title>Finding packages - go-pkgx docs</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#supply-chain" class="md-skip">
+        <a href="#finding-packages" class="md-skip">
           Skip to content
         </a>
       
@@ -117,7 +117,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Supply chain
+              Finding packages
             
           </span>
         </div>
@@ -352,10 +352,37 @@
       
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../finding-packages/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Finding packages
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -371,6 +398,59 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#completion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Completion
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#where-the-list-comes-from" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where the list comes from
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-it-cannot-be-read" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When it cannot be read
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -433,37 +513,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Supply chain
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../supply-chain/" class="md-nav__link">
         
   
   
@@ -479,70 +532,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#what-went-in-not-only-what-came-out" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What went IN, not only what came out
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#and-where-a-recipe-declares-nothing-which-is-903-of-904" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        And where a recipe declares nothing, which is 903 of 904
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#the-pinned-key" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        The pinned key
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#verify-on-install" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Verify on install
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -628,10 +617,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#what-went-in-not-only-what-came-out" class="md-nav__link">
+  <a href="#completion" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What went IN, not only what came out
+        Completion
       
     </span>
   </a>
@@ -639,10 +628,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#and-where-a-recipe-declares-nothing-which-is-903-of-904" class="md-nav__link">
+  <a href="#where-the-list-comes-from" class="md-nav__link">
     <span class="md-ellipsis">
       
-        And where a recipe declares nothing, which is 903 of 904
+        Where the list comes from
       
     </span>
   </a>
@@ -650,21 +639,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#the-pinned-key" class="md-nav__link">
+  <a href="#when-it-cannot-be-read" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The pinned key
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#verify-on-install" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Verify on install
+        When it cannot be read
       
     </span>
   </a>
@@ -688,90 +666,76 @@
 
 
 
-<h1 id="supply-chain">Supply chain<a class="headerlink" href="#supply-chain" title="Permanent link">&para;</a></h1>
-<p>Every package in <a href="../registry/"><code>ghcr.io/go-pkgx/packages</code></a> ships with the evidence
-needed to audit and trust it. Three artifacts are attached to each package as <strong>OCI
-referrers</strong>, so they travel with the image and are discoverable from its digest:</p>
-<ul>
-<li>a <strong>CycloneDX SBOM</strong> — the package's components and versions
-  (<a href="https://github.com/go-attest/sbom"><code>go-attest/sbom</code></a>);</li>
-<li>an in-toto <strong>SLSA provenance</strong> statement — how and from what the package was built;</li>
-<li>a <strong>cosign-style + minisign signature</strong> over the package
-  (<a href="https://github.com/go-attest/sign"><code>go-attest/sign</code></a>).</li>
-</ul>
-<h2 id="what-went-in-not-only-what-came-out">What went IN, not only what came out<a class="headerlink" href="#what-went-in-not-only-what-came-out" title="Permanent link">&para;</a></h2>
-<p>Those three describe the <strong>output</strong>. Until recently nothing recorded the input:
-of 1858 recipes with a source URL (measured 2026-09; re-counted 2026-10-05 as
-<strong>1874 distributable URLs across 1899 recipes</strong>, reaching <strong>233 distinct
-upstream hosts</strong>), exactly one declared a checksum, and none was verified. A source tarball that changed upstream produced a different package,
-correctly signed, attesting a URL rather than the bytes that came back from it.</p>
-<p>The provenance now carries the source as a SLSA <code>resolvedDependency</code> — the
-archive's SHA-256, or a git checkout's commit:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">"resolvedDependencies"</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">"uri"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://github.com/ROCm/ROCR-Runtime/archive/refs/tags/rocm-7.2.4.tar.gz"</span><span class="p">,</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span><span class="nt">"digest"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"sha256"</span><span class="p">:</span><span class="w"> </span><span class="s2">"60532cd86edce5a603aa18df406ec1f5a3d18f0663d79b3b7822ff721c5a04ec"</span><span class="p">}</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="p">}]</span>
+<h1 id="finding-packages">Finding packages<a class="headerlink" href="#finding-packages" title="Permanent link">&para;</a></h1>
+<p>A package manager you cannot browse is a package manager you have to already
+know. <code>pkgx ls</code> walks the tree; <code>&lt;TAB&gt;</code> completes into it.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>ls
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="go">curl.se                                  8.17.0, 3 under</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="go">github.com                               452 under</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go">gnu.org                                  54 under</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="go">zlib.net                                 1.3.2</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">$ </span>pkgx<span class="w"> </span>ls<span class="w"> </span>gnu.org
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go">gnu.org/autoconf                         2.73</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="go">gnu.org/bash                             5.3</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="go">gnu.org/gcc                              16.2.0, 1 under</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="go">…</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="gp">$ </span>pkgx<span class="w"> </span>ls<span class="w"> </span>zlib.net
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="go">zlib.net is a package, not a namespace — 1.3.2 1.3.1</span>
 </code></pre></div>
-<p>It records the candidate URL that <strong>answered</strong>, which for a recipe listing
-mirrors is not always the first one — a build that fell through to a mirror and
-one that did not are different builds.</p>
-<p>And where a recipe declares a <code>sha:</code> URL — the form the pkgx format already had
-and nothing read — the digest is verified. A mismatch fails the build rather
-than falling through to the next mirror: a build that quietly succeeded from a
-second host after the first served unexpected bytes would hide the one event
-that check exists to surface.</p>
-<h2 id="and-where-a-recipe-declares-nothing-which-is-903-of-904">And where a recipe declares nothing, which is 903 of 904<a class="headerlink" href="#and-where-a-recipe-declares-nothing-which-is-903-of-904" title="Permanent link">&para;</a></h2>
-<p>Verifying a declared <code>sha:</code> is worth having and reaches almost nothing. Measured
-on 2026-10-05 against a fresh <code>pkgxdev/pantry</code>: <strong>one recipe of 904</strong> carries a
-<code>sha:</code> at all, and that one — <code>openssl.org</code> — points at <code>${{url}}.sha256</code>, a file
-served by the <strong>same host</strong> as the tarball. It catches corruption in transit,
-which TLS already catches. It does not catch substitution: a host serving
-different bytes serves a matching <code>.sha256</code> beside them.</p>
-<p>So the source mirror grew a second job. It already kept every archive a build
-downloads, addressed by its SHA-256; it now also records <strong>which digest each URL
-served</strong>, and a later fetch that disagrees is refused:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>fetch: this URL has served different bytes before:
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>  https://…/x-1.2.tar.gz now serves 2c26b4…, and served 9f86d0… before
+<p>A node can be <strong>both</strong> a package and a namespace. <code>curl.se</code> is one — it is a
+package, and <code>curl.se/ca-certs</code> lives under it — so the listing says both
+rather than picking one.</p>
+<h2 id="completion">Completion<a class="headerlink" href="#completion" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nb">eval</span><span class="w"> </span><span class="s2">"</span><span class="k">$(</span>pkgx<span class="w"> </span>completion<span class="w"> </span>bash<span class="k">)</span><span class="s2">"</span><span class="w">     </span><span class="c1"># or zsh, or: pkgx completion fish | source</span>
 </code></pre></div>
-<p>Trust on first use. It does not make an upstream trustworthy — it makes a
-<strong>change</strong> visible, which is the part nobody had.</p>
-<p>A <strong>version bump is a first use</strong>, because the version is in the URL: a new
-release asks a question never asked before and is recorded rather than refused.
-That is why there is no <code>--no-pin</code> escape; the case it would serve does not
-arise.</p>
-<p>The uncomfortable case is a mirror that cannot be <strong>asked</strong>. That is not an
-absent pin, and treating the two alike is how trust-on-first-use quietly becomes
-trust-every-time. They are distinguished, said out loud, and
-<code>--source-pin-strict</code> chooses which is fatal — warn and continue by default,
-because an unreachable registry is not evidence of tampering.</p>
-<p>It is <strong>opt-in</strong>: <code>--source-mirror</code> is empty unless a run asks for it. Turning it
-on is safe rather than risky — the mirror's existing contents carry only content
-tags, so the first pass records and only the second enforces.</p>
-<p><strong>Still missing</strong>, and it is a decision rather than a patch: <code>openssl.org</code> also
-declares <code>sig: ${{url}}.asc</code>, and nothing reads that field. It is the only
-control in the recipe format a compromised host could not forge — the signing
-key is not on <code>www.openssl.org</code> — and honouring it needs a key policy: whose
-key, pinned where, and what happens when a release is signed by a new one. A
-verifier that accepts any key proves only that somebody signed something.</p>
-<h2 id="the-pinned-key">The pinned key<a class="headerlink" href="#the-pinned-key" title="Permanent link">&para;</a></h2>
-<p>Signatures verify against a single pinned public key:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>RWQ+rmH+fXy2iYr+gReQAOQtYWtH0A7UlxcAa2hpr+txNBwGqtpFsR6L
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>+gnu.org/ba&lt;TAB&gt;
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="go">+gnu.org/bash</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="gp">$ </span>pkgx<span class="w"> </span>gnu.o&lt;TAB&gt;
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="go">gnu.org/          # with the slash, so the next TAB descends</span>
 </code></pre></div>
-<p>The factory signs with the matching private key (held only as a CI secret); every
-consumer checks against this exact public key.</p>
-<h2 id="verify-on-install">Verify on install<a class="headerlink" href="#verify-on-install" title="Permanent link">&para;</a></h2>
-<p>The <a href="https://github.com/go-pkgx/bottle"><code>go-pkgx/bottle</code></a> backend that both <code>pkgx</code>
-and <code>pkgm</code> import performs verification at install time:</p>
-<ul>
-<li><code>bottle.VerifySignature</code> validates a package's signature against the pinned key.</li>
-<li>Setting <strong><code>PKGX_VERIFY=1</code></strong> makes verification <strong>fail-closed</strong>: a package with no
-  signature, or one that does not verify, is <strong>refused</strong> rather than installed.</li>
-</ul>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># refuses to install anything that isn't validly signed by the pinned key</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nv">PKGX_DIST</span><span class="o">=</span>oci://ghcr.io/go-pkgx/packages<span class="w"> </span><span class="nv">PKGX_VERIFY</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>pkgm<span class="w"> </span>install<span class="w"> </span>lz4.org
+<p>The snippet is a few lines and does nothing but call <code>pkgx</code>. Spack generates
+<code>spack-completion.bash</code> from its command tree and commits it; Guix
+hand-writes one per shell; both then need a check that the file still matches
+the program. Nix took the other road — the binary answers when
+<code>NIX_GET_COMPLETIONS</code> names the argument being completed — and that is the
+one followed here.</p>
+<p>The reason is specific: what is being completed is not a fixed command tree,
+it is <strong>the registry</strong>, which changes without pkgx changing and which a
+generated file could never be level with. It is also the only shape that
+works in a <code>FROM scratch</code> image, where there is no completion framework, no
+python and no generator to run.</p>
+<h2 id="where-the-list-comes-from">Where the list comes from<a class="headerlink" href="#where-the-list-comes-from" title="Permanent link">&para;</a></h2>
+<p><code>gnu.org/&lt;TAB&gt;</code> has to know what exists, and <strong>a registry cannot be asked</strong>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>GET /v2/_catalog                             403   (ghcr issues no token)
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>GET /v2/go-pkgx/packages/zlib.net/tags/list  200   ["1.3.2", …]
 </code></pre></div>
-<p>This closes the loop end to end: the factory signs and attests at publish time, and
-the consumer refuses to run anything it cannot verify.</p>
+<p>Versions, yes. Projects, no.</p>
+<p>Nix, Guix and Spack all answer this from a <strong>local index</strong> — an eval cache, a
+channel checkout, a package repo. The pkgx-native equivalent is an artefact
+in the registry itself, so the registry carries a <strong>catalogue</strong>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="gp">$ </span>bk<span class="w"> </span>catalog<span class="w"> </span>--pantry<span class="w"> </span>…<span class="w"> </span>--overlay<span class="w"> </span>…<span class="w"> </span>-o<span class="w"> </span>catalog.json
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="go">catalog: 1908 project(s) → catalog.json</span>
+</code></pre></div>
+<p>1908 projects, 905 roots, <strong>100 KB</strong>, built in 0.4 s with no network. It is
+an <strong>ordinary bottle</strong> — signed, attested, mirrored and cached like any
+other, fetched in one pull — and it is published <strong>per platform</strong>, because
+what is available differs by architecture and a single list would tell most
+readers that packages are available which, for them, are not.</p>
+<h2 id="when-it-cannot-be-read">When it cannot be read<a class="headerlink" href="#when-it-cannot-be-read" title="Permanent link">&para;</a></h2>
+<p><code>pkgx ls</code> falls back to <strong>what is installed</strong>, and says so in its header:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>ls
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="go">pkgx: showing what is INSTALLED — the registry catalogue could not be read</span>
+</code></pre></div>
+<p>Offline, and in a fresh scratch image before the first fetch, that is not a
+lesser answer: it is the only true one available, and it is often the one
+wanted, because completing onto something already installed costs nothing to
+run.</p>
+<p>The two lists are <strong>never merged</strong>. "Available" about a mix of a registry and
+a local store is a word with no meaning, and a header cannot be honest about
+a list with two sources.</p>
 
 
 
