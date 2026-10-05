@@ -415,6 +415,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#a-node-has-two-kinds-of-thing-under-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A node has two kinds of thing under it
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#completion" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -437,10 +448,32 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#when-it-cannot-be-read" class="md-nav__link">
+  <a href="#one-command-fetches-it" class="md-nav__link">
     <span class="md-ellipsis">
       
-        When it cannot be read
+        One command fetches it
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#shipping-a-catalogue-with-the-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shipping a catalogue with the image
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-there-is-none" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When there is none
       
     </span>
   </a>
@@ -617,6 +650,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#a-node-has-two-kinds-of-thing-under-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A node has two kinds of thing under it
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#completion" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -639,10 +683,32 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#when-it-cannot-be-read" class="md-nav__link">
+  <a href="#one-command-fetches-it" class="md-nav__link">
     <span class="md-ellipsis">
       
-        When it cannot be read
+        One command fetches it
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#shipping-a-catalogue-with-the-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shipping a catalogue with the image
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-there-is-none" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When there is none
       
     </span>
   </a>
@@ -669,32 +735,70 @@
 <h1 id="finding-packages">Finding packages<a class="headerlink" href="#finding-packages" title="Permanent link">&para;</a></h1>
 <p>A package manager you cannot browse is a package manager you have to already
 know. <code>pkgx ls</code> walks the tree; <code>&lt;TAB&gt;</code> completes into it.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>ls
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="go">curl.se                                  8.17.0, 3 under</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="go">github.com                               452 under</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go">gnu.org                                  54 under</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="go">zlib.net                                 1.3.2</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">$ </span>pkgx<span class="w"> </span>ls<span class="w"> </span>gnu.org
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go">gnu.org/autoconf                         2.73</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="go">gnu.org/bash                             5.3</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="go">gnu.org/gcc                              16.2.0, 1 under</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="go">…</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="gp">$ </span>pkgx<span class="w"> </span>ls<span class="w"> </span>zlib.net
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="go">zlib.net is a package, not a namespace — 1.3.2 1.3.1</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>catalog<span class="w"> </span>update
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="go">1907 project(s) → /home/you/.pkgx/catalog/linux-x86-64.json</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="gp">$ </span>pkgx<span class="w"> </span>ls
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="go">curl.se                                  8.17.0, 3 under</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go">github.com                               452 under</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="go">gnu.org                                  54 under</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go">zlib.net                                 1.3.2</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="gp">$ </span>pkgx<span class="w"> </span>ls<span class="w"> </span>gnu.org
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="go">gnu.org/autoconf                         2.73</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="go">gnu.org/bash                             5.3</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="go">gnu.org/gcc                              16.2.0, 1 under</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="go">…</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="gp">$ </span>pkgx<span class="w"> </span>ls<span class="w"> </span>curl.se
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="go">curl.se — 8.17.0</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="go">  curl.se/ca-certs</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="go">  nghttp2.org</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="go">  openssl.org</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="go">  zlib.net</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a><span class="go">also a namespace, 3 under it: pkgx ls curl.se/</span>
 </code></pre></div>
-<p>A node can be <strong>both</strong> a package and a namespace. <code>curl.se</code> is one — it is a
-package, and <code>curl.se/ca-certs</code> lives under it — so the listing says both
-rather than picking one.</p>
+<h2 id="a-node-has-two-kinds-of-thing-under-it">A node has two kinds of thing under it<a class="headerlink" href="#a-node-has-two-kinds-of-thing-under-it" title="Permanent link">&para;</a></h2>
+<p><code>gnu.org</code> has <code>gnu.org/bash</code> under it because of how it is <strong>named</strong>.
+<code>curl.se</code> has <code>openssl.org</code> under it because of what it <strong>needs</strong>.</p>
+<p>The same words — "what is available under this node" — mean <em>containment</em>
+at a namespace and <em>dependency</em> at a package, and <code>ls</code> answers whichever
+the node is. Nix, Guix and Spack keep the two in separate commands
+(<code>guix graph</code>, <code>nix-tree</code>); here the node decides, because the person
+typing already knows which kind of thing they named.</p>
+<p>A node can be <strong>both</strong>, and <code>curl.se</code> is. A <strong>trailing slash</strong> asks for the
+namespace — the only way to reach <code>curl.se/ca-certs</code> from <code>curl.se</code> — and a
+node that is both says where its other half is rather than hiding it.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>ls<span class="w"> </span>--tree<span class="w"> </span>curl.se
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="go">curl.se — 8.17.0</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="go">  curl.se/ca-certs</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="go">  nghttp2.org</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="go">  openssl.org</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="go">    curl.se/ca-certs  (shown above)</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="go">  zlib.net</span>
+</code></pre></div>
+<p><code>--depth N</code> bounds the descent. <code>guix graph --max-depth</code> exists for the same
+reason: the full transitive graph of anything interesting is pages long, and
+the first level is what a person reads. A diamond is expanded once and named
+once — and the one expanded is the <strong>direct</strong> dependency, because that is the
+one a reader came for.</p>
+<p><strong>It needs no network</strong> — not once <code>pkgx catalog update</code> has run, and never
+again until you run it. <code>pkgx --graph</code> answers the same question by
+resolving against the registry, which is the better answer when you have one
+and no answer at all in a <code>FROM scratch</code> image that has not fetched anything
+yet.</p>
+<p>What it shows is what recipes <strong>declare</strong>. It is not the installed closure:
+<code>bottle</code> also pulls providers by soname that no recipe names, so a real
+install can hold more than this tree does.</p>
 <h2 id="completion">Completion<a class="headerlink" href="#completion" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nb">eval</span><span class="w"> </span><span class="s2">"</span><span class="k">$(</span>pkgx<span class="w"> </span>completion<span class="w"> </span>bash<span class="k">)</span><span class="s2">"</span><span class="w">     </span><span class="c1"># or zsh, or: pkgx completion fish | source</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nb">eval</span><span class="w"> </span><span class="s2">"</span><span class="k">$(</span>pkgx<span class="w"> </span>completion<span class="w"> </span>bash<span class="k">)</span><span class="s2">"</span><span class="w">     </span><span class="c1"># or zsh, or: pkgx completion fish | source</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>+gnu.org/ba&lt;TAB&gt;
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="go">+gnu.org/bash</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="gp">$ </span>pkgx<span class="w"> </span>gnu.o&lt;TAB&gt;
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="go">gnu.org/          # with the slash, so the next TAB descends</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>+gnu.org/ba&lt;TAB&gt;
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="go">+gnu.org/bash</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="gp">$ </span>pkgx<span class="w"> </span>gnu.o&lt;TAB&gt;
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="go">gnu.org/          # with the slash, so the next TAB descends</span>
 </code></pre></div>
 <p>The snippet is a few lines and does nothing but call <code>pkgx</code>. Spack generates
 <code>spack-completion.bash</code> from its command tree and commits it; Guix
@@ -709,30 +813,86 @@ works in a <code>FROM scratch</code> image, where there is no completion framewo
 python and no generator to run.</p>
 <h2 id="where-the-list-comes-from">Where the list comes from<a class="headerlink" href="#where-the-list-comes-from" title="Permanent link">&para;</a></h2>
 <p><code>gnu.org/&lt;TAB&gt;</code> has to know what exists, and <strong>a registry cannot be asked</strong>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>GET /v2/_catalog                             403   (ghcr issues no token)
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>GET /v2/go-pkgx/packages/zlib.net/tags/list  200   ["1.3.2", …]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>GET /v2/_catalog                             403   (ghcr issues no token)
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>GET /v2/go-pkgx/packages/zlib.net/tags/list  200   ["1.3.2", …]
 </code></pre></div>
 <p>Versions, yes. Projects, no.</p>
 <p>Nix, Guix and Spack all answer this from a <strong>local index</strong> — an eval cache, a
 channel checkout, a package repo. The pkgx-native equivalent is an artefact
 in the registry itself, so the registry carries a <strong>catalogue</strong>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="gp">$ </span>bk<span class="w"> </span>catalog<span class="w"> </span>--pantry<span class="w"> </span>…<span class="w"> </span>--overlay<span class="w"> </span>…<span class="w"> </span>-o<span class="w"> </span>catalog.json
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="go">catalog: 1908 project(s) → catalog.json</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="gp">$ </span>bk<span class="w"> </span>catalog<span class="w"> </span>--pantry<span class="w"> </span>…<span class="w"> </span>--overlay<span class="w"> </span>…<span class="w"> </span>-o<span class="w"> </span>catalog.json
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="go">catalog: 1908 project(s) → catalog.json</span>
 </code></pre></div>
 <p>1908 projects, 905 roots, <strong>100 KB</strong>, built in 0.4 s with no network. It is
 an <strong>ordinary bottle</strong> — signed, attested, mirrored and cached like any
 other, fetched in one pull — and it is published <strong>per platform</strong>, because
 what is available differs by architecture and a single list would tell most
 readers that packages are available which, for them, are not.</p>
-<h2 id="when-it-cannot-be-read">When it cannot be read<a class="headerlink" href="#when-it-cannot-be-read" title="Permanent link">&para;</a></h2>
-<p><code>pkgx ls</code> falls back to <strong>what is installed</strong>, and says so in its header:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>ls
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="go">pkgx: showing what is INSTALLED — the registry catalogue could not be read</span>
+<p>Signed, and <strong>checked</strong>: forging a catalogue does not get an unsigned bottle
+installed, because the install path verifies anyway. It gets a near-miss
+name offered at your prompt, which is the whole of a typosquat. The attack
+is on the reader.</p>
+<h2 id="one-command-fetches-it">One command fetches it<a class="headerlink" href="#one-command-fetches-it" title="Permanent link">&para;</a></h2>
+<p><code>pkgx catalog update</code> is the <strong>only</strong> thing that asks the registry what
+exists. <code>ls</code> and <code>&lt;TAB&gt;</code> read the file it wrote, and nothing on that path
+opens a socket.</p>
+<p>That line is the difference between a completion you leave switched on and
+one you turn off. A <code>&lt;TAB&gt;</code> is a fresh process — there is no state between
+two presses — so a fetch on the read path is paid again on every press, in
+full. Measured, one press of <code>&lt;TAB&gt;</code> on <code>gnu.o</code>:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>median</th>
+<th>answer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>fetching on every press</td>
+<td>295 ms</td>
+<td>nothing</td>
+</tr>
+<tr>
+<td>reading the file</td>
+<td><strong>7.6 ms</strong></td>
+<td><code>gnu.org/</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>guix pull</code> and <code>nix-channel --update</code> put the line in the same place.</p>
+<p>The price is that the index goes stale and nothing tells you by magic, so
+every command that reads it says how old it is:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>catalog
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="go">/home/you/.pkgx/catalog/linux-x86-64.json</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="go">1907 project(s), 905 with dependencies, 2 hour(s) old</span>
 </code></pre></div>
-<p>Offline, and in a fresh scratch image before the first fetch, that is not a
-lesser answer: it is the only true one available, and it is often the one
-wanted, because completing onto something already installed costs nothing to
-run.</p>
+<h2 id="shipping-a-catalogue-with-the-image">Shipping a catalogue with the image<a class="headerlink" href="#shipping-a-catalogue-with-the-image" title="Permanent link">&para;</a></h2>
+<p><code>PKGX_CATALOG=&lt;file&gt;</code> reads one from somewhere else entirely — for an
+air-gapped image, or to inspect a catalogue before publishing it. An image
+that ships one can also simply drop the file at the path <code>pkgx catalog</code>
+prints, and never fetch at all.</p>
+<p>Set and unreadable is a <strong>refusal</strong>, not a quiet fall back to the local
+store: somebody who names a file means that file, and answering from
+somewhere else under a header blaming the registry would be three wrong
+things in one line.</p>
+<h2 id="when-there-is-none">When there is none<a class="headerlink" href="#when-there-is-none" title="Permanent link">&para;</a></h2>
+<p><code>pkgx ls</code> falls back to <strong>what is installed</strong>, and says so in its header —
+with the sentence that fits the case it is actually in:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>ls<span class="w">                      </span><span class="c1"># never fetched one</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="go">pkgx: showing what is INSTALLED — no catalogue yet; run: pkgx catalog update</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="gp">$ </span>pkgx<span class="w"> </span>ls<span class="w">                      </span><span class="c1"># one is there and will not parse</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="go">pkgx: showing what is INSTALLED — /home/you/.pkgx/catalog/linux-x86-64.json could not be read</span>
+</code></pre></div>
+<p>Those two are not the same state, and "run <code>pkgx catalog update</code>" is the fix
+for the first and no help at all for the second. Sending somebody to a
+command that cannot work is worse than saying nothing.</p>
+<p>Offline, and in a fresh scratch image before the first fetch, the fallback
+is not a lesser answer: it is the only true one available, and it is often
+the one wanted, because completing onto something already installed costs
+nothing to run.</p>
 <p>The two lists are <strong>never merged</strong>. "Available" about a mix of a registry and
 a local store is a word with no meaning, and a header cannot be honest about
 a list with two sources.</p>
