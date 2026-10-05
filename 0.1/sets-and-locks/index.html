@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://go-pkgx.github.io/docs/0.1/environments/">
+        <link rel="canonical" href="https://go-pkgx.github.io/docs/0.1/sets-and-locks/">
       
       
-        <link rel="prev" href="../from-scratch/">
+        <link rel="prev" href="../environments/">
       
       
-        <link rel="next" href="../sets-and-locks/">
+        <link rel="next" href="../registry/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>Environments and HPC - go-pkgx docs</title>
+        <title>Sets and locks - go-pkgx docs</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#environments-and-hpc" class="md-skip">
+        <a href="#naming-a-tree-and-pinning-it" class="md-skip">
           Skip to content
         </a>
       
@@ -117,7 +117,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Environments and HPC
+              Sets and locks
             
           </span>
         </div>
@@ -325,6 +325,33 @@
       
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Environments and HPC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
     
   
   
@@ -344,7 +371,7 @@
   <span class="md-ellipsis">
     
   
-    Environments and HPC
+    Sets and locks
   
 
     
@@ -362,7 +389,7 @@
   <span class="md-ellipsis">
     
   
-    Environments and HPC
+    Sets and locks
   
 
     
@@ -388,10 +415,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#why-unloading-is-exact" class="md-nav__link">
+  <a href="#a-set-is-an-ordinary-recipe" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Why unloading is exact
+        A set is an ordinary recipe
       
     </span>
   </a>
@@ -399,10 +426,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#named-environments" class="md-nav__link">
+  <a href="#a-manifest-alone-is-not-reproducible" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Named environments
+        A manifest alone is not reproducible
       
     </span>
   </a>
@@ -410,10 +437,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#with-an-existing-lmod" class="md-nav__link">
+  <a href="#spec-because-a-version-is-not-enough-either" class="md-nav__link">
     <span class="md-ellipsis">
       
-        With an existing Lmod
+        spec — because a version is not enough either
       
     </span>
   </a>
@@ -421,10 +448,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#without-one" class="md-nav__link">
+  <a href="#checking-a-lock-later" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Without one
+        Checking a lock later
       
     </span>
   </a>
@@ -432,21 +459,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#converting-a-sites-modulefiles" class="md-nav__link">
+  <a href="#what-a-lock-does-not-pin" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Converting a site's modulefiles
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#two-things-no-code-here-removes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Two things no code here removes
+        What a lock does not pin
       
     </span>
   </a>
@@ -457,33 +473,6 @@
   
 </nav>
       
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../sets-and-locks/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Sets and locks
-  
-
-    
-  </span>
-  
-  
-
-      </a>
     </li>
   
 
@@ -623,10 +612,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#why-unloading-is-exact" class="md-nav__link">
+  <a href="#a-set-is-an-ordinary-recipe" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Why unloading is exact
+        A set is an ordinary recipe
       
     </span>
   </a>
@@ -634,10 +623,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#named-environments" class="md-nav__link">
+  <a href="#a-manifest-alone-is-not-reproducible" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Named environments
+        A manifest alone is not reproducible
       
     </span>
   </a>
@@ -645,10 +634,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#with-an-existing-lmod" class="md-nav__link">
+  <a href="#spec-because-a-version-is-not-enough-either" class="md-nav__link">
     <span class="md-ellipsis">
       
-        With an existing Lmod
+        spec — because a version is not enough either
       
     </span>
   </a>
@@ -656,10 +645,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#without-one" class="md-nav__link">
+  <a href="#checking-a-lock-later" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Without one
+        Checking a lock later
       
     </span>
   </a>
@@ -667,21 +656,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#converting-a-sites-modulefiles" class="md-nav__link">
+  <a href="#what-a-lock-does-not-pin" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Converting a site's modulefiles
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#two-things-no-code-here-removes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Two things no code here removes
+        What a lock does not pin
       
     </span>
   </a>
@@ -705,140 +683,148 @@
 
 
 
-<h1 id="environments-and-hpc">Environments, and HPC<a class="headerlink" href="#environments-and-hpc" title="Permanent link">&para;</a></h1>
-<p>A module system does two things: it resolves what a package needs, and it edits
-your shell. <code>pkgx +a +b</code> already did the first. <code>pkge</code> does the second — a
-front-end shaped like Lmod's, over pkgx's own resolution, with no Lua
-interpreter and no modulefile tree.</p>
-<p>It ships in the <code>pkgx</code> binary; there is nothing else to install.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">$ </span><span class="nb">eval</span><span class="w"> </span><span class="s2">"</span><span class="k">$(</span>pkgx<span class="w"> </span>env<span class="w"> </span>init<span class="k">)</span><span class="s2">"</span><span class="w">          </span><span class="c1"># in a profile</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">$ </span>pkge<span class="w"> </span>load<span class="w"> </span>stedolan.github.io/jq
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">$ </span><span class="nb">command</span><span class="w"> </span>-v<span class="w"> </span>jq
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go">~/.pkgx/stedolan.github.io/jq/v1.8.2/bin/jq</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">$ </span>pkge<span class="w"> </span>list
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go">stedolan.github.io/jq</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">$ </span>pkge<span class="w"> </span>unload<span class="w"> </span>stedolan.github.io/jq
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="gp">$ </span><span class="nb">command</span><span class="w"> </span>-v<span class="w"> </span>jq
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="go">/usr/bin/jq                        # back, exactly as it was</span>
+<h1 id="naming-a-tree-and-pinning-it">Naming a tree, and pinning it<a class="headerlink" href="#naming-a-tree-and-pinning-it" title="Permanent link">&para;</a></h1>
+<p>A recipe describes one package. Two things were missing above it: a way to
+name a <strong>group</strong> of packages, and a way to say <strong>which</strong> group — because the
+same names resolve differently tomorrow.</p>
+<h2 id="a-set-is-an-ordinary-recipe">A set is an ordinary recipe<a class="headerlink" href="#a-set-is-an-ordinary-recipe" title="Permanent link">&para;</a></h2>
+<p>A recipe carrying <code>members</code> is a set:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># go-pkgx/base-toolchain</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">members</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1">  # clang, lld, compiler-rt — the compiler itself</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span><span class="s2">"llvm.org"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"*"</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="c1">  # libc, crt objects and the dynamic loader</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">  </span><span class="s2">"gnu.org/glibc"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"*"</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="p">}</span>
 </code></pre></div>
-<p><code>pkge save &lt;name&gt;</code> writes the current set to
-<code>$PKGX_DIR/collections/&lt;name&gt;</code>; <code>pkge restore &lt;name&gt;</code> purges and reloads it.
-<code>pkge purge</code> unloads everything.</p>
-<h2 id="why-unloading-is-exact">Why unloading is exact<a class="headerlink" href="#why-unloading-is-exact" title="Permanent link">&para;</a></h2>
-<p>Loading never edits incrementally. It restores the environment it first saw and
-recomposes from the whole spec set, so <code>unload b</code> after <code>load a b c</code> leaves
-precisely what <code>load a c</code> would have — independent of the order things were
-loaded in.</p>
-<p>The state that makes this work lives in the environment, not in the shell, and
-is read back by <code>pkgx</code>:</p>
+<p>Anything that takes a project name takes a set: <code>bk closure
+go-pkgx/base-toolchain</code>, <code>bk factory --recipes go-pkgx/base-toolchain</code>. A set
+is expanded <strong>at the root</strong>, before the dependency walk sees it, so nothing
+downstream has to learn the word.</p>
+<p>The three systems that solved this agree on the shape, and Nix's answer is the
+one taken:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Nix</strong></td>
+<td>a tree <em>is</em> a derivation. <code>buildEnv</code> takes a list of packages and its output is a tree of symlinks. No new kind of object.</td>
+</tr>
+<tr>
+<td><strong>Guix</strong></td>
+<td>a manifest names packages; a <strong>profile</strong> is the tree it makes.</td>
+</tr>
+<tr>
+<td><strong>Spack</strong></td>
+<td><code>spack.yaml</code> is the abstract set, <code>spack.lock</code> the concrete one.</td>
+</tr>
+</tbody>
+</table>
+<p>Because a set is an ordinary recipe, it is signed, attested, published and
+installed by everything that already does those things for a package — rather
+than a second kind of artefact to keep in step.</p>
+<p>A set is <strong>unordered</strong>. All three of those manifests are: the order comes out
+of resolution, not out of the file.</p>
+<h2 id="a-manifest-alone-is-not-reproducible">A manifest alone is not reproducible<a class="headerlink" href="#a-manifest-alone-is-not-reproducible" title="Permanent link">&para;</a></h2>
+<p>Guix's manual says it plainly: <em>"to reproduce a profile bit-for-bit, manifests
+alone might not be enough"</em>. The same names resolve differently against a
+different package set, so a manifest needs the channel revisions beside it.</p>
+<p><strong>And it matters more here than in Guix.</strong> A Guix manifest resolves
+deterministically once the channel revision is pinned, because the version is
+<em>in</em> the checkout. A pkgx recipe's <code>versions:</code> asks GitHub for tags <strong>at
+resolve time</strong>, so pinning the pantry commit is not enough: the same pantry
+resolves <code>gnu.org/binutils</code> to whatever the newest tag is the day you ask.</p>
+<p><code>bk lock</code> writes the answer down:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="gp">$ </span>bk<span class="w"> </span>lock<span class="w"> </span>--platform<span class="w"> </span>linux/x86-64<span class="w"> </span>-o<span class="w"> </span>base-toolchain.lock.hcl<span class="w"> </span>go-pkgx/base-toolchain
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="go">set: go-pkgx/base-toolchain names 25 member(s)</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="go">lock: 41 project(s) pinned → base-toolchain.lock.hcl</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="na">lockfile_version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="na">bk</span><span class="w">               </span><span class="o">=</span><span class="w"> </span><span class="s2">"v0.7.0"</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="na">platform</span><span class="w">         </span><span class="o">=</span><span class="w"> </span><span class="s2">"linux/x86-64"</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="na">generated</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="s2">"2026-10-05T09:10:39Z"</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="na">pantry</span><span class="w">           </span><span class="o">=</span><span class="w"> </span><span class="s2">"fd646990024e22f5752578cfdcfe2518b20c0797"</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="na">overlay</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="s2">"f8f6dcfd7b17410a6de780bdd58c81fbbb38d1b3"</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="na">roots</span><span class="w">            </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">"go-pkgx/base-toolchain"</span><span class="p">]</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="nb">locked</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">  </span><span class="s2">"curl.se"</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="na">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"8.17.0", spec = "sha256:5284d597c180…"</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">  </span><span class="s2">"gnu.org/bash"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="na">version</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"5.3",    spec = "sha256:…"</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="p">}</span>
+</code></pre></div>
+<p>The <strong>platform is in the header because it changes the answer</strong>: the same set
+locks to 41 projects on <code>linux/x86-64</code> and 40 on <code>darwin/aarch64</code>
+(<code>github.com/besser82/libxcrypt</code> is linux-only). A lock that did not say which
+platform it was taken on would be read as the other one's.</p>
+<h2 id="spec-because-a-version-is-not-enough-either"><code>spec</code> — because a version is not enough either<a class="headerlink" href="#spec-because-a-version-is-not-enough-either" title="Permanent link">&para;</a></h2>
+<p>A version pins what upstream served. It does not pin the <strong>recipe</strong>: a build
+script edited in the pantry resolves to the same version and produces a
+different package.</p>
+<p>Spack's packaging guide names what a spec hash covers: <em>"<code>build</code>, <code>link</code>, and
+<code>run</code> dependencies all affect the hash of Spack packages (along with <code>sha256</code>
+sums of patches and archives used to build the package, and a </em><em>canonical hash
+of the <code>package.py</code> recipes</em><em>)"</em>. The last clause is the one copied here.</p>
+<p><code>spec</code> is a Merkle hash over the platform, the project, the resolved version,
+the <strong>parsed</strong> recipe and the spec hashes of its dependencies. Over the parsed
+value and not the file, so reformatting a recipe or rewriting its comments does
+not move it and changing what it says does.</p>
+<h2 id="checking-a-lock-later">Checking a lock later<a class="headerlink" href="#checking-a-lock-later" title="Permanent link">&para;</a></h2>
+<p>Cargo's <code>--locked</code> and npm's <code>ci</code> exist because a lock nobody verifies is a
+lock nobody can rely on. <code>bk lock --check</code> re-resolves and says what moved:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="gp">$ </span>bk<span class="w"> </span>lock<span class="w"> </span>--check<span class="w"> </span>base-toolchain.lock.hcl
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="go">lock: linux/x86-64 · 2026-10-05T09:10:39Z · 41 pinned, 2 hour(s) old</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="go">lock: pantry revision differs: fd64699… → 9ab12cd…</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="go">  gnu.org/binutils                   2.47 → 2.48</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="go">  zlib.net                           spec 6a2d499db9ab → spec 90fae00e667c — same version, so something it is built FROM changed</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="go">lock: 2 of 41 moved</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>exit</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0</code></td>
+<td>nothing moved</td>
+</tr>
+<tr>
+<td><code>1</code></td>
+<td>something moved</td>
+</tr>
+<tr>
+<td><code>2</code></td>
+<td>the check could not be made at all</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The second line of that diff is the one a version-only lock cannot
+produce.</strong> It is what the spec hash is for.</p>
+<p>Two deliberate kindnesses to whoever has to run this in CI:</p>
 <ul>
-<li><code>PKGE_SPECS</code> — the package set currently loaded.</li>
-<li><code>PKGE_BASE</code> — the <em>original</em> value of every variable pkgx has touched,
-  base64 of NUL-separated <code>NAME=value</code> records.</li>
+<li>a <strong>revision that moved is reported and is not fatal on its own</strong>. A pantry
+  can move without moving any answer, and calling that drift would make the
+  check cry wolf until nobody ran it.</li>
+<li>an <strong>unresolved project is kept apart from drift</strong>, for the mirror-image
+  reason: a registry outage must not read as a pantry that changed.</li>
 </ul>
-<p>A variable's base is captured once, the first time something touches it: the
-second load must not record the first load's output as the pristine value. A
-variable that did not exist before is restored by being <em>unset</em>, not by being
-set empty — an empty <code>PATH</code> and no <code>PATH</code> are different to every program that
-reads one.</p>
-<p>Lmod carries a module table for the same reason. This carries the base instead,
-which is smaller and cannot disagree with itself.</p>
-<p><code>LOADEDMODULES</code> is maintained, in Lmod's own colon-separated spelling, because
-job scripts read it — <code>if [[ $LOADEDMODULES == *openmpi* ]]</code> is in thousands of
-them. <code>_LMFILES_</code> is deliberately <strong>not</strong> set: it names modulefiles, there are
-none here, and an invented value is a lie a script could act on.</p>
-<h2 id="named-environments">Named environments<a class="headerlink" href="#named-environments" title="Permanent link">&para;</a></h2>
-<p>A site declares environments in HCL2 under <code>$PKGX_DIR/environments/</code>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># ~/.pkgx/environments/site.hcl2</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="err">env</span><span class="w"> </span><span class="s2">"cfd"</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="na">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"the solver stack, as validated on 2026-09-01"</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="na">packages</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">"openmpi.org@5", "hdf5.org", "python.org@3.12"</span><span class="p">]</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="p">}</span>
-</code></pre></div>
-<p>An <code>env</code> block takes <code>description</code>, <code>packages</code>, and the environment edits
-<code>prepend_path</code>, <code>append_path</code>, <code>setenv</code> and <code>unsetenv</code>.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>env<span class="w"> </span>avail
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="go">cfd                      the solver stack, as validated on 2026-09-01</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="go">hdf5                     HDF5 1.14.3</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="gp">$ </span>pkgx<span class="w"> </span>env<span class="w"> </span>show<span class="w"> </span>cfd
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="go">env "cfd"</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="go">  description  the solver stack, as validated on 2026-09-01</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="go">  declared in  /home/you/.pkgx/environments/site.hcl2</span>
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="go">  package      openmpi.org@5</span>
-<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="go">  package      hdf5.org</span>
-<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="go">  package      python.org@3.12</span>
-<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>
-<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="gp">$ </span>pkge<span class="w"> </span>load<span class="w"> </span>cfd
-</code></pre></div>
-<p>An environment is not a lockfile: it names constraints, and the closure is
-resolved at load time from the signed registry, so a login node and a container
-agree.</p>
-<h2 id="with-an-existing-lmod">With an existing Lmod<a class="headerlink" href="#with-an-existing-lmod" title="Permanent link">&para;</a></h2>
-<p>Generate modulefiles and let the site's own Lmod load them. Nothing about
-<code>module</code> changes, and conflicts, hierarchies and <code>spider</code> keep working, because
-Lmod is still the one doing the work.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>--modulefile<span class="w"> </span>+openmpi.org@5<span class="w"> </span>&gt;<span class="w"> </span><span class="nv">$MODULEPATH_DIR</span>/openmpi/5.0.8.lua
-</code></pre></div>
-<p><code>pkgx --json +&lt;pkg&gt;...</code> emits the same composed environment as data, for a tool
-that wants to compose it some other way.</p>
-<h2 id="without-one">Without one<a class="headerlink" href="#without-one" title="Permanent link">&para;</a></h2>
-<p><code>pkgx env init --module</code> also defines <code>module</code> and <code>ml</code>
-(<code>load</code>/<code>add</code>, <code>unload</code>/<code>rm</code>/<code>del</code>, <code>purge</code>, <code>list</code>, <code>avail</code>/<code>av</code>,
-<code>show</code>/<code>display</code>/<code>whatis</code>, <code>save</code>, <code>restore</code>, <code>swap</code>/<code>switch</code>) — for a
-container, a laptop, or a cluster built on this toolchain.</p>
-<p>It <strong>refuses</strong> to install itself where an Lmod already exists:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>pkgx: an existing module system was found; not defining module().
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>pkgx: publish modulefiles to MODULEPATH instead: pkgx --modulefile +pkg
-</code></pre></div>
-<p>Two implementations answering one command is how a support ticket becomes
-unanswerable, and the site's own modulefiles are not ours to interpret.</p>
-<h2 id="converting-a-sites-modulefiles">Converting a site's modulefiles<a class="headerlink" href="#converting-a-sites-modulefiles" title="Permanent link">&para;</a></h2>
-<p><code>pkgx env import</code> reads Lmod's Lua <strong>and</strong> Environment Modules' TCL, and writes
-both into the same HCL2.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>env<span class="w"> </span>import<span class="w"> </span>/opt/modulefiles/hdf5
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="gp"># </span>imported<span class="w"> </span>from<span class="w"> </span>/opt/modulefiles/hdf5<span class="w"> </span>by<span class="w"> </span><span class="sb">`</span>pkgx<span class="w"> </span>env<span class="w"> </span>import<span class="sb">`</span>.
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="gp"># </span>Every<span class="w"> </span>statement<span class="w"> </span><span class="k">in</span><span class="w"> </span>that<span class="w"> </span>file<span class="w"> </span>was<span class="w"> </span>recognised<span class="p">;</span><span class="w"> </span>nothing<span class="w"> </span>was<span class="w"> </span>skipped.
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="go">env "hdf5" {</span>
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="go">  description = "HDF5 1.14.3"</span>
-<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="go">  prepend_path = {</span>
-<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="go">    LD_LIBRARY_PATH = ["/opt/hdf5/1.14.3/lib"]</span>
-<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="go">    PATH = ["/opt/hdf5/1.14.3/bin"]</span>
-<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="go">  }</span>
-<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="go">  setenv = {</span>
-<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="go">    HDF5_DIR = "/opt/hdf5/1.14.3"</span>
-<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="go">  }</span>
-<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="go">}</span>
-</code></pre></div>
-<p>It is a <strong>parser, not an evaluator</strong>. An interpreter runs a modulefile and
-silently skips what it does not implement; the result is not an error but an
-environment that is subtly wrong, found later inside somebody's job. This
-refuses anything it would have to guess at, names the line, and — the part that
-matters — <strong>writes nothing at all</strong> if any file was refused, because a partial
-conversion is the one outcome nobody can check.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>env<span class="w"> </span>import<span class="w"> </span>/opt/modulefiles/openmpi.lua<span class="w"> </span>/opt/modulefiles/hdf5
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="go">/opt/modulefiles/openmpi.lua: 3 statement(s) this converter will not guess at:</span>
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="go">  line 3: not a plain call: this converter reads statements, it does not run Lua</span>
-<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="go">    local root = "/opt/openmpi/5.0.8"</span>
-<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="go">  line 4: argument is not a string literal (pathJoin(root, "bin")): its value depends on something we are not running</span>
-<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="go">    prepend_path("PATH", pathJoin(root, "bin"))</span>
-<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="go">  line 5: depends_on states a RELATIONSHIP between modules, not an environment change: decide it in the environment that replaces this one</span>
-<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="go">    depends_on("hwloc")</span>
-<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="go">pkgx: 1 of 2 modulefile(s) not converted — nothing written, because a PARTIAL conversion is the one outcome nobody can check</span>
-<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="gp">$ </span><span class="nb">echo</span><span class="w"> </span><span class="nv">$?</span>
-<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="go">1</span>
-</code></pre></div>
-<p><code>conflict</code>, <code>family</code> and <code>depends_on</code> are refused on purpose rather than left
-for later: they state relationships <em>between</em> modules, which is a decision for
-the environment that replaces them, not something a converter can infer.</p>
-<h2 id="two-things-no-code-here-removes">Two things no code here removes<a class="headerlink" href="#two-things-no-code-here-removes" title="Permanent link">&para;</a></h2>
-<ul>
-<li><strong>MPI and the interconnect come from the host.</strong> libfabric/UCX, Slurm's PMI
-  and a vendor libmpi tied to a kernel driver cannot live in a hermetic tree.
-  Bind-mount them, as Spack and Apptainer do.</li>
-<li><strong>Metadata storms.</strong> Ten thousand ranks walking a shared <code>$PKGX_DIR</code> will melt
-  a Lustre MDS. Materialise once into a squashfs or SIF and mount it read-only.</li>
-</ul>
+<p><code>--check</code> takes its roots, its platform and the revisions it expects <strong>from the
+file</strong>, and refuses a project name beside it — naming them twice would let the
+two disagree, and the answer would be about a different question from the one
+the file asks.</p>
+<h2 id="what-a-lock-does-not-pin">What a lock does not pin<a class="headerlink" href="#what-a-lock-does-not-pin" title="Permanent link">&para;</a></h2>
+<p>The <strong>output bytes</strong>. The spec hash covers the inputs, as Nix's derivation hash
+and Spack's spec hash do; an output digest is a different promise and is not
+made here. Every lock says so in its own header rather than letting a reader
+assume a guarantee that is not there.</p>
 
 
 
