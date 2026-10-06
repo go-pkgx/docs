@@ -426,6 +426,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#everything-is-named-what-is-here-is-marked" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Everything is named; what is here is marked
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#completion" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -661,6 +672,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#everything-is-named-what-is-here-is-marked" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Everything is named; what is here is marked
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#completion" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -791,14 +813,46 @@ yet.</p>
 <p>What it shows is what recipes <strong>declare</strong>. It is not the installed closure:
 <code>bottle</code> also pulls providers by soname that no recipe names, so a real
 install can hold more than this tree does.</p>
-<h2 id="completion">Completion<a class="headerlink" href="#completion" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nb">eval</span><span class="w"> </span><span class="s2">"</span><span class="k">$(</span>pkgx<span class="w"> </span>completion<span class="w"> </span>bash<span class="k">)</span><span class="s2">"</span><span class="w">     </span><span class="c1"># or zsh, or: pkgx completion fish | source</span>
+<h2 id="everything-is-named-what-is-here-is-marked">Everything is named; what is here is marked<a class="headerlink" href="#everything-is-named-what-is-here-is-marked" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>ls<span class="w"> </span>doxygen.nl
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="go">doxygen.nl — no bottle here</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="gp">$ </span>pkgx<span class="w"> </span>ls<span class="w"> </span>--tree<span class="w"> </span>curl.se
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="go">curl.se — 8.17.0</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="go">  curl.se/ca-certs  2026.09.25</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="go">  doxygen.nl  (no bottle here)</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="go">  openssl.org  3.6.0</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>+gnu.org/ba&lt;TAB&gt;
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="go">+gnu.org/bash</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="gp">$ </span>pkgx<span class="w"> </span>gnu.o&lt;TAB&gt;
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="go">gnu.org/          # with the slash, so the next TAB descends</span>
+<p>A catalogue is published <strong>per platform</strong>, because what is available
+differs by architecture — the s390x lane has a fraction of what
+linux/x86-64 has.</p>
+<p><strong>Dropping the name</strong> would tell you the project does not exist, which is
+false. <strong>Printing it bare</strong> tells you nothing. <strong>Marking it</strong> tells you it
+exists, that there is no bottle for you, and therefore that building it is
+the thing to do next.</p>
+<p>In a tree, that mark is usually the most useful line on the page: an
+unsatisfiable dependency is the reason the thing above it cannot be
+installed, and it would otherwise print as a bare name among satisfied
+ones. It reaches <code>&lt;TAB&gt;</code> too, as the description beside the candidate —
+the moment it is worth knowing, <em>before</em> the name is typed rather than
+after it fails.</p>
+<p>What is behind the mark: the factory asks the registry, per project, which
+versions it carries and whether this platform is among them. Two things it
+deliberately does <strong>not</strong> do. It does not borrow: a version list that fell
+back to the upstream <code>dist.pkgx.dev</code> is dropped, because "available" is a
+claim about <strong>one</strong> registry and a list from another one answers a
+different question. And it does not assume: a tag listing spans every
+architecture, so a mirror wave that lands x86-64 publishes a tag s390x
+cannot use, and the version recorded is the newest this platform really
+carries.</p>
+<h2 id="completion">Completion<a class="headerlink" href="#completion" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nb">eval</span><span class="w"> </span><span class="s2">"</span><span class="k">$(</span>pkgx<span class="w"> </span>completion<span class="w"> </span>bash<span class="k">)</span><span class="s2">"</span><span class="w">     </span><span class="c1"># or zsh, or: pkgx completion fish | source</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>+gnu.org/ba&lt;TAB&gt;
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="go">+gnu.org/bash</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="gp">$ </span>pkgx<span class="w"> </span>gnu.o&lt;TAB&gt;
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="go">gnu.org/          # with the slash, so the next TAB descends</span>
 </code></pre></div>
 <p>The snippet is a few lines and does nothing but call <code>pkgx</code>. Spack generates
 <code>spack-completion.bash</code> from its command tree and commits it; Guix
@@ -813,21 +867,25 @@ works in a <code>FROM scratch</code> image, where there is no completion framewo
 python and no generator to run.</p>
 <h2 id="where-the-list-comes-from">Where the list comes from<a class="headerlink" href="#where-the-list-comes-from" title="Permanent link">&para;</a></h2>
 <p><code>gnu.org/&lt;TAB&gt;</code> has to know what exists, and <strong>a registry cannot be asked</strong>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>GET /v2/_catalog                             403   (ghcr issues no token)
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>GET /v2/go-pkgx/packages/zlib.net/tags/list  200   ["1.3.2", …]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>GET /v2/_catalog                             403   (ghcr issues no token)
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>GET /v2/go-pkgx/packages/zlib.net/tags/list  200   ["1.3.2", …]
 </code></pre></div>
 <p>Versions, yes. Projects, no.</p>
 <p>Nix, Guix and Spack all answer this from a <strong>local index</strong> — an eval cache, a
 channel checkout, a package repo. The pkgx-native equivalent is an artefact
 in the registry itself, so the registry carries a <strong>catalogue</strong>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="gp">$ </span>bk<span class="w"> </span>catalog<span class="w"> </span>--pantry<span class="w"> </span>…<span class="w"> </span>--overlay<span class="w"> </span>…<span class="w"> </span>-o<span class="w"> </span>catalog.json
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="go">catalog: 1908 project(s) → catalog.json</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="gp">$ </span>bk<span class="w"> </span>catalog<span class="w"> </span>--pantry<span class="w"> </span>…<span class="w"> </span>--overlay<span class="w"> </span>…<span class="w"> </span>-o<span class="w"> </span>catalog.json
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="go">catalog: 1908 project(s) → catalog.json</span>
 </code></pre></div>
 <p>1908 projects, 905 roots, <strong>100 KB</strong>, built in 0.4 s with no network. It is
 an <strong>ordinary bottle</strong> — signed, attested, mirrored and cached like any
 other, fetched in one pull — and it is published <strong>per platform</strong>, because
 what is available differs by architecture and a single list would tell most
 readers that packages are available which, for them, are not.</p>
+<p>Six lanes publish one each: <code>linux/x86-64</code>, <code>linux/aarch64</code>, <code>linux/s390x</code>,
+<code>darwin/aarch64</code>, <code>darwin/x86-64</code> and <code>windows/x86-64</code>. A platform with no
+catalogue would give you silence, which is not the same answer as "nothing
+is available here".</p>
 <p>Signed, and <strong>checked</strong>: forging a catalogue does not get an unsigned bottle
 installed, because the install path verifies anyway. It gets a near-miss
 name offered at your prompt, which is the whole of a typosquat. The attack
@@ -864,9 +922,9 @@ full. Measured, one press of <code>&lt;TAB&gt;</code> on <code>gnu.o</code>:</p>
 <p><code>guix pull</code> and <code>nix-channel --update</code> put the line in the same place.</p>
 <p>The price is that the index goes stale and nothing tells you by magic, so
 every command that reads it says how old it is:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>catalog
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="go">/home/you/.pkgx/catalog/linux-x86-64.json</span>
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="go">1907 project(s), 905 with dependencies, 2 hour(s) old</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>catalog
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="go">/home/you/.pkgx/catalog/linux-x86-64.json</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="go">1907 project(s), 905 with dependencies, 2 hour(s) old</span>
 </code></pre></div>
 <h2 id="shipping-a-catalogue-with-the-image">Shipping a catalogue with the image<a class="headerlink" href="#shipping-a-catalogue-with-the-image" title="Permanent link">&para;</a></h2>
 <p><code>PKGX_CATALOG=&lt;file&gt;</code> reads one from somewhere else entirely — for an
@@ -880,11 +938,11 @@ things in one line.</p>
 <h2 id="when-there-is-none">When there is none<a class="headerlink" href="#when-there-is-none" title="Permanent link">&para;</a></h2>
 <p><code>pkgx ls</code> falls back to <strong>what is installed</strong>, and says so in its header —
 with the sentence that fits the case it is actually in:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>ls<span class="w">                      </span><span class="c1"># never fetched one</span>
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="go">pkgx: showing what is INSTALLED — no catalogue yet; run: pkgx catalog update</span>
-<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
-<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="gp">$ </span>pkgx<span class="w"> </span>ls<span class="w">                      </span><span class="c1"># one is there and will not parse</span>
-<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="go">pkgx: showing what is INSTALLED — /home/you/.pkgx/catalog/linux-x86-64.json could not be read</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>ls<span class="w">                      </span><span class="c1"># never fetched one</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="go">pkgx: showing what is INSTALLED — no catalogue yet; run: pkgx catalog update</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="gp">$ </span>pkgx<span class="w"> </span>ls<span class="w">                      </span><span class="c1"># one is there and will not parse</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="go">pkgx: showing what is INSTALLED — /home/you/.pkgx/catalog/linux-x86-64.json could not be read</span>
 </code></pre></div>
 <p>Those two are not the same state, and "run <code>pkgx catalog update</code>" is the fix
 for the first and no help at all for the second. Sending somebody to a
