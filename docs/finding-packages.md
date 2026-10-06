@@ -5,7 +5,7 @@ know. `pkgx ls` walks the tree; `<TAB>` completes into it.
 
 ```console
 $ pkgx catalog update
-1907 project(s) → /home/you/.pkgx/catalog/linux-x86-64.json
+1908 project(s) → /home/you/.pkgx/catalog/linux-x86-64.json
 
 $ pkgx ls
 curl.se                                  8.17.0, 3 under
@@ -141,8 +141,9 @@ and search are different tools, and that is the line between them.
 
 `nix search`, `guix search` and `spack list -s` all match a package's
 **description**, which is right for a collection that has descriptions. This
-pantry does not: of its 1907 recipes, **1592** declare the commands they
-provide and **six** carry a summary. A search over prose would find six
+pantry does not. Counted on the catalogue published for linux/aarch64 on
+2026-10-06: of its **1908** projects, **1582** name the commands they put on
+PATH and **six** carry a summary. A search over prose would find six
 packages.
 
 So the match is on names and on commands, ranked by *how* a thing matched
@@ -285,7 +286,7 @@ every command that reads it says how old it is:
 ```console
 $ pkgx catalog
 /home/you/.pkgx/catalog/linux-x86-64.json
-1907 project(s), 905 with dependencies, 2 hour(s) old
+1908 project(s), 986 with dependencies, 2 hour(s) old
 ```
 
 ## Shipping a catalogue with the image
