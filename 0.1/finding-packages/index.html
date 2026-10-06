@@ -846,7 +846,7 @@
 <p>A package manager you cannot browse is a package manager you have to already
 know. <code>pkgx ls</code> walks the tree; <code>&lt;TAB&gt;</code> completes into it.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>catalog<span class="w"> </span>update
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="go">1907 project(s) → /home/you/.pkgx/catalog/linux-x86-64.json</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="go">1908 project(s) → /home/you/.pkgx/catalog/linux-x86-64.json</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="gp">$ </span>pkgx<span class="w"> </span>ls
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="go">curl.se                                  8.17.0, 3 under</span>
@@ -956,8 +956,9 @@ where a command would fetch something new.</p>
 and search are different tools, and that is the line between them.</p>
 <p><code>nix search</code>, <code>guix search</code> and <code>spack list -s</code> all match a package's
 <strong>description</strong>, which is right for a collection that has descriptions. This
-pantry does not: of its 1907 recipes, <strong>1592</strong> declare the commands they
-provide and <strong>six</strong> carry a summary. A search over prose would find six
+pantry does not. Counted on the catalogue published for linux/aarch64 on
+2026-10-06: of its <strong>1908</strong> projects, <strong>1582</strong> name the commands they put on
+PATH and <strong>six</strong> carry a summary. A search over prose would find six
 packages.</p>
 <p>So the match is on names and on commands, ranked by <em>how</em> a thing matched
 rather than by how often — a command named exactly what you typed is what
@@ -1078,7 +1079,7 @@ full. Measured, one press of <code>&lt;TAB&gt;</code> on <code>gnu.o</code>:</p>
 every command that reads it says how old it is:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>catalog
 <a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="go">/home/you/.pkgx/catalog/linux-x86-64.json</span>
-<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="go">1907 project(s), 905 with dependencies, 2 hour(s) old</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="go">1908 project(s), 986 with dependencies, 2 hour(s) old</span>
 </code></pre></div>
 <h2 id="shipping-a-catalogue-with-the-image">Shipping a catalogue with the image<a class="headerlink" href="#shipping-a-catalogue-with-the-image" title="Permanent link">&para;</a></h2>
 <p><code>PKGX_CATALOG=&lt;file&gt;</code> reads one from somewhere else entirely — for an
