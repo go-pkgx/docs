@@ -109,6 +109,95 @@ architecture, so a mirror wave that lands x86-64 publishes a tag s390x
 cannot use, and the version recorded is the newest this platform really
 carries.
 
+## What you already have
+
+```console
+$ pkgx ls --tree curl.se
+curl.se — 8.17.0  ✓
+  curl.se/ca-certs  2026.09.25  ✓
+  doxygen.nl  (no bottle here)
+  openssl.org  3.6.0  ✓ 3.5.1
+```
+
+A catalogue says what **exists**; a reader standing in front of it mostly
+wants to know what they **have**. nix and guix show the state of the store
+in everything they print.
+
+A bare `✓` when what is installed is the version on offer, and `✓ <version>`
+when it is **not** — the case worth the extra word, because it is the one
+where a command would fetch something new.
+
+## You know the command, not the package
+
+```console
+$ pkgx search rg
+crates.io/ripgrep                        rg  14.1.1
+aardvark.io/rgbds                        rgbasm  0.9.0
+```
+
+`rg` is `crates.io/ripgrep`. No guess at the project name reaches it, and
+`<TAB>` — a **prefix** on the project path — never will either. Completion
+and search are different tools, and that is the line between them.
+
+`nix search`, `guix search` and `spack list -s` all match a package's
+**description**, which is right for a collection that has descriptions. This
+pantry does not: of its 1907 recipes, **1592** declare the commands they
+provide and **six** carry a summary. A search over prose would find six
+packages.
+
+So the match is on names and on commands, ranked by *how* a thing matched
+rather than by how often — a command named exactly what you typed is what
+you meant, every time. Nothing found exits **non-zero**, so
+`pkgx search x || echo none` works.
+
+## Walking it full-screen
+
+```console
+$ pkgx browse
+gnu.org — 54
+
+> gnu.org/bash                             5.3  ✓
+  gnu.org/gcc                              no bottle here
+ +gnu.org/make                             4.4.1
+
+↑ ↓ move · → descend · ← back · tab names ⇄ dependencies · / search
+· space pin · q quit, printing what is pinned
+```
+
+[`nix-tree`](https://github.com/utdemir/nix-tree) is the precedent: the same
+data read one node at a time is data nobody explores. Descending into a
+**leaf** shows what it needs, rather than making you press `tab`.
+
+`q` prints what you pinned on **stdout** while the screen goes to stderr, so
+`pkgx +$(pkgx browse)` composes. It reads the cached catalogue and nothing
+else — 0.013 s against the real 1908-project one — and **without a terminal
+it prints the tree and exits**, because `pkgx browse | less`, a CI log and a
+scratch image are the same case.
+
+## Running exactly what a lock pins
+
+```console
+$ pkgx --lock seed.lock.hcl -- make
+pkgx: seed.lock.hcl, 231 pin(s), 3 hour(s) old
+```
+
+A lock nobody consumes is a record, not a mechanism: cargo's `--locked` and
+npm's `ci` exist because the file only means something once a command
+refuses to deviate from it.
+
+The defect is not hypothetical here. The **same** pantry commit resolved tcl
+to 9.0.4 and then to 9.1.0 four hours apart, because a recipe's `versions:`
+asks GitHub at resolution time.
+
+**Every pin becomes a root**, not just the lock's own — that is what makes
+it a lock rather than a hint, and a set that cannot be satisfied exactly
+fails instead of materialising something near it. A lock taken on another
+platform is refused by name: **537 of 1908** projects available on
+`linux/x86-64` have no bottle for `darwin/aarch64`.
+
+An environment is still **not** a lockfile. An environment names a *set* and
+resolves it afresh; a lock names *versions*. Two paths, side by side.
+
 ## Completion
 
 ```sh
