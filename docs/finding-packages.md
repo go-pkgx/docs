@@ -70,6 +70,45 @@ What it shows is what recipes **declare**. It is not the installed closure:
 `bottle` also pulls providers by soname that no recipe names, so a real
 install can hold more than this tree does.
 
+## Everything is named; what is here is marked
+
+```console
+$ pkgx ls doxygen.nl
+doxygen.nl — no bottle here
+
+$ pkgx ls --tree curl.se
+curl.se — 8.17.0
+  curl.se/ca-certs  2026.09.25
+  doxygen.nl  (no bottle here)
+  openssl.org  3.6.0
+```
+
+A catalogue is published **per platform**, because what is available
+differs by architecture — the s390x lane has a fraction of what
+linux/x86-64 has.
+
+**Dropping the name** would tell you the project does not exist, which is
+false. **Printing it bare** tells you nothing. **Marking it** tells you it
+exists, that there is no bottle for you, and therefore that building it is
+the thing to do next.
+
+In a tree, that mark is usually the most useful line on the page: an
+unsatisfiable dependency is the reason the thing above it cannot be
+installed, and it would otherwise print as a bare name among satisfied
+ones. It reaches `<TAB>` too, as the description beside the candidate —
+the moment it is worth knowing, *before* the name is typed rather than
+after it fails.
+
+What is behind the mark: the factory asks the registry, per project, which
+versions it carries and whether this platform is among them. Two things it
+deliberately does **not** do. It does not borrow: a version list that fell
+back to the upstream `dist.pkgx.dev` is dropped, because "available" is a
+claim about **one** registry and a list from another one answers a
+different question. And it does not assume: a tag listing spans every
+architecture, so a mirror wave that lands x86-64 publishes a tag s390x
+cannot use, and the version recorded is the newest this platform really
+carries.
+
 ## Completion
 
 ```sh
@@ -122,6 +161,11 @@ an **ordinary bottle** — signed, attested, mirrored and cached like any
 other, fetched in one pull — and it is published **per platform**, because
 what is available differs by architecture and a single list would tell most
 readers that packages are available which, for them, are not.
+
+Six lanes publish one each: `linux/x86-64`, `linux/aarch64`, `linux/s390x`,
+`darwin/aarch64`, `darwin/x86-64` and `windows/x86-64`. A platform with no
+catalogue would give you silence, which is not the same answer as "nothing
+is available here".
 
 Signed, and **checked**: forging a catalogue does not get an unsigned bottle
 installed, because the install path verifies anyway. It gets a near-miss
