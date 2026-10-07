@@ -960,6 +960,13 @@ pantry does not. Counted on the catalogue published for linux/aarch64 on
 2026-10-06: of its <strong>1908</strong> projects, <strong>1582</strong> name the commands they put on
 PATH and <strong>six</strong> carry a summary. A search over prose would find six
 packages.</p>
+<p>Those figures are not a recollection: <code>go run ./internal/catstat
+~/.pkgx/catalog/*.json</code> in <a href="https://github.com/go-pkgx/pkgx">go-pkgx/pkgx</a> prints them from the file you
+have, through the same parser the client uses, so you can check them
+against your own catalogue rather than against this page. Both published
+platforms agree on the number that matters — six — and differ where you
+would expect them to, 1430 projects with a bottle on linux/aarch64 against
+1371 on darwin/aarch64.</p>
 <p>So the match is on names and on commands, ranked by <em>how</em> a thing matched
 rather than by how often — a command named exactly what you typed is what
 you meant, every time. Nothing found exits <strong>non-zero</strong>, so
