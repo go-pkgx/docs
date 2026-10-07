@@ -539,6 +539,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#metadata-is-not-a-program-and-a-key-is-not-a-caption" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Metadata is not a program, and a key is not a caption
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -671,6 +682,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#metadata-is-not-a-program-and-a-key-is-not-a-caption" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Metadata is not a program, and a key is not a caption
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -772,6 +794,72 @@ and <code>pkgm</code> import performs verification at install time:</p>
 </code></pre></div>
 <p>This closes the loop end to end: the factory signs and attests at publish time, and
 the consumer refuses to run anything it cannot verify.</p>
+<h2 id="metadata-is-not-a-program-and-a-key-is-not-a-caption">Metadata is not a program, and a key is not a caption<a class="headerlink" href="#metadata-is-not-a-program-and-a-key-is-not-a-caption" title="Permanent link">&para;</a></h2>
+<p>Signatures cover the <strong>bytes</strong>. The strings beside them — a project's name, its
+summary, the commands it provides, its versions and platforms — reach your
+terminal before any of that is checked, and they are written by people who are
+not you: an upstream recipe author, whoever wrote the lock you were handed,
+whatever registry <code>PKGX_DIST</code> points at.</p>
+<p>Measured, with a crafted lock:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>--lock<span class="w"> </span>esc.lock.hcl<span class="w"> </span><span class="nb">true</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cat<span class="w"> </span>-v
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="go">pkgx: no version of zlib.net satisfies "=1.3.2\x1b[2K\r…" (available: 2);</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="go">  asked for by =1.3.2^[[2K^Mzlib.net  1.9.9  ✓ verified (requested)</span>
+</code></pre></div>
+<p><code>ESC[2K</code> erases the line and <code>\r</code> returns the cursor, so on a terminal that line
+rubs itself out and reprints as something reassuring. The same hole was in the
+catalogue, where <code>pkgx ls</code> printed versions straight through.</p>
+<p>Three treatments, and which one applies depends on <strong>what the field is</strong> and
+<strong>who writes it</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>field</th>
+<th>treatment</th>
+<th>why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>project name</td>
+<td>the whole file is <strong>refused</strong></td>
+<td>a name becomes a URL and a path; a bad one means somebody wanted something</td>
+</tr>
+<tr>
+<td>summary, provides</td>
+<td><strong>cleaned and shown</strong></td>
+<td>cosmetic — refusing a catalogue over one paragraph would deny service for a typo</td>
+</tr>
+<tr>
+<td>version, platform <strong>in a lock</strong></td>
+<td>the whole file is <strong>refused</strong></td>
+<td>exactness is the entire point of a lock</td>
+</tr>
+<tr>
+<td>version, platform <strong>in a catalogue</strong></td>
+<td>that entry is <strong>dropped</strong>, the file is kept, and the count is printed</td>
+<td>these come from an upstream recipe's <code>versions:</code>, so refusing would hand any recipe author a switch that turns off <code>pkgx ls</code>, <code>search</code> and every <code>&lt;TAB&gt;</code> for everyone</td>
+</tr>
+<tr>
+<td>a tag from the registry</td>
+<td>skipped</td>
+<td>a registry is a configured endpoint</td>
+</tr>
+</tbody>
+</table>
+<p>A <strong>key</strong> can never be cleaned the way a caption is: a cleaned key would select
+something other than what it says. So it is refused or dropped, never silently
+repaired.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>catalog
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="go">~/.pkgx/catalog/darwin-aarch64.json</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="go">1908 project(s), 956 with dependencies, 2 hour(s) old</span>
+</code></pre></div>
+<p>If a catalogue ever carried an unreadable version, a third line would say so —
+<code>1 version string(s) were unreadable and are not listed</code>. On a catalogue our own
+factory published it should never appear.</p>
+<p>The allowlist was measured before it was written: across the two catalogues
+published on 2026-10-06, <strong>2801 version strings use fifteen distinct runes</strong> and
+the longest is 19 bytes. What is accepted is deliberately wider than that, because
+a guard that refuses the ordinary case is a worse bug than the one it fixes.</p>
 
 
 
