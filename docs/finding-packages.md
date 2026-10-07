@@ -145,10 +145,19 @@ openssl.org — 4.0.2  ✓ 3.6.0
 runtime dependents on darwin/aarch64; a build-only user is in no catalogue
 ```
 
-Counted on the catalogue published 2026-10-06: **153** of 1908 projects need
-openssl directly, and **789** transitively with `--tree`. The number is the
-point — it is the blast radius of a bump, and before this it could not be
-obtained at all.
+The number is the point — it is the blast radius of a bump, and before this it
+could not be obtained at all. Counted on the catalogues published 2026-10-06,
+**and it is not one number**:
+
+| platform | need openssl directly | transitively (`--tree`) |
+| --- | ---: | ---: |
+| darwin/aarch64 | 153 | 789 |
+| linux/aarch64 | 164 | 854 |
+
+Out of 1908 projects in each. The two differ because a catalogue records what a
+platform really carries, so a project with no bottle here has no edges here. That
+is why the command prints the platform under the list rather than leaving the
+figure to be quoted bare.
 
 **Why is this in here** — what you ask when a closure holds a surprise:
 
