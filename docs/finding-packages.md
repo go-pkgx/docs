@@ -146,6 +146,16 @@ pantry does not. Counted on the catalogue published for linux/aarch64 on
 PATH and **six** carry a summary. A search over prose would find six
 packages.
 
+Those figures are not a recollection: `go run ./internal/catstat
+~/.pkgx/catalog/*.json` in [go-pkgx/pkgx] prints them from the file you
+have, through the same parser the client uses, so you can check them
+against your own catalogue rather than against this page. Both published
+platforms agree on the number that matters — six — and differ where you
+would expect them to, 1430 projects with a bottle on linux/aarch64 against
+1371 on darwin/aarch64.
+
+[go-pkgx/pkgx]: https://github.com/go-pkgx/pkgx
+
 So the match is on names and on commands, ranked by *how* a thing matched
 rather than by how often — a command named exactly what you typed is what
 you meant, every time. Nothing found exits **non-zero**, so
