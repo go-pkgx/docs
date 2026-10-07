@@ -108,3 +108,53 @@ PKGX_DIST=oci://ghcr.io/go-pkgx/packages PKGX_VERIFY=1 pkgm install lz4.org
 
 This closes the loop end to end: the factory signs and attests at publish time, and
 the consumer refuses to run anything it cannot verify.
+
+## Metadata is not a program, and a key is not a caption
+
+Signatures cover the **bytes**. The strings beside them — a project's name, its
+summary, the commands it provides, its versions and platforms — reach your
+terminal before any of that is checked, and they are written by people who are
+not you: an upstream recipe author, whoever wrote the lock you were handed,
+whatever registry `PKGX_DIST` points at.
+
+Measured, with a crafted lock:
+
+```console
+$ pkgx --lock esc.lock.hcl true | cat -v
+pkgx: no version of zlib.net satisfies "=1.3.2\x1b[2K\r…" (available: 2);
+  asked for by =1.3.2^[[2K^Mzlib.net  1.9.9  ✓ verified (requested)
+```
+
+`ESC[2K` erases the line and `\r` returns the cursor, so on a terminal that line
+rubs itself out and reprints as something reassuring. The same hole was in the
+catalogue, where `pkgx ls` printed versions straight through.
+
+Three treatments, and which one applies depends on **what the field is** and
+**who writes it**:
+
+| field | treatment | why |
+| --- | --- | --- |
+| project name | the whole file is **refused** | a name becomes a URL and a path; a bad one means somebody wanted something |
+| summary, provides | **cleaned and shown** | cosmetic — refusing a catalogue over one paragraph would deny service for a typo |
+| version, platform **in a lock** | the whole file is **refused** | exactness is the entire point of a lock |
+| version, platform **in a catalogue** | that entry is **dropped**, the file is kept, and the count is printed | these come from an upstream recipe's `versions:`, so refusing would hand any recipe author a switch that turns off `pkgx ls`, `search` and every `<TAB>` for everyone |
+| a tag from the registry | skipped | a registry is a configured endpoint |
+
+A **key** can never be cleaned the way a caption is: a cleaned key would select
+something other than what it says. So it is refused or dropped, never silently
+repaired.
+
+```console
+$ pkgx catalog
+~/.pkgx/catalog/darwin-aarch64.json
+1908 project(s), 956 with dependencies, 2 hour(s) old
+```
+
+If a catalogue ever carried an unreadable version, a third line would say so —
+`1 version string(s) were unreadable and are not listed`. On a catalogue our own
+factory published it should never appear.
+
+The allowlist was measured before it was written: across the two catalogues
+published on 2026-10-06, **2801 version strings use fifteen distinct runes** and
+the longest is 19 bytes. What is accepted is deliberately wider than that, because
+a guard that refuses the ordinary case is a worse bug than the one it fixes.
