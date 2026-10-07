@@ -127,6 +127,68 @@ A bare `✓` when what is installed is the version on offer, and `✓ <version>`
 when it is **not** — the case worth the extra word, because it is the one
 where a command would fetch something new.
 
+## The two questions that do not descend
+
+Everything above descends. `ls --tree` says what a project **needs**, which is
+what you ask before installing it. Two questions point the other way, and no
+amount of descending reaches them.
+
+**Who needs this** — what you ask before *changing* something:
+
+```console
+$ pkgx ls --dependents openssl.org
+openssl.org — 4.0.2  ✓ 3.6.0
+  agwa.name/git-crypt  (no bottle here)
+  apache.org/arrow  25.0.1
+  …
+
+runtime dependents on darwin/aarch64; a build-only user is in no catalogue
+```
+
+Counted on the catalogue published 2026-10-06: **153** of 1908 projects need
+openssl directly, and **789** transitively with `--tree`. The number is the
+point — it is the blast radius of a bump, and before this it could not be
+obtained at all.
+
+**Why is this in here** — what you ask when a closure holds a surprise:
+
+```console
+$ pkgx why git-scm.org zlib.net
+git-scm.org — 2.55.0  ✓ 2.47.1
+  → zlib.net — 1.3.2  ✓
+```
+
+A **shortest** path, as [`nix why-depends`][why] answers it: the point is an
+explanation a person can hold, not every route. When there is none it says so
+and exits 1, which is the answer that tells you a bump cannot reach you.
+
+[why]: https://nix.dev/manual/nix/2.35/command-ref/new-cli/nix3-why-depends
+
+Every comparable tool has the first question and they do not all mean the same
+thing by it. [`spack dependents`][sd] is direct, or transitive with `-t`.
+[`guix refresh --list-dependent`][gr] is about what would need **rebuilding**,
+and its manual says plainly that it *only approximates* that.
+
+[sd]: https://spack.readthedocs.io/en/latest/
+[gr]: https://guix.gnu.org/manual/html_node/Invoking-guix-refresh.html
+
+### What this answer is not
+
+The catalogue carries **runtime** dependencies, reduced for **one platform**. So
+`--dependents` is the runtime blast radius on the platform you are standing on:
+who would load different bytes if this project changed.
+
+**It is not the rebuild set.** A build dependency is paid once by the factory
+and is in nobody's installed closure, so it is not in a catalogue and cannot be
+in this answer. Guix is about rebuilds and says it approximates them; this is
+about closures and is exact for what it covers. The line is printed under the
+list, not only written here, because a number is read where it is printed.
+
+And `why` answers from the **declared** graph. Nix answers from the store, by
+scanning built output for the hash parts of store paths — there is nothing to
+scan before anything is installed, and saying which it is beats implying a scan
+nobody ran.
+
 ## You know the command, not the package
 
 ```console
