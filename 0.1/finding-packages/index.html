@@ -1015,10 +1015,34 @@ amount of descending reaches them.</p>
 <a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
 <a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="go">runtime dependents on darwin/aarch64; a build-only user is in no catalogue</span>
 </code></pre></div>
-<p>Counted on the catalogue published 2026-10-06: <strong>153</strong> of 1908 projects need
-openssl directly, and <strong>789</strong> transitively with <code>--tree</code>. The number is the
-point — it is the blast radius of a bump, and before this it could not be
-obtained at all.</p>
+<p>The number is the point — it is the blast radius of a bump, and before this it
+could not be obtained at all. Counted on the catalogues published 2026-10-06,
+<strong>and it is not one number</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>platform</th>
+<th style="text-align: right;">need openssl directly</th>
+<th style="text-align: right;">transitively (<code>--tree</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>darwin/aarch64</td>
+<td style="text-align: right;">153</td>
+<td style="text-align: right;">789</td>
+</tr>
+<tr>
+<td>linux/aarch64</td>
+<td style="text-align: right;">164</td>
+<td style="text-align: right;">854</td>
+</tr>
+</tbody>
+</table>
+<p>Out of 1908 projects in each. The two differ because a catalogue records what a
+platform really carries, so a project with no bottle here has no edges here. That
+is why the command prints the platform under the list rather than leaving the
+figure to be quoted bare.</p>
 <p><strong>Why is this in here</strong> — what you ask when a closure holds a surprise:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>why<span class="w"> </span>git-scm.org<span class="w"> </span>zlib.net
 <a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="go">git-scm.org — 2.55.0  ✓ 2.47.1</span>
