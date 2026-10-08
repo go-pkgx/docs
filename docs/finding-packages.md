@@ -127,6 +127,55 @@ A bare `✓` when what is installed is the version on offer, and `✓ <version>`
 when it is **not** — the case worth the extra word, because it is the one
 where a command would fetch something new.
 
+## And what that has cost you
+
+A `✓` is per project. `pkgx store` is the whole disk:
+
+```console
+$ pkgx store --by-size -n 6
+~/.pkgx
+llvm.org                                   13.8 GiB  3 versions, 8.5 GiB not the newest here
+android.com/cmdline-tools                   6.4 GiB
+swift.org                                   4.6 GiB
+github.com/coqui-ai/TTS                     1.6 GiB
+go.dev                                      1.5 GiB  7 versions, 1.3 GiB not the newest here
+gohugo.io                                1020.5 MiB  13 versions, 934.6 MiB not the newest here
+… 296 more
+
+41.2 GiB over 363 version(s) of 302 project(s)
+12.8 GiB is in versions that are not the newest present — which is not the same as unused
+```
+
+Every ephemeral run leaves its bottles behind and **nothing removes one**.
+`pkgm list` answers a different question — what you asked to have installed —
+so a bottle pulled six months ago to run one command is in neither. Those
+figures are one developer's machine on 2026-10-08, and **thirteen versions of
+gohugo.io** is not a number anybody chose.
+
+### It reports and deletes nothing
+
+That is deliberate, and it is the same line every comparable tool draws:
+[`nix path-info -S`][npi] against `nix store gc`, `guix gc --list-live`
+against `guix gc`, `spack find` against `spack gc`. All three make the
+**roots** explicit before removing anything.
+
+[npi]: https://nix.dev/manual/nix/2.35/command-ref/new-cli/nix3-path-info
+
+There is no profile here, so there is **no root set**: a version that looks
+superseded may be exactly what a lock pins or what an environment asks for.
+So the last line states a fact about the disk and says in as many words that
+it is **not the same as unused**.
+
+### Two things about the figures
+
+It **walks the tree**, so it costs seconds rather than milliseconds — eight
+over 41 GiB. That is why it is its own command and not a line in `pkgx
+catalog`: nothing on the `<TAB>` path may cost that.
+
+Sizes are **powers of 1024** and say so with the `i`. `du` counts blocks and
+this counts file sizes, so the two disagree twice over; naming the unit is
+the least a report can do about that.
+
 ## The two questions that do not descend
 
 Everything above descends. `ls --tree` says what a project **needs**, which is
