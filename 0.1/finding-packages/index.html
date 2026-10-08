@@ -448,6 +448,45 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#and-what-that-has-cost-you" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        And what that has cost you
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="And what that has cost you">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#it-reports-and-deletes-nothing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        It reports and deletes nothing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#two-things-about-the-figures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two things about the figures
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#the-two-questions-that-do-not-descend" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -766,6 +805,45 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#and-what-that-has-cost-you" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        And what that has cost you
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="And what that has cost you">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#it-reports-and-deletes-nothing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        It reports and deletes nothing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#two-things-about-the-figures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two things about the figures
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#the-two-questions-that-do-not-descend" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1002,18 +1080,54 @@ in everything they print.</p>
 <p>A bare <code>✓</code> when what is installed is the version on offer, and <code>✓ &lt;version&gt;</code>
 when it is <strong>not</strong> — the case worth the extra word, because it is the one
 where a command would fetch something new.</p>
+<h2 id="and-what-that-has-cost-you">And what that has cost you<a class="headerlink" href="#and-what-that-has-cost-you" title="Permanent link">&para;</a></h2>
+<p>A <code>✓</code> is per project. <code>pkgx store</code> is the whole disk:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>store<span class="w"> </span>--by-size<span class="w"> </span>-n<span class="w"> </span><span class="m">6</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="go">~/.pkgx</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="go">llvm.org                                   13.8 GiB  3 versions, 8.5 GiB not the newest here</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="go">android.com/cmdline-tools                   6.4 GiB</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="go">swift.org                                   4.6 GiB</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="go">github.com/coqui-ai/TTS                     1.6 GiB</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="go">go.dev                                      1.5 GiB  7 versions, 1.3 GiB not the newest here</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="go">gohugo.io                                1020.5 MiB  13 versions, 934.6 MiB not the newest here</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="go">… 296 more</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="go">41.2 GiB over 363 version(s) of 302 project(s)</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="go">12.8 GiB is in versions that are not the newest present — which is not the same as unused</span>
+</code></pre></div>
+<p>Every ephemeral run leaves its bottles behind and <strong>nothing removes one</strong>.
+<code>pkgm list</code> answers a different question — what you asked to have installed —
+so a bottle pulled six months ago to run one command is in neither. Those
+figures are one developer's machine on 2026-10-08, and <strong>thirteen versions of
+gohugo.io</strong> is not a number anybody chose.</p>
+<h3 id="it-reports-and-deletes-nothing">It reports and deletes nothing<a class="headerlink" href="#it-reports-and-deletes-nothing" title="Permanent link">&para;</a></h3>
+<p>That is deliberate, and it is the same line every comparable tool draws:
+<a href="https://nix.dev/manual/nix/2.35/command-ref/new-cli/nix3-path-info"><code>nix path-info -S</code></a> against <code>nix store gc</code>, <code>guix gc --list-live</code>
+against <code>guix gc</code>, <code>spack find</code> against <code>spack gc</code>. All three make the
+<strong>roots</strong> explicit before removing anything.</p>
+<p>There is no profile here, so there is <strong>no root set</strong>: a version that looks
+superseded may be exactly what a lock pins or what an environment asks for.
+So the last line states a fact about the disk and says in as many words that
+it is <strong>not the same as unused</strong>.</p>
+<h3 id="two-things-about-the-figures">Two things about the figures<a class="headerlink" href="#two-things-about-the-figures" title="Permanent link">&para;</a></h3>
+<p>It <strong>walks the tree</strong>, so it costs seconds rather than milliseconds — eight
+over 41 GiB. That is why it is its own command and not a line in <code>pkgx
+catalog</code>: nothing on the <code>&lt;TAB&gt;</code> path may cost that.</p>
+<p>Sizes are <strong>powers of 1024</strong> and say so with the <code>i</code>. <code>du</code> counts blocks and
+this counts file sizes, so the two disagree twice over; naming the unit is
+the least a report can do about that.</p>
 <h2 id="the-two-questions-that-do-not-descend">The two questions that do not descend<a class="headerlink" href="#the-two-questions-that-do-not-descend" title="Permanent link">&para;</a></h2>
 <p>Everything above descends. <code>ls --tree</code> says what a project <strong>needs</strong>, which is
 what you ask before installing it. Two questions point the other way, and no
 amount of descending reaches them.</p>
 <p><strong>Who needs this</strong> — what you ask before <em>changing</em> something:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>ls<span class="w"> </span>--dependents<span class="w"> </span>openssl.org
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="go">openssl.org — 4.0.2  ✓ 3.6.0</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="go">  agwa.name/git-crypt  (no bottle here)</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="go">  apache.org/arrow  25.0.1</span>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="go">  …</span>
-<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
-<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="go">runtime dependents on darwin/aarch64; a build-only user is in no catalogue</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>ls<span class="w"> </span>--dependents<span class="w"> </span>openssl.org
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="go">openssl.org — 4.0.2  ✓ 3.6.0</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="go">  agwa.name/git-crypt  (no bottle here)</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="go">  apache.org/arrow  25.0.1</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="go">  …</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="go">runtime dependents on darwin/aarch64; a build-only user is in no catalogue</span>
 </code></pre></div>
 <p>The number is the point — it is the blast radius of a bump, and before this it
 could not be obtained at all. Counted on the catalogues published 2026-10-06,
@@ -1044,9 +1158,9 @@ platform really carries, so a project with no bottle here has no edges here. Tha
 is why the command prints the platform under the list rather than leaving the
 figure to be quoted bare.</p>
 <p><strong>Why is this in here</strong> — what you ask when a closure holds a surprise:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>why<span class="w"> </span>git-scm.org<span class="w"> </span>zlib.net
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="go">git-scm.org — 2.55.0  ✓ 2.47.1</span>
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="go">  → zlib.net — 1.3.2  ✓</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>why<span class="w"> </span>git-scm.org<span class="w"> </span>zlib.net
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="go">git-scm.org — 2.55.0  ✓ 2.47.1</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="go">  → zlib.net — 1.3.2  ✓</span>
 </code></pre></div>
 <p>A <strong>shortest</strong> path, as <a href="https://nix.dev/manual/nix/2.35/command-ref/new-cli/nix3-why-depends"><code>nix why-depends</code></a> answers it: the point is an
 explanation a person can hold, not every route. When there is none it says so
@@ -1069,9 +1183,9 @@ scanning built output for the hash parts of store paths — there is nothing to
 scan before anything is installed, and saying which it is beats implying a scan
 nobody ran.</p>
 <h2 id="you-know-the-command-not-the-package">You know the command, not the package<a class="headerlink" href="#you-know-the-command-not-the-package" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>search<span class="w"> </span>rg
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="go">crates.io/ripgrep                        rg  14.1.1</span>
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="go">aardvark.io/rgbds                        rgbasm  0.9.0</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>search<span class="w"> </span>rg
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="go">crates.io/ripgrep                        rg  14.1.1</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="go">aardvark.io/rgbds                        rgbasm  0.9.0</span>
 </code></pre></div>
 <p><code>rg</code> is <code>crates.io/ripgrep</code>. No guess at the project name reaches it, and
 <code>&lt;TAB&gt;</code> — a <strong>prefix</strong> on the project path — never will either. Completion
@@ -1094,15 +1208,15 @@ rather than by how often — a command named exactly what you typed is what
 you meant, every time. Nothing found exits <strong>non-zero</strong>, so
 <code>pkgx search x || echo none</code> works.</p>
 <h2 id="walking-it-full-screen">Walking it full-screen<a class="headerlink" href="#walking-it-full-screen" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>browse
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="go">gnu.org — 54</span>
-<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
-<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="go">&gt; gnu.org/bash                             5.3  ✓</span>
-<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="go">  gnu.org/gcc                              no bottle here</span>
-<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="go"> +gnu.org/make                             4.4.1</span>
-<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>
-<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="go">↑ ↓ move · → descend · ← back · tab names ⇄ dependencies · / search</span>
-<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="go">· space pin · q quit, printing what is pinned</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>browse
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="go">gnu.org — 54</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="go">&gt; gnu.org/bash                             5.3  ✓</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="go">  gnu.org/gcc                              no bottle here</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="go"> +gnu.org/make                             4.4.1</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="go">↑ ↓ move · → descend · ← back · tab names ⇄ dependencies · / search</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="go">· space pin · q quit, printing what is pinned</span>
 </code></pre></div>
 <p><a href="https://github.com/utdemir/nix-tree"><code>nix-tree</code></a> is the precedent: the same
 data read one node at a time is data nobody explores. Descending into a
@@ -1113,8 +1227,8 @@ else — 0.013 s against the real 1908-project one — and <strong>without a ter
 it prints the tree and exits</strong>, because <code>pkgx browse | less</code>, a CI log and a
 scratch image are the same case.</p>
 <h2 id="running-exactly-what-a-lock-pins">Running exactly what a lock pins<a class="headerlink" href="#running-exactly-what-a-lock-pins" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>--lock<span class="w"> </span>seed.lock.hcl<span class="w"> </span>--<span class="w"> </span>make
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="go">pkgx: seed.lock.hcl, 231 pin(s), 3 hour(s) old</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>--lock<span class="w"> </span>seed.lock.hcl<span class="w"> </span>--<span class="w"> </span>make
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="go">pkgx: seed.lock.hcl, 231 pin(s), 3 hour(s) old</span>
 </code></pre></div>
 <p>A lock nobody consumes is a record, not a mechanism: cargo's <code>--locked</code> and
 npm's <code>ci</code> exist because the file only means something once a command
@@ -1130,13 +1244,13 @@ platform is refused by name: <strong>537 of 1908</strong> projects available on
 <p>An environment is still <strong>not</strong> a lockfile. An environment names a <em>set</em> and
 resolves it afresh; a lock names <em>versions</em>. Two paths, side by side.</p>
 <h2 id="completion">Completion<a class="headerlink" href="#completion" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nb">eval</span><span class="w"> </span><span class="s2">"</span><span class="k">$(</span>pkgx<span class="w"> </span>completion<span class="w"> </span>bash<span class="k">)</span><span class="s2">"</span><span class="w">     </span><span class="c1"># or zsh, or: pkgx completion fish | source</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nb">eval</span><span class="w"> </span><span class="s2">"</span><span class="k">$(</span>pkgx<span class="w"> </span>completion<span class="w"> </span>bash<span class="k">)</span><span class="s2">"</span><span class="w">     </span><span class="c1"># or zsh, or: pkgx completion fish | source</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>+gnu.org/ba&lt;TAB&gt;
-<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="go">+gnu.org/bash</span>
-<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>
-<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="gp">$ </span>pkgx<span class="w"> </span>gnu.o&lt;TAB&gt;
-<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="go">gnu.org/          # with the slash, so the next TAB descends</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>+gnu.org/ba&lt;TAB&gt;
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="go">+gnu.org/bash</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="gp">$ </span>pkgx<span class="w"> </span>gnu.o&lt;TAB&gt;
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="go">gnu.org/          # with the slash, so the next TAB descends</span>
 </code></pre></div>
 <p>The snippet is a few lines and does nothing but call <code>pkgx</code>. Spack generates
 <code>spack-completion.bash</code> from its command tree and commits it; Guix
@@ -1151,15 +1265,15 @@ works in a <code>FROM scratch</code> image, where there is no completion framewo
 python and no generator to run.</p>
 <h2 id="where-the-list-comes-from">Where the list comes from<a class="headerlink" href="#where-the-list-comes-from" title="Permanent link">&para;</a></h2>
 <p><code>gnu.org/&lt;TAB&gt;</code> has to know what exists, and <strong>a registry cannot be asked</strong>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>GET /v2/_catalog                             403   (ghcr issues no token)
-<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>GET /v2/go-pkgx/packages/zlib.net/tags/list  200   ["1.3.2", …]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>GET /v2/_catalog                             403   (ghcr issues no token)
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>GET /v2/go-pkgx/packages/zlib.net/tags/list  200   ["1.3.2", …]
 </code></pre></div>
 <p>Versions, yes. Projects, no.</p>
 <p>Nix, Guix and Spack all answer this from a <strong>local index</strong> — an eval cache, a
 channel checkout, a package repo. The pkgx-native equivalent is an artefact
 in the registry itself, so the registry carries a <strong>catalogue</strong>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="gp">$ </span>bk<span class="w"> </span>catalog<span class="w"> </span>--pantry<span class="w"> </span>…<span class="w"> </span>--overlay<span class="w"> </span>…<span class="w"> </span>-o<span class="w"> </span>catalog.json
-<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="go">catalog: 1908 project(s) → catalog.json</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="gp">$ </span>bk<span class="w"> </span>catalog<span class="w"> </span>--pantry<span class="w"> </span>…<span class="w"> </span>--overlay<span class="w"> </span>…<span class="w"> </span>-o<span class="w"> </span>catalog.json
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="go">catalog: 1908 project(s) → catalog.json</span>
 </code></pre></div>
 <p>1908 projects, 905 roots, <strong>100 KB</strong>, built in 0.4 s with no network. It is
 an <strong>ordinary bottle</strong> — signed, attested, mirrored and cached like any
@@ -1206,9 +1320,9 @@ full. Measured, one press of <code>&lt;TAB&gt;</code> on <code>gnu.o</code>:</p>
 <p><code>guix pull</code> and <code>nix-channel --update</code> put the line in the same place.</p>
 <p>The price is that the index goes stale and nothing tells you by magic, so
 every command that reads it says how old it is:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>catalog
-<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="go">/home/you/.pkgx/catalog/linux-x86-64.json</span>
-<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="go">1908 project(s), 986 with dependencies, 2 hour(s) old</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>catalog
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="go">/home/you/.pkgx/catalog/linux-x86-64.json</span>
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="go">1908 project(s), 986 with dependencies, 2 hour(s) old</span>
 </code></pre></div>
 <h2 id="shipping-a-catalogue-with-the-image">Shipping a catalogue with the image<a class="headerlink" href="#shipping-a-catalogue-with-the-image" title="Permanent link">&para;</a></h2>
 <p><code>PKGX_CATALOG=&lt;file&gt;</code> reads one from somewhere else entirely — for an
@@ -1222,11 +1336,11 @@ things in one line.</p>
 <h2 id="when-there-is-none">When there is none<a class="headerlink" href="#when-there-is-none" title="Permanent link">&para;</a></h2>
 <p><code>pkgx ls</code> falls back to <strong>what is installed</strong>, and says so in its header —
 with the sentence that fits the case it is actually in:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>ls<span class="w">                      </span><span class="c1"># never fetched one</span>
-<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="go">pkgx: showing what is INSTALLED — no catalogue yet; run: pkgx catalog update</span>
-<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>
-<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="gp">$ </span>pkgx<span class="w"> </span>ls<span class="w">                      </span><span class="c1"># one is there and will not parse</span>
-<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="go">pkgx: showing what is INSTALLED — /home/you/.pkgx/catalog/linux-x86-64.json could not be read</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>ls<span class="w">                      </span><span class="c1"># never fetched one</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="go">pkgx: showing what is INSTALLED — no catalogue yet; run: pkgx catalog update</span>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="gp">$ </span>pkgx<span class="w"> </span>ls<span class="w">                      </span><span class="c1"># one is there and will not parse</span>
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="go">pkgx: showing what is INSTALLED — /home/you/.pkgx/catalog/linux-x86-64.json could not be read</span>
 </code></pre></div>
 <p>Those two are not the same state, and "run <code>pkgx catalog update</code>" is the fix
 for the first and no help at all for the second. Sending somebody to a
