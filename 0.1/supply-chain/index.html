@@ -540,6 +540,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#known-vulnerabilities-asked-at-the-version-we-publish" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known vulnerabilities, asked at the version we publish
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Known vulnerabilities, asked at the version we publish">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-a-decision-looks-like-and-how-far-it-reaches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What a decision looks like, and how far it reaches
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#metadata-is-not-a-program-and-a-key-is-not-a-caption" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -683,6 +711,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#known-vulnerabilities-asked-at-the-version-we-publish" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known vulnerabilities, asked at the version we publish
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Known vulnerabilities, asked at the version we publish">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-a-decision-looks-like-and-how-far-it-reaches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What a decision looks like, and how far it reaches
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#metadata-is-not-a-program-and-a-key-is-not-a-caption" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -794,6 +850,93 @@ and <code>pkgm</code> import performs verification at install time:</p>
 </code></pre></div>
 <p>This closes the loop end to end: the factory signs and attests at publish time, and
 the consumer refuses to run anything it cannot verify.</p>
+<h2 id="known-vulnerabilities-asked-at-the-version-we-publish">Known vulnerabilities, asked at the version we publish<a class="headerlink" href="#known-vulnerabilities-asked-at-the-version-we-publish" title="Permanent link">&para;</a></h2>
+<p>Signing says <em>these are the bytes we built</em>. It says nothing about whether those
+bytes are known to be vulnerable. That is a second question, and it is asked
+daily, for two platforms, by a scheduled job in
+<a href="https://github.com/go-pkgx/packages/blob/main/.github/workflows/vulnscan.yml"><code>go-pkgx/packages</code></a>.</p>
+<p>The whole design is in <strong>which</strong> question it asks. Ask OSV about each package
+<em>as a whole</em> and it returns every advisory that package has ever carried —
+<strong>748 findings across 21 projects</strong> over this pantry on 2026-10-17, nearly all
+of them fixed long before anything we ship. Ask at the version the published
+catalogue says we carry, and skip outright the identities a platform carries no
+version of:</p>
+<table>
+<thead>
+<tr>
+<th>platform</th>
+<th>asked at version</th>
+<th>unanswerable by OSV</th>
+<th>not asked (no bottle)</th>
+<th>findings</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>linux/x86-64</td>
+<td>133</td>
+<td>1090</td>
+<td>448</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td>darwin/aarch64</td>
+<td>137</td>
+<td>1082</td>
+<td>452</td>
+<td><strong>0</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Each row adds to <strong>1671</strong>, the identity count of the pantry — that sum is the
+control that no bucket is a silent drop. <em>Unanswerable</em> means an identity OSV is
+not keyed on: a repository or a CPE rather than a package in an ecosystem.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>pkgx<span class="w"> </span>catalog<span class="w"> </span>update<span class="w"> </span>--platform<span class="w"> </span>linux/x86-64
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>bk<span class="w"> </span>vulnfetch<span class="w"> </span>-dir<span class="w"> </span>pantry<span class="w"> </span>-advisories<span class="w"> </span>advisories<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span>-catalog<span class="w"> </span><span class="s2">"</span><span class="nv">$PKGX_DIR</span><span class="s2">/catalog/linux-x86-64.json"</span><span class="w"> </span>-fail-on-new
+</code></pre></div>
+<p>One ubuntu runner answers for both platforms, because <code>pkgx catalog update
+--platform</code> fetches another platform's published catalogue rather than
+rebuilding one. The two catalogues are not the same document and do not list
+the same projects, so a linux-only scan would have reported "clean" about a
+platform it never asked about.</p>
+<p><code>-fail-on-new</code> is a verdict, not a report: a finding already recorded has a
+decision behind it, and one that is not is a question with an answer. The job
+holds <code>contents: read</code> and never writes to the advisory tree — recording a
+decision stays a pull request, by a person.</p>
+<h3 id="what-a-decision-looks-like-and-how-far-it-reaches">What a decision looks like, and how far it reaches<a class="headerlink" href="#what-a-decision-looks-like-and-how-far-it-reaches" title="Permanent link">&para;</a></h3>
+<p>A decision is a dated event in <code>advisories/&lt;project&gt;/advisories.yaml</code>, and
+<code>bk publish --advisories</code> attaches it to the bottle as an <strong>OpenVEX v0.2.0</strong>
+document, signed with everything else.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MAL-2026-3020</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="nt">events</span><span class="p">:</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">timestamp</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2026-10-11T10:29:00Z</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">detection</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">      </span><span class="nt">detected-version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.22.1</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">timestamp</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2026-10-11T10:31:00Z</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false-positive-determination</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">      </span><span class="nt">detected-version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.22.1</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">      </span><span class="nt">justification</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">component_not_present</span>
+</code></pre></div>
+<p>⛔ <strong><code>detected-version</code> is not paperwork.</strong> A purl names a version, so a VEX
+statement is a claim <em>about a version</em> — and the emitter will not restate the
+two statuses that tell a reader to stop looking, <code>not_affected</code> and <code>fixed</code>,
+about a version no event in the record names:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>record determines not_affected for 1.22.1, bottle is 1.22.1   → not_affected + justification
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>record determines not_affected for 1.22.1, bottle is 2026.9.1 → under_investigation + status_notes
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>record names no version at all                                → under_investigation + status_notes
+</code></pre></div>
+<p>Neither the justification nor the prose travels onto a downgraded statement:
+both were written about another artefact. <code>affected</code> is deliberately <strong>not</strong>
+downgraded — restating a warning for an unexamined version over-warns, which
+costs noise, while downgrading it would turn a warning into "we are looking into
+it".</p>
+<p>The <strong>gate</strong> and the <strong>document</strong> therefore read an absent version in opposite
+directions, on purpose: <code>vulnfetch -fail-on-new</code> treats a record that names no
+version as covering everything and stays green, because it interrupts <em>us</em>; the
+emitter treats it as covering nothing, because it reassures a <em>stranger</em>, and a
+stale "not affected" stops them looking. <em>When in doubt do not interrupt
+ourselves; when in doubt do not reassure somebody else.</em></p>
 <h2 id="metadata-is-not-a-program-and-a-key-is-not-a-caption">Metadata is not a program, and a key is not a caption<a class="headerlink" href="#metadata-is-not-a-program-and-a-key-is-not-a-caption" title="Permanent link">&para;</a></h2>
 <p>Signatures cover the <strong>bytes</strong>. The strings beside them — a project's name, its
 summary, the commands it provides, its versions and platforms — reach your
@@ -801,9 +944,9 @@ terminal before any of that is checked, and they are written by people who are
 not you: an upstream recipe author, whoever wrote the lock you were handed,
 whatever registry <code>PKGX_DIST</code> points at.</p>
 <p>Measured, with a crafted lock:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>--lock<span class="w"> </span>esc.lock.hcl<span class="w"> </span><span class="nb">true</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cat<span class="w"> </span>-v
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="go">pkgx: no version of zlib.net satisfies "=1.3.2\x1b[2K\r…" (available: 2);</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="go">  asked for by =1.3.2^[[2K^Mzlib.net  1.9.9  ✓ verified (requested)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>--lock<span class="w"> </span>esc.lock.hcl<span class="w"> </span><span class="nb">true</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cat<span class="w"> </span>-v
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="go">pkgx: no version of zlib.net satisfies "=1.3.2\x1b[2K\r…" (available: 2);</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="go">  asked for by =1.3.2^[[2K^Mzlib.net  1.9.9  ✓ verified (requested)</span>
 </code></pre></div>
 <p><code>ESC[2K</code> erases the line and <code>\r</code> returns the cursor, so on a terminal that line
 rubs itself out and reprints as something reassuring. The same hole was in the
@@ -849,9 +992,9 @@ catalogue, where <code>pkgx ls</code> printed versions straight through.</p>
 <p>A <strong>key</strong> can never be cleaned the way a caption is: a cleaned key would select
 something other than what it says. So it is refused or dropped, never silently
 repaired.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>catalog
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="go">~/.pkgx/catalog/darwin-aarch64.json</span>
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="go">1908 project(s), 956 with dependencies, 2 hour(s) old</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>catalog
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="go">~/.pkgx/catalog/darwin-aarch64.json</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="go">1908 project(s), 956 with dependencies, 2 hour(s) old</span>
 </code></pre></div>
 <p>If a catalogue ever carried an unreadable version, a third line would say so —
 <code>1 version string(s) were unreadable and are not listed</code>. On a catalogue our own

@@ -795,8 +795,8 @@ script edited in the pantry resolves to the same version and produces a
 different package.</p>
 <p>Spack's packaging guide names what a spec hash covers: <em>"<code>build</code>, <code>link</code>, and
 <code>run</code> dependencies all affect the hash of Spack packages (along with <code>sha256</code>
-sums of patches and archives used to build the package, and a </em><em>canonical hash
-of the <code>package.py</code> recipes</em><em>)"</em>. The last clause is the one copied here.</p>
+sums of patches and archives used to build the package, and a <strong>canonical hash
+of the <code>package.py</code> recipes</strong>)"</em>. The last clause is the one copied here.</p>
 <p><code>spec</code> is a Merkle hash over the platform, the project, the resolved version,
 the <strong>parsed</strong> recipe and the spec hashes of its dependencies. Over the parsed
 value and not the file, so reformatting a recipe or rewriting its comments does

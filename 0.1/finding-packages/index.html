@@ -589,6 +589,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="One command fetches it">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-platform-you-are-not-on" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A platform you are not on
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -956,6 +973,23 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="One command fetches it">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-platform-you-are-not-on" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A platform you are not on
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1370,11 +1404,48 @@ full. Measured, one press of <code>&lt;TAB&gt;</code> on <code>gnu.o</code>:</p>
 </tbody>
 </table>
 <p><code>guix pull</code> and <code>nix-channel --update</code> put the line in the same place.</p>
+<h3 id="a-platform-you-are-not-on">A platform you are not on<a class="headerlink" href="#a-platform-you-are-not-on" title="Permanent link">&para;</a></h3>
+<p>Both <code>catalog update</code> and <code>--graph</code> take <code>--platform os/arch</code>, because the
+answer is <strong>not the same everywhere</strong> and the question is usually asked from
+whichever machine you happen to be sitting at.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>catalog<span class="w"> </span>update<span class="w"> </span>--platform<span class="w"> </span>linux/x86-64
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="go">1915 project(s) → ~/.pkgx/catalog/linux-x86-64.json</span>
+</code></pre></div>
+<p>It writes to that platform's own file, so <code>ls</code> and <code>&lt;TAB&gt;</code> — which read the
+host's — cannot mistake a foreign catalogue for yours.</p>
+<p><code>--graph</code> answers the sharper question, the one a recipe author has:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>--graph<span class="w"> </span>+go.dev@^1.27.1
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="go">go.dev 1.27.1</span>
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="go">└─ openssl.org 3.6.4</span>
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="gp">$ </span>pkgx<span class="w"> </span>--graph<span class="w"> </span>--platform<span class="w"> </span>linux/x86-64<span class="w"> </span>+go.dev@^1.27.1
+<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a><span class="go">pkgx: no version of go.dev satisfies "^1.27.1" AND is published for</span>
+<a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a><span class="go">linux/x86-64 (available: 1.27.1 1.26.8 1.26.5 … (11 in all);</span>
+<a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a><span class="go">satisfy but not published here: 1.27.1); asked for by ^1.27.1 (requested)</span>
+</code></pre></div>
+<p><strong>"Satisfy but not published here"</strong> is the distinction that matters: the
+version exists as a tag and no bottle carries it for that platform. Before
+the flag, <code>--graph</code> resolved for the host and said so about everywhere.</p>
+<p>⛔ <strong><code>PKGX_CATALOG</code> does not redirect <code>--graph</code>.</strong> <code>ls</code>, <code>search</code> and <code>why</code>
+read the file that variable names. <code>--graph</code> resolves against the
+<strong>registry</strong> and never opens it — so it refuses rather than answering about
+the wrong machine:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="gp">$ </span><span class="nv">PKGX_CATALOG</span><span class="o">=</span>~/.pkgx/catalog/linux-x86-64.json<span class="w"> </span>pkgx<span class="w"> </span>--graph<span class="w"> </span>+go.dev
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="go">pkgx: PKGX_CATALOG names …/linux-x86-64.json, and --graph does not read a</span>
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="go">catalogue — it resolves against the registry. To ask about another platform:</span>
+<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="go">--graph --platform os/arch</span>
+</code></pre></div>
+<p>It used to answer the <strong>host's</strong> resolution there, with exit 0 and no sign
+the file was never opened (<a href="https://github.com/go-pkgx/pkgx/issues/110">go-pkgx/pkgx#110</a>).
+A catalogue records what is <em>published</em>; <code>--graph</code> resolves what <em>would
+satisfy</em> a constraint, including versions no bottle carries. Those are
+different questions, and the "satisfy but not published here" line above
+depends on telling them apart.</p>
 <p>The price is that the index goes stale and nothing tells you by magic, so
 every command that reads it says how old it is:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>catalog
-<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="go">/home/you/.pkgx/catalog/linux-x86-64.json</span>
-<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="go">1908 project(s), 986 with dependencies, 2 hour(s) old</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>catalog
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="go">/home/you/.pkgx/catalog/linux-x86-64.json</span>
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="go">1908 project(s), 986 with dependencies, 2 hour(s) old</span>
 </code></pre></div>
 <h2 id="shipping-a-catalogue-with-the-image">Shipping a catalogue with the image<a class="headerlink" href="#shipping-a-catalogue-with-the-image" title="Permanent link">&para;</a></h2>
 <p><code>PKGX_CATALOG=&lt;file&gt;</code> reads one from somewhere else entirely — for an
@@ -1388,11 +1459,11 @@ things in one line.</p>
 <h2 id="when-there-is-none">When there is none<a class="headerlink" href="#when-there-is-none" title="Permanent link">&para;</a></h2>
 <p><code>pkgx ls</code> falls back to <strong>what is installed</strong>, and says so in its header —
 with the sentence that fits the case it is actually in:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>ls<span class="w">                      </span><span class="c1"># never fetched one</span>
-<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="go">pkgx: showing what is INSTALLED — no catalogue yet; run: pkgx catalog update</span>
-<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>
-<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="gp">$ </span>pkgx<span class="w"> </span>ls<span class="w">                      </span><span class="c1"># one is there and will not parse</span>
-<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="go">pkgx: showing what is INSTALLED — /home/you/.pkgx/catalog/linux-x86-64.json could not be read</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="gp">$ </span>pkgx<span class="w"> </span>ls<span class="w">                      </span><span class="c1"># never fetched one</span>
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="go">pkgx: showing what is INSTALLED — no catalogue yet; run: pkgx catalog update</span>
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>
+<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="gp">$ </span>pkgx<span class="w"> </span>ls<span class="w">                      </span><span class="c1"># one is there and will not parse</span>
+<a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="go">pkgx: showing what is INSTALLED — /home/you/.pkgx/catalog/linux-x86-64.json could not be read</span>
 </code></pre></div>
 <p>Those two are not the same state, and "run <code>pkgx catalog update</code>" is the fix
 for the first and no help at all for the second. Sending somebody to a
