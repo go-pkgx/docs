@@ -1,4 +1,9 @@
-# go-pkgx
+---
+title: "Home"
+weight: 10
+---
+
+# go-pkgx {#go-pkgx}
 
 A **dependency-free, pure-Go** (`CGO_ENABLED=0`) package manager for
 [pkgx](https://pkgx.sh) packages — a single static binary that installs **and
@@ -10,7 +15,7 @@ The reference `pkgm` is a Deno/TypeScript script that shells out to `pkgx`,
 closure just to install a package. go-pkgx replaces all of it with one static
 ~9 MB binary.
 
-## Install
+## Install {#install}
 
 **Linux / macOS** — one line, naming the release you want:
 
@@ -50,7 +55,7 @@ go install github.com/go-pkgx/pkgm@latest
 Once installed, `pkgm install lz4.org` verifies each bottle against the signed
 registry by default.
 
-## Usage
+## Usage {#usage}
 
 ```
 pkgm install|i    <pkg>[@version] ...   install to /usr/local (root) or ~/.local
@@ -73,7 +78,7 @@ The `install`/`uninstall`/`shim`/`list`/`outdated`/`update`/`pin` command
 surface and the `~/.local` vs `/usr/local` prefix logic mirror the reference
 `pkgm`, so it is a drop-in replacement.
 
-## FROM scratch
+## FROM scratch {#from-scratch}
 
 A scratch image whose only file is the `pkgm` binary can install and run real
 packages, with no system libc:
@@ -90,10 +95,10 @@ $ docker run --rm pkgm-scratch run gnu.org/bash -- --version
 GNU bash, version 5.3.0(1)-release (aarch64-unknown-linux-gnu)
 ```
 
-See [FROM scratch](from-scratch.md) for how the closure is resolved, the
+See [FROM scratch]({{< relref "from-scratch.md" >}}) for how the closure is resolved, the
 conformance matrix, and the pantry-wide audit.
 
-## Environments
+## Environments {#environments}
 
 `pkgx` also carries `pkge`, a module system: named environments declared in
 HCL2, `load`/`unload`/`purge` that are exact rather than incremental, and a
@@ -104,4 +109,4 @@ $ eval "$(pkgx env init)"
 $ pkge load cfd
 ```
 
-See [Environments and HPC](environments.md).
+See [Environments and HPC]({{< relref "environments.md" >}}).

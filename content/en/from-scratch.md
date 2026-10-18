@@ -1,11 +1,16 @@
-# Running pkgx packages on `FROM scratch`
+---
+title: "FROM scratch"
+weight: 20
+---
+
+# Running pkgx packages on `FROM scratch` {#running-pkgx-packages-on-from-scratch}
 
 This document records what it takes to run pkgx packages on a literally-empty
 base image (no libc, no shell, no coreutils), the conformance status of common
 packages, the fixes `pkgm` maintains to get there, and a proposal for the pkgx
 maintainers. It is a living document — extend it as new packages are tested.
 
-## Why packages don't "just run" on scratch
+## Why packages don't "just run" on scratch {#why-packages-dont-just-run-on-scratch}
 
 A pkgx package assumes a host system. Two structural gaps surface on scratch:
 
@@ -27,7 +32,7 @@ A pkgx package assumes a host system. Two structural gaps surface on scratch:
    on `dist.pkgx.dev` (no `deps.json`; all such URLs 404). So `pkgm` rebuilds
    the closure from the packages' own `DT_NEEDED` — see below.
 
-## What `pkgm` does
+## What `pkgm` does {#what-pkgm-does}
 
 `pkgm run` (and `pkgm install --from-scratch`) iterate to a fixpoint: scan the
 installed packages' ELF `DT_NEEDED` (via Go's `debug/elf`) and, for every soname
@@ -48,7 +53,7 @@ a package manager, so it uses the real pkgx shell rather than reimplementing
 one. (An earlier attempt embedded a pure-Go shell, but its `set -e` semantics
 diverged from dash/bash and broke git's wrapper; real bash behaves correctly.)
 
-## Conformance status (linux/aarch64, image = only the pkgm binary)
+## Conformance status (linux/aarch64, image = only the pkgm binary) {#conformance-status-linuxaarch64-image-only-the-pkgm-binary}
 
 | package | status | notes |
 | --- | --- | --- |
@@ -72,7 +77,7 @@ scratch with **no missing-library failures** — the `DT_NEEDED`-driven closure
 plus the `soname → project` table cover the implicit graph, and wrapper
 scripts run under the real pkgx bash.
 
-## Pantry-wide audit
+## Pantry-wide audit {#pantry-wide-audit}
 
 An audit of the whole pantry (linux/aarch64):
 
@@ -95,12 +100,12 @@ pantry, with the only observed failures being upstream version-pin drift. The
 `soname → project` table also gained prefix matching (`projectForSoname`) for
 multi-`.so` projects such as abseil (`libabsl_*`), protobuf and re2.
 
-## Full-pantry conformance sweep (2026-07-28)
+## Full-pantry conformance sweep (2026-07-28) {#full-pantry-conformance-sweep-2026-07-28}
 
 The 100-project sample above was extended to the **entire** set of
 package-backed projects. This section records the full run.
 
-### Provenance
+### Provenance {#provenance}
 
 | field | value |
 | --- | --- |
@@ -116,7 +121,7 @@ Each project is run through `pkgm run <project> -- --version` inside a
 assembles the closure from `DT_NEEDED` and executes the project's default
 binary. The verdict is derived from the exit code and stderr.
 
-### Results
+### Results {#results}
 
 | verdict | count | honest interpretation |
 | --- | ---: | --- |
@@ -144,7 +149,7 @@ out on `--version` (mostly tools with no `--version` flag, REPLs, or servers)
 **41 MISSING + 40 DLFAIL + 4 SIGSEGV = 85 projects (4.7%)**; the other 1733
 (95.3%) either ran or launched their closure cleanly.
 
-### Fix applied — soname-exact closure completion (pkgm `637f6db`, 2026-07-28)
+### Fix applied — soname-exact closure completion (pkgm `637f6db`, 2026-07-28) {#fix-applied-soname-exact-closure-completion-pkgm-637f6db-2026-07-28}
 
 Re-running the 81 MISSING + DLFAIL projects after the fix, **73 now run FROM
 scratch** (25 exit 0, 48 launch their closure and return non-zero/timeout on
@@ -178,7 +183,7 @@ projects are addressed by the new eudev recipe + mapping (pending its package
 publishing); the true residue is 1 `librt` (glibc absorbed it), 1 Bun quirk, 1
 probe artifact, and the 4 SIGSEGV (a separate crash class, not addressed here).
 
-### MISSING — unresolved shared library (41)
+### MISSING — unresolved shared library (41) {#missing-unresolved-shared-library-41}
 
 The closure did not provide a `.so` the binary needs. Each is actionable: the
 soname either needs a `soname → project` mapping in `closure.go`, or the pantry
@@ -243,7 +248,7 @@ Single-project sonames:
 - gnu.org/texinfo → `libtinfow.so.6` (wide-char ncurses; distinct from `libtinfo.so.6`)
 - tailwindcss.com → *(soname not captured — the sweep detected a `cannot open shared object` error but its message did not match the soname-extraction regex; needs a manual re-run to identify the library)*
 
-### DLFAIL — package-fetch failure resolving the closure (40)
+### DLFAIL — package-fetch failure resolving the closure (40) {#dlfail-package-fetch-failure-resolving-the-closure-40}
 
 pkgm could not fetch a package it needs for the closure (`GET https://dist…` /
 `no package` / `no version`). Actionable: either a missing soname→project
@@ -292,7 +297,7 @@ with big plugin closures (gtk, php, ruby, imagemagick, mpv, httpd, …).
 - wxwidgets.org
 - xpra.org
 
-### SIGSEGV — genuine crash (4)
+### SIGSEGV — genuine crash (4) {#sigsegv-genuine-crash-4}
 
 The binary loaded and started but crashed (signal 11):
 
@@ -301,7 +306,7 @@ The binary loaded and started but crashed (signal 11):
 - mcgill.ca/lrslib
 - pkgx.sh
 
-### Interpretation
+### Interpretation {#interpretation}
 
 `NOBIN`, `OTHER:1` and `OTHER:124` are **not** FROM-scratch failures. `NOBIN`
 projects are libraries with no runnable binary (an artifact of probing every
@@ -334,7 +339,7 @@ of the pantry, and the residual gaps are honest, understood, and — for MISSING
 and DLFAIL — actionable through soname→project mappings or upstream package
 fixes.
 
-## Proposal to the pkgx / pantry maintainers
+## Proposal to the pkgx / pantry maintainers {#proposal-to-the-pkgx-pantry-maintainers}
 
 The information needed to run a package standalone (its complete runtime closure)
 exists at build time but is not published. Two complementary asks:

@@ -1,10 +1,15 @@
-# Naming a tree, and pinning it
+---
+title: "Sets and locks"
+weight: 50
+---
+
+# Naming a tree, and pinning it {#naming-a-tree-and-pinning-it}
 
 A recipe describes one package. Two things were missing above it: a way to
 name a **group** of packages, and a way to say **which** group — because the
 same names resolve differently tomorrow.
 
-## A set is an ordinary recipe
+## A set is an ordinary recipe {#a-set-is-an-ordinary-recipe}
 
 A recipe carrying `members` is a set:
 
@@ -40,7 +45,7 @@ than a second kind of artefact to keep in step.
 A set is **unordered**. All three of those manifests are: the order comes out
 of resolution, not out of the file.
 
-## A manifest alone is not reproducible
+## A manifest alone is not reproducible {#a-manifest-alone-is-not-reproducible}
 
 Guix's manual says it plainly: *"to reproduce a profile bit-for-bit, manifests
 alone might not be enough"*. The same names resolve differently against a
@@ -80,7 +85,7 @@ locks to 41 projects on `linux/x86-64` and 40 on `darwin/aarch64`
 (`github.com/besser82/libxcrypt` is linux-only). A lock that did not say which
 platform it was taken on would be read as the other one's.
 
-## `spec` — because a version is not enough either
+## `spec` — because a version is not enough either {#spec-because-a-version-is-not-enough-either}
 
 A version pins what upstream served. It does not pin the **recipe**: a build
 script edited in the pantry resolves to the same version and produces a
@@ -96,7 +101,7 @@ the **parsed** recipe and the spec hashes of its dependencies. Over the parsed
 value and not the file, so reformatting a recipe or rewriting its comments does
 not move it and changing what it says does.
 
-## Checking a lock later
+## Checking a lock later {#checking-a-lock-later}
 
 Cargo's `--locked` and npm's `ci` exist because a lock nobody verifies is a
 lock nobody can rely on. `bk lock --check` re-resolves and says what moved:
@@ -132,7 +137,7 @@ file**, and refuses a project name beside it — naming them twice would let the
 two disagree, and the answer would be about a different question from the one
 the file asks.
 
-## What a lock does not pin
+## What a lock does not pin {#what-a-lock-does-not-pin}
 
 The **output bytes**. The spec hash covers the inputs, as Nix's derivation hash
 and Spack's spec hash do; an output digest is a different promise and is not
