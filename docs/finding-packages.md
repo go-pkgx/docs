@@ -481,12 +481,23 @@ version exists as a tag and no bottle carries it for that platform. Before
 the flag, `--graph` resolved for the host and said so about everywhere.
 
 ⛔ **`PKGX_CATALOG` does not redirect `--graph`.** `ls`, `search` and `why`
-read the file that variable names, and refuse it loudly when it cannot be
-read. `--graph` resolves against the **registry** and never consults it — so
-pointing `PKGX_CATALOG` at another platform's catalogue and asking `--graph`
-returns the host's answer, with exit 0 and no sign the file was never opened.
-Use `--platform`. Tracked as
-[go-pkgx/pkgx#110](https://github.com/go-pkgx/pkgx/issues/110).
+read the file that variable names. `--graph` resolves against the
+**registry** and never opens it — so it refuses rather than answering about
+the wrong machine:
+
+```console
+$ PKGX_CATALOG=~/.pkgx/catalog/linux-x86-64.json pkgx --graph +go.dev
+pkgx: PKGX_CATALOG names …/linux-x86-64.json, and --graph does not read a
+catalogue — it resolves against the registry. To ask about another platform:
+--graph --platform os/arch
+```
+
+It used to answer the **host's** resolution there, with exit 0 and no sign
+the file was never opened ([go-pkgx/pkgx#110](https://github.com/go-pkgx/pkgx/issues/110)).
+A catalogue records what is *published*; `--graph` resolves what *would
+satisfy* a constraint, including versions no bottle carries. Those are
+different questions, and the "satisfy but not published here" line above
+depends on telling them apart.
 
 The price is that the index goes stale and nothing tells you by magic, so
 every command that reads it says how old it is:
