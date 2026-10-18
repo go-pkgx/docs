@@ -1,4 +1,9 @@
-# Environments, and HPC
+---
+title: "Environments and HPC"
+weight: 30
+---
+
+# Environments, and HPC {#environments-and-hpc}
 
 A module system does two things: it resolves what a package needs, and it edits
 your shell. `pkgx +a +b` already did the first. `pkge` does the second — a
@@ -23,7 +28,7 @@ $ command -v jq
 `$PKGX_DIR/collections/<name>`; `pkge restore <name>` purges and reloads it.
 `pkge purge` unloads everything.
 
-## Why unloading is exact
+## Why unloading is exact {#why-unloading-is-exact}
 
 Loading never edits incrementally. It restores the environment it first saw and
 recomposes from the whole spec set, so `unload b` after `load a b c` leaves
@@ -51,7 +56,7 @@ job scripts read it — `if [[ $LOADEDMODULES == *openmpi* ]]` is in thousands o
 them. `_LMFILES_` is deliberately **not** set: it names modulefiles, there are
 none here, and an invented value is a lie a script could act on.
 
-## Named environments
+## Named environments {#named-environments}
 
 A site declares environments in HCL2 under `$PKGX_DIR/environments/`:
 
@@ -86,7 +91,7 @@ An environment is not a lockfile: it names constraints, and the closure is
 resolved at load time from the signed registry, so a login node and a container
 agree.
 
-## With an existing Lmod
+## With an existing Lmod {#with-an-existing-lmod}
 
 Generate modulefiles and let the site's own Lmod load them. Nothing about
 `module` changes, and conflicts, hierarchies and `spider` keep working, because
@@ -99,7 +104,7 @@ $ pkgx --modulefile +openmpi.org@5 > $MODULEPATH_DIR/openmpi/5.0.8.lua
 `pkgx --json +<pkg>...` emits the same composed environment as data, for a tool
 that wants to compose it some other way.
 
-## Without one
+## Without one {#without-one}
 
 `pkgx env init --module` also defines `module` and `ml`
 (`load`/`add`, `unload`/`rm`/`del`, `purge`, `list`, `avail`/`av`,
@@ -116,7 +121,7 @@ pkgx: publish modulefiles to MODULEPATH instead: pkgx --modulefile +pkg
 Two implementations answering one command is how a support ticket becomes
 unanswerable, and the site's own modulefiles are not ours to interpret.
 
-## Converting a site's modulefiles
+## Converting a site's modulefiles {#converting-a-sites-modulefiles}
 
 `pkgx env import` reads Lmod's Lua **and** Environment Modules' TCL, and writes
 both into the same HCL2.
@@ -162,7 +167,7 @@ $ echo $?
 for later: they state relationships *between* modules, which is a decision for
 the environment that replaces them, not something a converter can infer.
 
-## Two things no code here removes
+## Two things no code here removes {#two-things-no-code-here-removes}
 
 - **MPI and the interconnect come from the host.** libfabric/UCX, Slurm's PMI
   and a vendor libmpi tied to a kernel driver cannot live in a hermetic tree.

@@ -1,17 +1,22 @@
-# pkgx Windows packages — feasibility study & proposal
+---
+title: "Windows"
+weight: 90
+---
+
+# pkgx Windows packages — feasibility study & proposal {#pkgx-windows-packages-feasibility-study-proposal}
 
 **Date:** 2026-07-31 · pkgx has **no** Windows packages today (every
 `dist.pkgx.dev/<project>/windows/*` returns 404). This studies whether that can
 change, with a working cross-build proof, and proposes a path.
 
-## TL;DR
+## TL;DR {#tldr}
 
 Windows packages are **feasible and, for most packages, simpler than the
 linux/darwin ones**. pkgx already ships the whole cross toolchain
 (`llvm.org/mingw-w64`). The blockers are (1) an upstream decision to build them
 and (2) a small runtime port of the client tools — not any deep technical wall.
 
-## What was proven (on darwin/arm64, from this repo)
+## What was proven (on darwin/arm64, from this repo) {#what-was-proven-on-darwinarm64-from-this-repo}
 
 | # | Finding | Evidence |
 |---|---|---|
@@ -20,7 +25,7 @@ and (2) a small runtime port of the client tools — not any deep technical wall
 | 3 | **Leaf tools bundle nothing.** The PE imports only Windows-provided DLLs — `api-ms-win-crt-*` (Universal CRT, present on Windows 10+) and `KERNEL32.dll`. | `objdump -p` import table |
 | 4 | **C++ can be fully self-contained.** `clang++ … -static` on a `<iostream>` program produces a PE whose only imports are Windows DLLs — **zero** bundled `libc++`/`libunwind`/`libwinpthread`. | `objdump -p hi-static.exe` |
 
-## Why Windows packages are *simpler* than linux ones
+## Why Windows packages are *simpler* than linux ones {#why-windows-packages-are-simpler-than-linux-ones}
 
 The linux FROM-scratch work in this repo fought three things that **do not exist
 on Windows**:
@@ -40,7 +45,7 @@ So the package shapes are:
 - **C/C++ with static libs** (`-static`) → a single self-contained `.exe`.
 - **shared-lib deps** → the `.exe` + the dependency DLLs colocated in the package.
 
-## The two halves of "Windows support"
+## The two halves of "Windows support" {#the-two-halves-of-windows-support}
 
 **(A) Producing packages** — an upstream (pkgxdev) concern. A pantry recipe would
 cross-build with `llvm.org/mingw-w64` on the existing linux CI, e.g.
@@ -80,7 +85,7 @@ Not yet done (follow-ups): `pkgm install` shims are `#!/bin/sh` (need `.cmd`);
 the colocated-DLL case (a non-static shared dep) isn't exercised because no such
 package exists yet.
 
-## Proposal to pkgxdev
+## Proposal to pkgxdev {#proposal-to-pkgxdev}
 
 1. Add `windows/x86-64` (+ `aarch64`) as first-class package slugs, built on the
    existing linux CI via `llvm.org/mingw-w64`, **opt-in per recipe** (`platforms`
@@ -92,7 +97,7 @@ package exists yet.
    Windows packages, and `mirror` to host them — so the ecosystem is testable
    independently of the reference Deno tooling.
 
-## Honest limitations
+## Honest limitations {#honest-limitations}
 
 - Native-Windows consumption only helps once Windows packages exist; until then,
   **WSL2** remains the path for Windows users (linux binaries + linux packages).

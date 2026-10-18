@@ -1,6 +1,11 @@
-# Supply chain
+---
+title: "Supply chain"
+weight: 70
+---
 
-Every package in [`ghcr.io/go-pkgx/packages`](registry.md) ships with the evidence
+# Supply chain {#supply-chain}
+
+Every package in [`ghcr.io/go-pkgx/packages`]({{< relref "registry.md" >}}) ships with the evidence
 needed to audit and trust it. Three artifacts are attached to each package as **OCI
 referrers**, so they travel with the image and are discoverable from its digest:
 
@@ -10,7 +15,7 @@ referrers**, so they travel with the image and are discoverable from its digest:
 - a **cosign-style + minisign signature** over the package
   ([`go-attest/sign`](https://github.com/go-attest/sign)).
 
-## What went IN, not only what came out
+## What went IN, not only what came out {#what-went-in-not-only-what-came-out}
 
 Those three describe the **output**. Until recently nothing recorded the input:
 of 1858 recipes with a source URL (measured 2026-09; re-counted 2026-10-05 as
@@ -38,7 +43,7 @@ than falling through to the next mirror: a build that quietly succeeded from a
 second host after the first served unexpected bytes would hide the one event
 that check exists to surface.
 
-## And where a recipe declares nothing, which is 903 of 904
+## And where a recipe declares nothing, which is 903 of 904 {#and-where-a-recipe-declares-nothing-which-is-903-of-904}
 
 Verifying a declared `sha:` is worth having and reaches almost nothing. Measured
 on 2026-10-05 against a fresh `pkgxdev/pantry`: **one recipe of 904** carries a
@@ -81,7 +86,7 @@ key is not on `www.openssl.org` — and honouring it needs a key policy: whose
 key, pinned where, and what happens when a release is signed by a new one. A
 verifier that accepts any key proves only that somebody signed something.
 
-## The pinned key
+## The pinned key {#the-pinned-key}
 
 Signatures verify against a single pinned public key:
 
@@ -92,7 +97,7 @@ RWQ+rmH+fXy2iYr+gReQAOQtYWtH0A7UlxcAa2hpr+txNBwGqtpFsR6L
 The factory signs with the matching private key (held only as a CI secret); every
 consumer checks against this exact public key.
 
-## Verify on install
+## Verify on install {#verify-on-install}
 
 The [`go-pkgx/bottle`](https://github.com/go-pkgx/bottle) backend that both `pkgx`
 and `pkgm` import performs verification at install time:
@@ -109,7 +114,7 @@ PKGX_DIST=oci://ghcr.io/go-pkgx/packages PKGX_VERIFY=1 pkgm install lz4.org
 This closes the loop end to end: the factory signs and attests at publish time, and
 the consumer refuses to run anything it cannot verify.
 
-## Known vulnerabilities, asked at the version we publish
+## Known vulnerabilities, asked at the version we publish {#known-vulnerabilities-asked-at-the-version-we-publish}
 
 Signing says *these are the bytes we built*. It says nothing about whether those
 bytes are known to be vulnerable. That is a second question, and it is asked
@@ -149,7 +154,7 @@ decision behind it, and one that is not is a question with an answer. The job
 holds `contents: read` and never writes to the advisory tree — recording a
 decision stays a pull request, by a person.
 
-### What a decision looks like, and how far it reaches
+### What a decision looks like, and how far it reaches {#what-a-decision-looks-like-and-how-far-it-reaches}
 
 A decision is a dated event in `advisories/<project>/advisories.yaml`, and
 `bk publish --advisories` attaches it to the bottle as an **OpenVEX v0.2.0**
@@ -191,7 +196,7 @@ emitter treats it as covering nothing, because it reassures a *stranger*, and a
 stale "not affected" stops them looking. *When in doubt do not interrupt
 ourselves; when in doubt do not reassure somebody else.*
 
-## Metadata is not a program, and a key is not a caption
+## Metadata is not a program, and a key is not a caption {#metadata-is-not-a-program-and-a-key-is-not-a-caption}
 
 Signatures cover the **bytes**. The strings beside them — a project's name, its
 summary, the commands it provides, its versions and platforms — reach your

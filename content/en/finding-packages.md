@@ -1,4 +1,9 @@
-# Finding packages
+---
+title: "Finding packages"
+weight: 40
+---
+
+# Finding packages {#finding-packages}
 
 A package manager you cannot browse is a package manager you have to already
 know. `pkgx ls` walks the tree; `<TAB>` completes into it.
@@ -29,7 +34,7 @@ curl.se — 8.17.0
 also a namespace, 3 under it: pkgx ls curl.se/
 ```
 
-## A node has two kinds of thing under it
+## A node has two kinds of thing under it {#a-node-has-two-kinds-of-thing-under-it}
 
 `gnu.org` has `gnu.org/bash` under it because of how it is **named**.
 `curl.se` has `openssl.org` under it because of what it **needs**.
@@ -70,7 +75,7 @@ What it shows is what recipes **declare**. It is not the installed closure:
 `bottle` also pulls providers by soname that no recipe names, so a real
 install can hold more than this tree does.
 
-## Everything is named; what is here is marked
+## Everything is named; what is here is marked {#everything-is-named-what-is-here-is-marked}
 
 ```console
 $ pkgx ls doxygen.nl
@@ -109,7 +114,7 @@ architecture, so a mirror wave that lands x86-64 publishes a tag s390x
 cannot use, and the version recorded is the newest this platform really
 carries.
 
-## What you already have
+## What you already have {#what-you-already-have}
 
 ```console
 $ pkgx ls --tree curl.se
@@ -127,7 +132,7 @@ A bare `✓` when what is installed is the version on offer, and `✓ <version>`
 when it is **not** — the case worth the extra word, because it is the one
 where a command would fetch something new.
 
-## And what that has cost you
+## And what that has cost you {#and-what-that-has-cost-you}
 
 A `✓` is per project. `pkgx store` is the whole disk:
 
@@ -152,7 +157,7 @@ so a bottle pulled six months ago to run one command is in neither. Those
 figures are one developer's machine on 2026-10-08, and **thirteen versions of
 gohugo.io** is not a number anybody chose.
 
-### It reports and deletes nothing
+### It reports and deletes nothing {#it-reports-and-deletes-nothing}
 
 That is deliberate, and it is the same line every comparable tool draws:
 [`nix path-info -S`][npi] against `nix store gc`, `guix gc --list-live`
@@ -166,7 +171,7 @@ superseded may be exactly what a lock pins or what an environment asks for.
 So the last line states a fact about the disk and says in as many words that
 it is **not the same as unused**.
 
-### Two things about the figures
+### Two things about the figures {#two-things-about-the-figures}
 
 It **walks the tree**, so it costs seconds rather than milliseconds — eight
 over 41 GiB. That is why it is its own command and not a line in `pkgx
@@ -176,7 +181,7 @@ Sizes are **powers of 1024** and say so with the `i`. `du` counts blocks and
 this counts file sizes, so the two disagree twice over; naming the unit is
 the least a report can do about that.
 
-### And what any of it is for
+### And what any of it is for {#and-what-any-of-it-is-for}
 
 A size is not a decision. `--root` says what a lock needs:
 
@@ -215,7 +220,7 @@ Three things worth knowing:
 A mistyped `--root` is refused **before** the store is walked: eight seconds
 over 41 GiB is too long to wait to be told the arguments were wrong.
 
-## The two questions that do not descend
+## The two questions that do not descend {#the-two-questions-that-do-not-descend}
 
 Everything above descends. `ls --tree` says what a project **needs**, which is
 what you ask before installing it. Two questions point the other way, and no
@@ -269,7 +274,7 @@ and its manual says plainly that it *only approximates* that.
 [sd]: https://spack.readthedocs.io/en/latest/
 [gr]: https://guix.gnu.org/manual/html_node/Invoking-guix-refresh.html
 
-### What this answer is not
+### What this answer is not {#what-this-answer-is-not}
 
 The catalogue carries **runtime** dependencies, reduced for **one platform**. So
 `--dependents` is the runtime blast radius on the platform you are standing on:
@@ -286,7 +291,7 @@ scanning built output for the hash parts of store paths — there is nothing to
 scan before anything is installed, and saying which it is beats implying a scan
 nobody ran.
 
-## You know the command, not the package
+## You know the command, not the package {#you-know-the-command-not-the-package}
 
 ```console
 $ pkgx search rg
@@ -320,7 +325,7 @@ rather than by how often — a command named exactly what you typed is what
 you meant, every time. Nothing found exits **non-zero**, so
 `pkgx search x || echo none` works.
 
-## Walking it full-screen
+## Walking it full-screen {#walking-it-full-screen}
 
 ```console
 $ pkgx browse
@@ -344,7 +349,7 @@ else — 0.013 s against the real 1908-project one — and **without a terminal
 it prints the tree and exits**, because `pkgx browse | less`, a CI log and a
 scratch image are the same case.
 
-## Running exactly what a lock pins
+## Running exactly what a lock pins {#running-exactly-what-a-lock-pins}
 
 ```console
 $ pkgx --lock seed.lock.hcl -- make
@@ -368,7 +373,7 @@ platform is refused by name: **537 of 1908** projects available on
 An environment is still **not** a lockfile. An environment names a *set* and
 resolves it afresh; a lock names *versions*. Two paths, side by side.
 
-## Completion
+## Completion {#completion}
 
 ```sh
 eval "$(pkgx completion bash)"     # or zsh, or: pkgx completion fish | source
@@ -395,7 +400,7 @@ generated file could never be level with. It is also the only shape that
 works in a `FROM scratch` image, where there is no completion framework, no
 python and no generator to run.
 
-## Where the list comes from
+## Where the list comes from {#where-the-list-comes-from}
 
 `gnu.org/<TAB>` has to know what exists, and **a registry cannot be asked**:
 
@@ -431,7 +436,7 @@ installed, because the install path verifies anyway. It gets a near-miss
 name offered at your prompt, which is the whole of a typosquat. The attack
 is on the reader.
 
-## One command fetches it
+## One command fetches it {#one-command-fetches-it}
 
 `pkgx catalog update` is the **only** thing that asks the registry what
 exists. `ls` and `<TAB>` read the file it wrote, and nothing on that path
@@ -449,7 +454,7 @@ full. Measured, one press of `<TAB>` on `gnu.o`:
 
 `guix pull` and `nix-channel --update` put the line in the same place.
 
-### A platform you are not on
+### A platform you are not on {#a-platform-you-are-not-on}
 
 Both `catalog update` and `--graph` take `--platform os/arch`, because the
 answer is **not the same everywhere** and the question is usually asked from
@@ -508,7 +513,7 @@ $ pkgx catalog
 1908 project(s), 986 with dependencies, 2 hour(s) old
 ```
 
-## Shipping a catalogue with the image
+## Shipping a catalogue with the image {#shipping-a-catalogue-with-the-image}
 
 `PKGX_CATALOG=<file>` reads one from somewhere else entirely — for an
 air-gapped image, or to inspect a catalogue before publishing it. An image
@@ -520,7 +525,7 @@ store: somebody who names a file means that file, and answering from
 somewhere else under a header blaming the registry would be three wrong
 things in one line.
 
-## When there is none
+## When there is none {#when-there-is-none}
 
 `pkgx ls` falls back to **what is installed**, and says so in its header —
 with the sentence that fits the case it is actually in:
