@@ -454,6 +454,56 @@ full. Measured, one press of `<TAB>` on `gnu.o`:
 
 `guix pull` and `nix-channel --update` put the line in the same place.
 
+### A platform you are not on {#a-platform-you-are-not-on}
+
+Both `catalog update` and `--graph` take `--platform os/arch`, because the
+answer is **not the same everywhere** and the question is usually asked from
+whichever machine you happen to be sitting at.
+
+```console
+$ pkgx catalog update --platform linux/x86-64
+1915 project(s) → ~/.pkgx/catalog/linux-x86-64.json
+```
+
+It writes to that platform's own file, so `ls` and `<TAB>` — which read the
+host's — cannot mistake a foreign catalogue for yours.
+
+`--graph` answers the sharper question, the one a recipe author has:
+
+```console
+$ pkgx --graph +go.dev@^1.27.1
+go.dev 1.27.1
+└─ openssl.org 3.6.4
+
+$ pkgx --graph --platform linux/x86-64 +go.dev@^1.27.1
+pkgx: no version of go.dev satisfies "^1.27.1" AND is published for
+linux/x86-64 (available: 1.27.1 1.26.8 1.26.5 … (11 in all);
+satisfy but not published here: 1.27.1); asked for by ^1.27.1 (requested)
+```
+
+**"Satisfy but not published here"** is the distinction that matters: the
+version exists as a tag and no bottle carries it for that platform. Before
+the flag, `--graph` resolved for the host and said so about everywhere.
+
+⛔ **`PKGX_CATALOG` does not redirect `--graph`.** `ls`, `search` and `why`
+read the file that variable names. `--graph` resolves against the
+**registry** and never opens it — so it refuses rather than answering about
+the wrong machine:
+
+```console
+$ PKGX_CATALOG=~/.pkgx/catalog/linux-x86-64.json pkgx --graph +go.dev
+pkgx: PKGX_CATALOG names …/linux-x86-64.json, and --graph does not read a
+catalogue — it resolves against the registry. To ask about another platform:
+--graph --platform os/arch
+```
+
+It used to answer the **host's** resolution there, with exit 0 and no sign
+the file was never opened ([go-pkgx/pkgx#110](https://github.com/go-pkgx/pkgx/issues/110)).
+A catalogue records what is *published*; `--graph` resolves what *would
+satisfy* a constraint, including versions no bottle carries. Those are
+different questions, and the "satisfy but not published here" line above
+depends on telling them apart.
+
 The price is that the index goes stale and nothing tells you by magic, so
 every command that reads it says how old it is:
 
