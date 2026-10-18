@@ -109,6 +109,88 @@ PKGX_DIST=oci://ghcr.io/go-pkgx/packages PKGX_VERIFY=1 pkgm install lz4.org
 This closes the loop end to end: the factory signs and attests at publish time, and
 the consumer refuses to run anything it cannot verify.
 
+## Known vulnerabilities, asked at the version we publish
+
+Signing says *these are the bytes we built*. It says nothing about whether those
+bytes are known to be vulnerable. That is a second question, and it is asked
+daily, for two platforms, by a scheduled job in
+[`go-pkgx/packages`](https://github.com/go-pkgx/packages/blob/main/.github/workflows/vulnscan.yml).
+
+The whole design is in **which** question it asks. Ask OSV about each package
+*as a whole* and it returns every advisory that package has ever carried —
+**748 findings across 21 projects** over this pantry on 2026-10-17, nearly all
+of them fixed long before anything we ship. Ask at the version the published
+catalogue says we carry, and skip outright the identities a platform carries no
+version of:
+
+| platform | asked at version | unanswerable by OSV | not asked (no bottle) | findings |
+| --- | --- | --- | --- | --- |
+| linux/x86-64 | 133 | 1090 | 448 | **0** |
+| darwin/aarch64 | 137 | 1082 | 452 | **0** |
+
+Each row adds to **1671**, the identity count of the pantry — that sum is the
+control that no bucket is a silent drop. *Unanswerable* means an identity OSV is
+not keyed on: a repository or a CPE rather than a package in an ecosystem.
+
+```sh
+pkgx catalog update --platform linux/x86-64
+bk vulnfetch -dir pantry -advisories advisories \
+  -catalog "$PKGX_DIR/catalog/linux-x86-64.json" -fail-on-new
+```
+
+One ubuntu runner answers for both platforms, because `pkgx catalog update
+--platform` fetches another platform's published catalogue rather than
+rebuilding one. The two catalogues are not the same document and do not list
+the same projects, so a linux-only scan would have reported "clean" about a
+platform it never asked about.
+
+`-fail-on-new` is a verdict, not a report: a finding already recorded has a
+decision behind it, and one that is not is a question with an answer. The job
+holds `contents: read` and never writes to the advisory tree — recording a
+decision stays a pull request, by a person.
+
+### What a decision looks like, and how far it reaches
+
+A decision is a dated event in `advisories/<project>/advisories.yaml`, and
+`bk publish --advisories` attaches it to the bottle as an **OpenVEX v0.2.0**
+document, signed with everything else.
+
+```yaml
+- id: MAL-2026-3020
+  events:
+    - timestamp: 2026-10-11T10:29:00Z
+      type: detection
+      detected-version: 1.22.1
+    - timestamp: 2026-10-11T10:31:00Z
+      type: false-positive-determination
+      detected-version: 1.22.1
+      justification: component_not_present
+```
+
+⛔ **`detected-version` is not paperwork.** A purl names a version, so a VEX
+statement is a claim *about a version* — and the emitter will not restate the
+two statuses that tell a reader to stop looking, `not_affected` and `fixed`,
+about a version no event in the record names:
+
+```
+record determines not_affected for 1.22.1, bottle is 1.22.1   → not_affected + justification
+record determines not_affected for 1.22.1, bottle is 2026.9.1 → under_investigation + status_notes
+record names no version at all                                → under_investigation + status_notes
+```
+
+Neither the justification nor the prose travels onto a downgraded statement:
+both were written about another artefact. `affected` is deliberately **not**
+downgraded — restating a warning for an unexamined version over-warns, which
+costs noise, while downgrading it would turn a warning into "we are looking into
+it".
+
+The **gate** and the **document** therefore read an absent version in opposite
+directions, on purpose: `vulnfetch -fail-on-new` treats a record that names no
+version as covering everything and stays green, because it interrupts *us*; the
+emitter treats it as covering nothing, because it reassures a *stranger*, and a
+stale "not affected" stops them looking. *When in doubt do not interrupt
+ourselves; when in doubt do not reassure somebody else.*
+
 ## Metadata is not a program, and a key is not a caption
 
 Signatures cover the **bytes**. The strings beside them — a project's name, its
