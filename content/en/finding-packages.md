@@ -6,32 +6,32 @@ weight: 40
 # Finding packages {#finding-packages}
 
 A package manager you cannot browse is a package manager you have to already
-know. `pkgx ls` walks the tree; `<TAB>` completes into it.
+know. `pkgs ls` walks the tree; `<TAB>` completes into it.
 
 ```console
-$ pkgx catalog update
+$ pkgs catalog update
 1908 project(s) → /home/you/.pkgx/catalog/linux-x86-64.json
 
-$ pkgx ls
+$ pkgs ls
 curl.se                                  8.17.0, 3 under
 github.com                               452 under
 gnu.org                                  54 under
 zlib.net                                 1.3.2
 
-$ pkgx ls gnu.org
+$ pkgs ls gnu.org
 gnu.org/autoconf                         2.73
 gnu.org/bash                             5.3
 gnu.org/gcc                              16.2.0, 1 under
 …
 
-$ pkgx ls curl.se
+$ pkgs ls curl.se
 curl.se — 8.17.0
   curl.se/ca-certs
   nghttp2.org
   openssl.org
   zlib.net
 
-also a namespace, 3 under it: pkgx ls curl.se/
+also a namespace, 3 under it: pkgs ls curl.se/
 ```
 
 ## A node has two kinds of thing under it {#a-node-has-two-kinds-of-thing-under-it}
@@ -50,7 +50,7 @@ namespace — the only way to reach `curl.se/ca-certs` from `curl.se` — and a
 node that is both says where its other half is rather than hiding it.
 
 ```console
-$ pkgx ls --tree curl.se
+$ pkgs ls --tree curl.se
 curl.se — 8.17.0
   curl.se/ca-certs
   nghttp2.org
@@ -65,7 +65,7 @@ the first level is what a person reads. A diamond is expanded once and named
 once — and the one expanded is the **direct** dependency, because that is the
 one a reader came for.
 
-**It needs no network** — not once `pkgx catalog update` has run, and never
+**It needs no network** — not once `pkgs catalog update` has run, and never
 again until you run it. `pkgx --graph` answers the same question by
 resolving against the registry, which is the better answer when you have one
 and no answer at all in a `FROM scratch` image that has not fetched anything
@@ -78,10 +78,10 @@ install can hold more than this tree does.
 ## Everything is named; what is here is marked {#everything-is-named-what-is-here-is-marked}
 
 ```console
-$ pkgx ls doxygen.nl
+$ pkgs ls doxygen.nl
 doxygen.nl — no bottle here
 
-$ pkgx ls --tree curl.se
+$ pkgs ls --tree curl.se
 curl.se — 8.17.0
   curl.se/ca-certs  2026.09.25
   doxygen.nl  (no bottle here)
@@ -117,7 +117,7 @@ carries.
 ## What you already have {#what-you-already-have}
 
 ```console
-$ pkgx ls --tree curl.se
+$ pkgs ls --tree curl.se
 curl.se — 8.17.0  ✓
   curl.se/ca-certs  2026.09.25  ✓
   doxygen.nl  (no bottle here)
@@ -134,10 +134,10 @@ where a command would fetch something new.
 
 ## And what that has cost you {#and-what-that-has-cost-you}
 
-A `✓` is per project. `pkgx store` is the whole disk:
+A `✓` is per project. `pkgs store` is the whole disk:
 
 ```console
-$ pkgx store --by-size -n 6
+$ pkgs store --by-size -n 6
 ~/.pkgx
 llvm.org                                   13.8 GiB  3 versions, 8.5 GiB not the newest here
 android.com/cmdline-tools                   6.4 GiB
@@ -186,7 +186,7 @@ the least a report can do about that.
 A size is not a decision. `--root` says what a lock needs:
 
 ```console
-$ pkgx store --root seed.lock.hcl
+$ pkgs store --root seed.lock.hcl
 …
 41.2 GiB over 363 version(s) of 302 project(s)
 
@@ -229,7 +229,7 @@ amount of descending reaches them.
 **Who needs this** — what you ask before *changing* something:
 
 ```console
-$ pkgx ls --dependents openssl.org
+$ pkgs ls --dependents openssl.org
 openssl.org — 4.0.2  ✓ 3.6.0
   agwa.name/git-crypt  (no bottle here)
   apache.org/arrow  25.0.1
@@ -255,7 +255,7 @@ figure to be quoted bare.
 **Why is this in here** — what you ask when a closure holds a surprise:
 
 ```console
-$ pkgx why git-scm.org zlib.net
+$ pkgs why git-scm.org zlib.net
 git-scm.org — 2.55.0  ✓ 2.47.1
   → zlib.net — 1.3.2  ✓
 ```
@@ -294,7 +294,7 @@ nobody ran.
 ## You know the command, not the package {#you-know-the-command-not-the-package}
 
 ```console
-$ pkgx search rg
+$ pkgs search rg
 crates.io/ripgrep                        rg  14.1.1
 aardvark.io/rgbds                        rgbasm  0.9.0
 ```
@@ -323,12 +323,12 @@ would expect them to, 1430 projects with a bottle on linux/aarch64 against
 So the match is on names and on commands, ranked by *how* a thing matched
 rather than by how often — a command named exactly what you typed is what
 you meant, every time. Nothing found exits **non-zero**, so
-`pkgx search x || echo none` works.
+`pkgs search x || echo none` works.
 
 ## Walking it full-screen {#walking-it-full-screen}
 
 ```console
-$ pkgx browse
+$ pkgs browse
 gnu.org — 54
 
 > gnu.org/bash                             5.3  ✓
@@ -344,9 +344,9 @@ data read one node at a time is data nobody explores. Descending into a
 **leaf** shows what it needs, rather than making you press `tab`.
 
 `q` prints what you pinned on **stdout** while the screen goes to stderr, so
-`pkgx +$(pkgx browse)` composes. It reads the cached catalogue and nothing
+`pkgx +$(pkgs browse)` composes. It reads the cached catalogue and nothing
 else — 0.013 s against the real 1908-project one — and **without a terminal
-it prints the tree and exits**, because `pkgx browse | less`, a CI log and a
+it prints the tree and exits**, because `pkgs browse | less`, a CI log and a
 scratch image are the same case.
 
 ## Running exactly what a lock pins {#running-exactly-what-a-lock-pins}
@@ -376,7 +376,7 @@ resolves it afresh; a lock names *versions*. Two paths, side by side.
 ## Completion {#completion}
 
 ```sh
-eval "$(pkgx completion bash)"     # or zsh, or: pkgx completion fish | source
+eval "$(pkgs completion bash)"     # or zsh, or: pkgs completion fish | source
 ```
 
 ```console
@@ -438,7 +438,7 @@ is on the reader.
 
 ## One command fetches it {#one-command-fetches-it}
 
-`pkgx catalog update` is the **only** thing that asks the registry what
+`pkgs catalog update` is the **only** thing that asks the registry what
 exists. `ls` and `<TAB>` read the file it wrote, and nothing on that path
 opens a socket.
 
@@ -461,7 +461,7 @@ answer is **not the same everywhere** and the question is usually asked from
 whichever machine you happen to be sitting at.
 
 ```console
-$ pkgx catalog update --platform linux/x86-64
+$ pkgs catalog update --platform linux/x86-64
 1915 project(s) → ~/.pkgx/catalog/linux-x86-64.json
 ```
 
@@ -508,7 +508,7 @@ The price is that the index goes stale and nothing tells you by magic, so
 every command that reads it says how old it is:
 
 ```console
-$ pkgx catalog
+$ pkgs catalog
 /home/you/.pkgx/catalog/linux-x86-64.json
 1908 project(s), 986 with dependencies, 2 hour(s) old
 ```
@@ -517,7 +517,7 @@ $ pkgx catalog
 
 `PKGX_CATALOG=<file>` reads one from somewhere else entirely — for an
 air-gapped image, or to inspect a catalogue before publishing it. An image
-that ships one can also simply drop the file at the path `pkgx catalog`
+that ships one can also simply drop the file at the path `pkgs catalog`
 prints, and never fetch at all.
 
 Set and unreadable is a **refusal**, not a quiet fall back to the local
@@ -527,18 +527,18 @@ things in one line.
 
 ## When there is none {#when-there-is-none}
 
-`pkgx ls` falls back to **what is installed**, and says so in its header —
+`pkgs ls` falls back to **what is installed**, and says so in its header —
 with the sentence that fits the case it is actually in:
 
 ```console
-$ pkgx ls                      # never fetched one
-pkgx: showing what is INSTALLED — no catalogue yet; run: pkgx catalog update
+$ pkgs ls                      # never fetched one
+pkgs: showing what is INSTALLED — no catalogue yet; run: pkgs catalog update
 
-$ pkgx ls                      # one is there and will not parse
-pkgx: showing what is INSTALLED — /home/you/.pkgx/catalog/linux-x86-64.json could not be read
+$ pkgs ls                      # one is there and will not parse
+pkgs: showing what is INSTALLED — /home/you/.pkgx/catalog/linux-x86-64.json could not be read
 ```
 
-Those two are not the same state, and "run `pkgx catalog update`" is the fix
+Those two are not the same state, and "run `pkgs catalog update`" is the fix
 for the first and no help at all for the second. Sending somebody to a
 command that cannot work is worse than saying nothing.
 
