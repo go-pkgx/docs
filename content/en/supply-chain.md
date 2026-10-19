@@ -138,12 +138,12 @@ control that no bucket is a silent drop. *Unanswerable* means an identity OSV is
 not keyed on: a repository or a CPE rather than a package in an ecosystem.
 
 ```sh
-pkgx catalog update --platform linux/x86-64
+pkgs catalog update --platform linux/x86-64
 bk vulnfetch -dir pantry -advisories advisories \
   -catalog "$PKGX_DIR/catalog/linux-x86-64.json" -fail-on-new
 ```
 
-One ubuntu runner answers for both platforms, because `pkgx catalog update
+One ubuntu runner answers for both platforms, because `pkgs catalog update
 --platform` fetches another platform's published catalogue rather than
 rebuilding one. The two catalogues are not the same document and do not list
 the same projects, so a linux-only scan would have reported "clean" about a
@@ -214,7 +214,7 @@ pkgx: no version of zlib.net satisfies "=1.3.2\x1b[2K\r…" (available: 2);
 
 `ESC[2K` erases the line and `\r` returns the cursor, so on a terminal that line
 rubs itself out and reprints as something reassuring. The same hole was in the
-catalogue, where `pkgx ls` printed versions straight through.
+catalogue, where `pkgs ls` printed versions straight through.
 
 Three treatments, and which one applies depends on **what the field is** and
 **who writes it**:
@@ -224,7 +224,7 @@ Three treatments, and which one applies depends on **what the field is** and
 | project name | the whole file is **refused** | a name becomes a URL and a path; a bad one means somebody wanted something |
 | summary, provides | **cleaned and shown** | cosmetic — refusing a catalogue over one paragraph would deny service for a typo |
 | version, platform **in a lock** | the whole file is **refused** | exactness is the entire point of a lock |
-| version, platform **in a catalogue** | that entry is **dropped**, the file is kept, and the count is printed | these come from an upstream recipe's `versions:`, so refusing would hand any recipe author a switch that turns off `pkgx ls`, `search` and every `<TAB>` for everyone |
+| version, platform **in a catalogue** | that entry is **dropped**, the file is kept, and the count is printed | these come from an upstream recipe's `versions:`, so refusing would hand any recipe author a switch that turns off `pkgs ls`, `search` and every `<TAB>` for everyone |
 | a tag from the registry | skipped | a registry is a configured endpoint |
 
 A **key** can never be cleaned the way a caption is: a cleaned key would select
@@ -232,7 +232,7 @@ something other than what it says. So it is refused or dropped, never silently
 repaired.
 
 ```console
-$ pkgx catalog
+$ pkgs catalog
 ~/.pkgx/catalog/darwin-aarch64.json
 1908 project(s), 956 with dependencies, 2 hour(s) old
 ```

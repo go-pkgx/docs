@@ -15,6 +15,39 @@ The reference `pkgm` is a Deno/TypeScript script that shells out to `pkgx`,
 closure just to install a package. go-pkgx replaces all of it with one static
 ~9 MB binary.
 
+## ⛔ Three commands, and why `pkgx` and `pkgs` are two of them {#three-commands}
+
+| | |
+| --- | --- |
+| `pkgm` | **installs** a package, into a store you keep |
+| `pkgx` | **runs** one, on the fly, without installing it |
+| `pkgs` | **answers about** one: `ls`, `search`, `why`, `catalog`, `store`, `browse`, `compat`, `env`, `completion` |
+
+The last two ship from one repository and share one resolver. They are
+separate commands because of a grammar, not a preference.
+
+Upstream pkgx has no verbs at all: the first argument that is not a flag is
+a **package**, and pkgx runs it. This implementation had added nine verbs in
+that position, and each took a name away from the registry. Two took names
+that exist — measured against the published linux/x86-64 catalogue on
+2026-10-18, **`gnu.org/coreutils` provides both `ls` and `env`** — so `pkgx
+ls` listed a catalogue where upstream runs GNU ls, and there was no way to
+ask for the other one.
+
+```console
+$ pkgx ls --version          # GNU coreutils, as upstream does
+ls (GNU coreutils) 9.11
+$ pkgs ls gnu.org            # what is available under a node
+$ pkgx -Q ls                 # which project provides a command
+gnu.org/coreutils
+```
+
+A reserved word could not have fixed it: `vercel.com/pkg` provides the
+command `pkg`, and any bare word can become a package tomorrow, because the
+point of the first position is that the **registry** decides what is in it.
+Only a token the grammar already reserves is safe — a flag, which is what
+upstream chose for `pkgx -Q`, or a different binary.
+
 ## Install {#install}
 
 **Linux / macOS** — one line, naming the release you want:
@@ -105,7 +138,7 @@ HCL2, `load`/`unload`/`purge` that are exact rather than incremental, and a
 converter that reads a site's existing Lmod and Environment Modules files.
 
 ```console
-$ eval "$(pkgx env init)"
+$ eval "$(pkgs env init)"
 $ pkge load cfd
 ```
 

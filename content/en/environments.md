@@ -13,7 +13,7 @@ interpreter and no modulefile tree.
 It ships in the `pkgx` binary; there is nothing else to install.
 
 ```console
-$ eval "$(pkgx env init)"          # in a profile
+$ eval "$(pkgs env init)"          # in a profile
 $ pkge load stedolan.github.io/jq
 $ command -v jq
 ~/.pkgx/stedolan.github.io/jq/v1.8.2/bin/jq
@@ -72,11 +72,11 @@ An `env` block takes `description`, `packages`, and the environment edits
 `prepend_path`, `append_path`, `setenv` and `unsetenv`.
 
 ```console
-$ pkgx env avail
+$ pkgs env avail
 cfd                      the solver stack, as validated on 2026-09-01
 hdf5                     HDF5 1.14.3
 
-$ pkgx env show cfd
+$ pkgs env show cfd
 env "cfd"
   description  the solver stack, as validated on 2026-09-01
   declared in  /home/you/.pkgx/environments/site.hcl2
@@ -106,7 +106,7 @@ that wants to compose it some other way.
 
 ## Without one {#without-one}
 
-`pkgx env init --module` also defines `module` and `ml`
+`pkgs env init --module` also defines `module` and `ml`
 (`load`/`add`, `unload`/`rm`/`del`, `purge`, `list`, `avail`/`av`,
 `show`/`display`/`whatis`, `save`, `restore`, `swap`/`switch`) — for a
 container, a laptop, or a cluster built on this toolchain.
@@ -123,12 +123,12 @@ unanswerable, and the site's own modulefiles are not ours to interpret.
 
 ## Converting a site's modulefiles {#converting-a-sites-modulefiles}
 
-`pkgx env import` reads Lmod's Lua **and** Environment Modules' TCL, and writes
+`pkgs env import` reads Lmod's Lua **and** Environment Modules' TCL, and writes
 both into the same HCL2.
 
 ```console
-$ pkgx env import /opt/modulefiles/hdf5
-# imported from /opt/modulefiles/hdf5 by `pkgx env import`.
+$ pkgs env import /opt/modulefiles/hdf5
+# imported from /opt/modulefiles/hdf5 by `pkgs env import`.
 # Every statement in that file was recognised; nothing was skipped.
 env "hdf5" {
   description = "HDF5 1.14.3"
@@ -150,7 +150,7 @@ matters — **writes nothing at all** if any file was refused, because a partial
 conversion is the one outcome nobody can check.
 
 ```console
-$ pkgx env import /opt/modulefiles/openmpi.lua /opt/modulefiles/hdf5
+$ pkgs env import /opt/modulefiles/openmpi.lua /opt/modulefiles/hdf5
 /opt/modulefiles/openmpi.lua: 3 statement(s) this converter will not guess at:
   line 3: not a plain call: this converter reads statements, it does not run Lua
     local root = "/opt/openmpi/5.0.8"
@@ -158,7 +158,7 @@ $ pkgx env import /opt/modulefiles/openmpi.lua /opt/modulefiles/hdf5
     prepend_path("PATH", pathJoin(root, "bin"))
   line 5: depends_on states a RELATIONSHIP between modules, not an environment change: decide it in the environment that replaces this one
     depends_on("hwloc")
-pkgx: 1 of 2 modulefile(s) not converted — nothing written, because a PARTIAL conversion is the one outcome nobody can check
+pkgs: 1 of 2 modulefile(s) not converted — nothing written, because a PARTIAL conversion is the one outcome nobody can check
 $ echo $?
 1
 ```
