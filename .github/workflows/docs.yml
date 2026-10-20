@@ -40,6 +40,28 @@ jobs:
           # The whole history: each page's date comes from git.
           fetch-depth: 0
 
+      - uses: actions/setup-go@v6
+        with:
+          go-version: '1.27.2'
+
+      # ⛔ A PIN IN THE INSTALL SECTION IS A PROMISE TO KEEP IT CURRENT, and
+      # nothing here was keeping it. Measured 2026-10-20: FOUR pins behind —
+      # `pkgm v0.1.4` against a released v0.5.1, `pkgx v0.1.5` against
+      # v0.23.2, which is twenty-two minor versions. The landing has had this
+      # exact check for weeks and it was simply never pointed at the
+      # documentation, so the drift was invisible rather than tolerated.
+      #
+      # The same binary the landing runs, by its module path, pinned: the
+      # check and the thing checked must not disagree about what "the current
+      # release" means. GITHUB_TOKEN raises the API limit from 60/hour per IP
+      # to 1000.
+      - name: The install section's pins are the current releases
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: >-
+          go run github.com/go-pkgx/go-pkgx.github.io/tools/versioncheck@v0.0.0-20261020081923-bf7d6b7b13f2
+          -root .
+
       - name: Install Hugo ${{ env.HUGO_VERSION }}
         run: |
           curl -fsSL -o /tmp/hugo.tar.gz \
