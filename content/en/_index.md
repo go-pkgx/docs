@@ -53,14 +53,14 @@ upstream chose for `pkgx -Q`, or a different binary.
 **Linux / macOS** — one line, naming the release you want:
 
 ```sh
-curl -fsSL https://go-pkgx.github.io/install.sh | sh -s -- pkgm v0.1.4
+curl -fsSL https://go-pkgx.github.io/install.sh | sh -s -- pkgm v0.5.1
 ```
 
 **Windows** (PowerShell) — `irm | iex` passes no arguments, so the version goes
 in the environment:
 
 ```powershell
-$env:PKGM_VERSION='v0.1.4'; irm https://go-pkgx.github.io/install.ps1 | iex
+$env:PKGM_VERSION='v0.5.1'; irm https://go-pkgx.github.io/install.ps1 | iex
 ```
 
 The installer downloads the static binary for your os/arch from that
@@ -68,6 +68,21 @@ The installer downloads the static binary for your os/arch from that
 release `SHA256SUMS`, and puts `pkgm` on your `PATH` (`$HOME/.local/bin`, or
 `%LOCALAPPDATA%\Programs\go-pkgx` on Windows; set `PKGM_INSTALL` to override on
 Unix).
+
+⛔ **`SHA256SUMS` is a checksum of itself.** It says the binaries match a
+manifest published beside them, and whoever replaced the binaries would
+replace the manifest. The half that cannot be forged from the release page is
+GitHub's **provenance attestation** — signed through Sigstore, saying that the
+repository's own release workflow built that file from that commit:
+
+```sh
+gh attestation verify -R go-pkgx/pkgm pkgm-linux-amd64
+```
+
+Every file of every `pkgx`, `pkgs`, `bk`, `pkgm` and `mirror` release
+published from 2026-10-20 carries one. Earlier releases carry none, and
+`gh attestation verify` answers `HTTP 404` for those rather than failing
+closed, so a 404 on an older binary means *unattested*, not *tampered with*.
 
 The version is named on purpose: this line copied today and the same line
 copied in six months install the same bytes, and a bad release does not reach
@@ -77,7 +92,7 @@ everyone who happens to install that hour. To track releases instead, say so —
 the target version is already installed.
 
 To install `pkgx` (the runtime) or `mirror` instead, name it:
-`sh -s -- pkgx v0.1.5`, `sh -s -- mirror v0.1.4`.
+`sh -s -- pkgx v0.23.2`, `sh -s -- mirror v0.3.12`.
 
 **Go users**:
 
