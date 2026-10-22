@@ -438,9 +438,10 @@ is on the reader.
 
 ## One command fetches it {#one-command-fetches-it}
 
-`pkgs catalog update` is the **only** thing that asks the registry what
-exists. `ls` and `<TAB>` read the file it wrote, and nothing on that path
-opens a socket.
+`pkgs catalog update` is the **only** thing on the read path that asks the
+registry what exists — `catalog platforms` below asks it too, and is the one
+other command that does. `ls`, `search`, `why`, `browse` and `<TAB>` read the
+file `update` wrote, and nothing on that path opens a socket.
 
 That line is the difference between a completion you leave switched on and
 one you turn off. A `<TAB>` is a fresh process — there is no state between
@@ -467,6 +468,31 @@ $ pkgs catalog update --platform linux/x86-64
 
 It writes to that platform's own file, so `ls` and `<TAB>` — which read the
 host's — cannot mistake a foreign catalogue for yours.
+
+And which platforms are there at all:
+
+```console
+$ pkgs catalog platforms
+darwin/aarch64
+darwin/x86-64
+linux/aarch64
+linux/s390x
+linux/x86-64
+windows/x86-64
+```
+
+⛔ **This exists because a list copied into a file froze while the registry
+grew.** `--platform` could be *guessed at* one value at a time — an
+unpublished platform is refused with `platform not in index`, so the index
+plainly knows — and nothing could ask it for the set. The daily vulnerability
+scan carried its list in a workflow file, that list said two, and the registry
+published six; see [Supply chain]({{< relref "supply-chain" >}}).
+
+The output is an **input**: one platform per line and nothing else, ready to
+hand back to `--platform` from a loop. A failure is **not an empty list** — a
+loop that reads nothing and sees success scans nothing and calls it clean — so
+an unreadable index, a tag that is a single manifest, and an index naming no
+platform are each an error with its reason on stderr.
 
 `--graph` answers the sharper question, the one a recipe author has:
 
