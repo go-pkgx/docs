@@ -118,7 +118,7 @@ the consumer refuses to run anything it cannot verify.
 
 Signing says *these are the bytes we built*. It says nothing about whether those
 bytes are known to be vulnerable. That is a second question, and it is asked
-daily, for two platforms, by a scheduled job in
+daily, **for every platform we publish**, by a scheduled job in
 [`go-pkgx/packages`](https://github.com/go-pkgx/packages/blob/main/.github/workflows/vulnscan.yml).
 
 The whole design is in **which** question it asks. Ask OSV about each package
@@ -126,28 +126,50 @@ The whole design is in **which** question it asks. Ask OSV about each package
 **748 findings across 21 projects** over this pantry on 2026-10-17, nearly all
 of them fixed long before anything we ship. Ask at the version the published
 catalogue says we carry, and skip outright the identities a platform carries no
-version of:
+version of (2026-10-20):
 
 | platform | asked at version | unanswerable by OSV | not asked (no bottle) | findings |
 | --- | --- | --- | --- | --- |
-| linux/x86-64 | 133 | 1090 | 448 | **0** |
-| darwin/aarch64 | 137 | 1082 | 452 | **0** |
+| linux/x86-64 | 133 | 1089 | 451 | 0 |
+| linux/aarch64 | 132 | 1104 | 437 | 0 |
+| darwin/aarch64 | 137 | 1082 | 452 | 0 |
+| darwin/x86-64 | 137 | 1074 | 462 | 0 |
+| windows/x86-64 | 94 | 461 | 1118 | 0 |
+| linux/s390x | 1 | 28 | 1644 | 0 |
 
-Each row adds to **1671**, the identity count of the pantry — that sum is the
+Each row adds to **1673**, the identity count of the pantry — that sum is the
 control that no bucket is a silent drop. *Unanswerable* means an identity OSV is
 not keyed on: a repository or a CPE rather than a package in an ecosystem.
 
+### ⛔ It asked about two of six until 2026-10-20 {#it-asked-about-two-of-six}
+
+The platform list was **written into the workflow**, and it named `linux/x86-64`
+and `darwin/aarch64` while the registry published six — `linux/aarch64` among
+them, the largest here by bottle count. All four of the missing ones were
+clean, so the cost was **coverage, not exposure**; but an enumeration copied
+into a file freezes while the population grows.
+
+The list is now derived. The index has always known which platforms exist — a
+platform that is not published is refused with `platform not in index` — and
+`pkgs catalog platforms` asks it:
+
 ```sh
-pkgs catalog update --platform linux/x86-64
-bk vulnfetch -dir pantry -advisories advisories \
-  -catalog "$PKGX_DIR/catalog/linux-x86-64.json" -fail-on-new
+pkgs catalog platforms          # one per line, ready for --platform
+go run ./vulnsweep -pantry pantry -advisories advisories -store "$PKGX_DIR"
 ```
 
-One ubuntu runner answers for both platforms, because `pkgs catalog update
---platform` fetches another platform's published catalogue rather than
-rebuilding one. The two catalogues are not the same document and do not list
-the same projects, so a linux-only scan would have reported "clean" about a
-platform it never asked about.
+A seventh platform is covered the day it is published, by nobody's decision.
+`vulnsweep` prints a line per platform, keeps going after a red one — a sweep
+that stops at the first reports one problem and hides the rest — and refuses to
+sweep nothing: an empty list, a list of noise, or a list it could not obtain is
+an error, never the clean zero this lane would otherwise print on the day the
+registry stops answering.
+
+⭐ **The first derived run found three real advisories**, against `vitejs.dev`,
+on four platforms — two of which had never been scanned at all. We published
+vite 8.2.1 and the affected range is `>= 8.2.0, < 8.2.4`. The remedy was a
+rebuild at a version npm actually publishes above the fix boundary, which is
+worth checking: the 8.3 line is affected too, below 8.3.3.
 
 `-fail-on-new` is a verdict, not a report: a finding already recorded has a
 decision behind it, and one that is not is a question with an answer. The job
