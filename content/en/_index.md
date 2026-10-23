@@ -92,7 +92,7 @@ everyone who happens to install that hour. To track releases instead, say so —
 the target version is already installed.
 
 To install `pkgx` (the runtime) or `mirror` instead, name it:
-`sh -s -- pkgx v0.26.0`, `sh -s -- mirror v0.3.12`.
+`sh -s -- pkgx v0.27.1`, `sh -s -- mirror v0.3.12`.
 
 **Go users**:
 
