@@ -114,6 +114,79 @@ architecture, so a mirror wave that lands x86-64 publishes a tag s390x
 cannot use, and the version recorded is the newest this platform really
 carries.
 
+## How many are marked, and how to ask {#how-many-are-marked-and-how-to-ask}
+
+The mark is not rare. Measured against the published `darwin/aarch64`
+catalogue on 2026-10-23, **567 of 1940 projects** have a recipe and no
+bottle — 29% of the pantry. `pkgs ls` marks each one as you meet it; to see
+them as a list rather than one at a time:
+
+```console
+$ go run ./internal/catstat -missing ~/.pkgx/catalog/darwin-aarch64.json
+567 of 1940 project(s) have no bottle here
+aerc-mail.org
+agpt.co
+…
+```
+
+A percentage is not a work list: nobody can file, build or triage 29%.
+
+When you want one of them, `pkgs request` turns "this is missing" into a
+report somebody can act on — and **sends nothing**:
+
+```console
+$ pkgs request aerc-mail.org
+project   aerc-mail.org
+platform  darwin/aarch64
+pkgs      0.26.0
+state     published for linux/aarch64, NOT for darwin/aarch64
+
+Nothing was sent. `pkgs request --url aerc-mail.org` prints a link that opens this as an issue.
+```
+
+`--url` prints a prefilled issue link you read first. There is no flag that
+posts and nothing to configure or forget: the only way a report reaches
+GitHub is a person clicking a link they have already seen in full.
+
+The payload is a **fixed list** — project, platform, tool version, state —
+assembled by a function that does not import `os`, so it cannot reach argv
+or the environment even by accident. That is deliberate. The command that
+prompted all of this was
+
+```console
+$ pkgx openstack user list --domain stratuslab
+```
+
+and a reporter that attached "the command that failed" would have published
+an organisation's infrastructure names into a public tracker, from a
+machine whose owner was debugging rather than publishing.
+
+A request for something **already here** is refused rather than filed: an
+issue whose premise is false spends a maintainer's trust.
+
+### The failure says where to go {#the-failure-says-where-to-go}
+
+That only helps somebody who knows the command exists, so the failure
+itself names it:
+
+```console
+$ pkgx +aerc-mail.org -- echo ok
+pkgx: no version of aerc-mail.org is published for darwin/aarch64 (available: 0.22.0; not published here: 0.22.0)
+pkgx: if it should be here: `pkgs request aerc-mail.org` prints a report you can open as an issue (it sends nothing)
+```
+
+The hint fires on a **type**, not on words in a message. An earlier version
+matched the text and turned up on
+
+```console
+pkgx: command not found in the requested packages: true
+```
+
+where the package was published and the *command* was missing — and a hint
+that appears on unrelated failures teaches people to ignore hints. A build
+that failed, a signature that did not verify and a registry having a bad
+day get none: none of them is something to ask a maintainer to publish.
+
 ## What you already have {#what-you-already-have}
 
 ```console
