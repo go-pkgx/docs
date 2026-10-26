@@ -39,9 +39,23 @@ GitHub Actions workflows build each recipe with
   `bin/<name>.wasm`; a recipe's `provides: bin/<name>` stays extension-free and
   `bottle.ResolveBinPath` finds the `.wasm`, as it finds `.exe` on Windows. Pilots:
   `filippo.io/age` 1.3.2, `github.com/cpuguy83/go-md2man` 2.0.7, `mvdan.cc/sh`
-  (`shfmt`) 3.14.1. C tools (wasi-sdk) are not part of this target. The build side
-  is `bk`'s `wasip1/wasm` target (`BREWKIT_TARGET=wasip1/wasm`, triple
-  `wasm32-wasip1`; `wasm` is an architecture of `wasip1` only).
+  (`shfmt`) 3.14.1. The build side is `bk`'s `wasip1/wasm` target
+  (`BREWKIT_TARGET=wasip1/wasm`, triple `wasm32-wasip1`; `wasm` is an architecture
+  of `wasip1` only).
+- **`wasip1/wasm` C tools:** `wasip1-c.yml` builds C with our own toolchain, not a
+  prebuilt wasi-sdk: the `llvm.org` bottle (clang, wasm-ld, llvm-ar) plus two cross
+  parts built from source in the pantry overlay, following wasi-sdk's
+  `cmake/wasi-sdk-sysroot.cmake` — `compiler-rt.llvm.org/wasi` (builtins for
+  wasm32-wasip1 and clang's headers, as a clang resource dir) and
+  `github.com/WebAssembly/wasi-libc` (the sysroot). `bk --platform wasip1/wasm
+  build` adds the three bottles and imposes `clang --target=wasm32-wasip1
+  --sysroot=… -resource-dir=… -mcpu=lime1 --rtlib=compiler-rt` through `$BK_CC` /
+  `$BK_CXX`, the stencil the cc/gcc/clang shims re-exec. Published as `wasip1/wasm`
+  after a run under wasmtime: `zlib.net` 1.3.2 (libz.a, minigzip), `sqlite.org`
+  3.53.4 (the shell) and `lua.org` 5.4.9 (errors via setjmp/longjmp, compiled to the
+  standard WebAssembly exception-handling instructions — a `pcall(error)` runs under
+  wasmtime 50). Not yet: libc++ for wasip1 (C++), and toolchain bottles for hosts
+  other than linux/x86-64.
 - **Schedule:** each factory runs on a schedule (plus manual `workflow_dispatch`).
 - **Auth:** the workflow's **native `GITHUB_TOKEN`** (`permissions.packages: write`)
   — no long-lived PAT to manage or rotate.
