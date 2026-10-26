@@ -32,6 +32,16 @@ GitHub Actions workflows build each recipe with
   `windows-rust.yml` (Rust) + `windows-proof.yml` (e2e), each publishing to the OCI
   registry and uploading a pkgx dist tree; a single `pages.yml` aggregator unions
   the latest run of every build into the combined Pages mirror.
+- **`wasip1/wasm` (pilot):** `wasip1.yml` cross-builds pure-Go projects with
+  `GOOS=wasip1 GOARCH=wasm CGO_ENABLED=0`, runs each module under wasmtime, then
+  publishes it **to the OCI registry only** (no Pages mirror yet) with the OCI
+  platform `os=wasip1, architecture=wasm` (pkgx slug `wasip1/wasm`). The module is
+  `bin/<name>.wasm`; a recipe's `provides: bin/<name>` stays extension-free and
+  `bottle.ResolveBinPath` finds the `.wasm`, as it finds `.exe` on Windows. Pilots:
+  `filippo.io/age` 1.3.2, `github.com/cpuguy83/go-md2man` 2.0.7, `mvdan.cc/sh`
+  (`shfmt`) 3.14.1. C tools (wasi-sdk) are not part of this target. The build side
+  is `bk`'s `wasip1/wasm` target (`BREWKIT_TARGET=wasip1/wasm`, triple
+  `wasm32-wasip1`; `wasm` is an architecture of `wasip1` only).
 - **Schedule:** each factory runs on a schedule (plus manual `workflow_dispatch`).
 - **Auth:** the workflow's **native `GITHUB_TOKEN`** (`permissions.packages: write`)
   — no long-lived PAT to manage or rotate.
