@@ -54,8 +54,17 @@ GitHub Actions workflows build each recipe with
   after a run under wasmtime: `zlib.net` 1.3.2 (libz.a, minigzip), `sqlite.org`
   3.53.4 (the shell) and `lua.org` 5.4.9 (errors via setjmp/longjmp, compiled to the
   standard WebAssembly exception-handling instructions — a `pcall(error)` runs under
-  wasmtime 50). Not yet: libc++ for wasip1 (C++), and toolchain bottles for hosts
-  other than linux/x86-64.
+  wasmtime 50). The build runs **inside the sovereign rootfs** (`bk builder`'s tree,
+  entered by `builder/sovereign-bk.sh`), so `sh`, `make`, coreutils, clang and wasm-ld
+  are bottles in that tree and a "what ran, from where" step prints their resolved
+  paths from inside the chroot; the runner contributes three static Go binaries, the
+  namespace and wasmtime. **C++**: a third source-built bottle, `libcxx.llvm.org/wasi`
+  (libc++ and libc++abi, no exceptions, from wasi-sdk's `define_libcxx_sub`), named by
+  the `$BK_CXX` stencil when installed; pilot `github.com/simdjson/simdjson` 5.0.5
+  (upstream's library plus a small minifier driver), run under wasmtime. Pilots and
+  toolchain bottles are published for **linux/aarch64 hosts too** (native
+  `ubuntu-24.04-arm` runner). Not yet: C++ exceptions (wasi-sdk's `DUAL` flavour,
+  `-fwasm-exceptions` plus libunwind) and darwin hosts.
 - **Schedule:** each factory runs on a schedule (plus manual `workflow_dispatch`).
 - **Auth:** the workflow's **native `GITHUB_TOKEN`** (`permissions.packages: write`)
   — no long-lived PAT to manage or rotate.
