@@ -187,6 +187,44 @@ that appears on unrelated failures teaches people to ignore hints. A build
 that failed, a signature that did not verify and a registry having a bad
 day get none: none of them is something to ask a maintainer to publish.
 
+### And it remembers {#and-it-remembers}
+
+The hint fires once, in front of somebody who is in the middle of something
+else. `pkgs request` answers about one project at the moment you ask it.
+Neither can tell you that the same package has failed eleven times this
+month, which is the thing worth acting on:
+
+```console
+$ pkgs journal
+2 failure(s) recorded here, 1 of them a package this registry does not have
+
+most asked for and not here:
+     1  aerc-mail.org
+
+`pkgs request <project>` turns one of those into a report you can open as
+an issue. It sends nothing, and neither does this.
+```
+
+It is a **local file**, and that is the whole design. The useful signal from
+a package manager is which packages people reach for and do not get, and the
+usual way to collect it is to phone home. This does not: it keeps the promise
+`request` already makes a few paragraphs above, and adds the only thing
+`request` cannot — memory. `PKGX_JOURNAL=0` records nothing at all, and
+`pkgs journal --clear` removes it.
+
+A record of failures is still a thing that can go wrong, so three properties
+are tested rather than intended:
+
+| | |
+|---|---|
+| it cannot fail the command it records | a store that cannot be written is a reason for the journal to stay empty, not for `pkgx node` to fail |
+| it cannot grow without bound | a failing command in a loop would otherwise fill the disk — one rotation, capped |
+| it cannot carry what it cannot print | the text is an error string quoting names read out of a catalogue, a registry index or a downloaded binary, so it is sanitised on the way **in** |
+
+A fourth came from the test rather than the design: a crash mid-write leaves
+a line with no newline, and appending onto it glued the next entry to the
+damaged one — one interrupted write costing two records.
+
 ## What you already have {#what-you-already-have}
 
 ```console
