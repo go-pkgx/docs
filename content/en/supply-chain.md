@@ -266,6 +266,42 @@ that ships no shared library at all is never reported, because it cannot be
 linked and declaring it says something else — a program run at runtime, a data
 set like `curl.se/ca-certs`, an interpreter.
 
+### ⛔ What a finding is not, and the noise floor it has {#what-a-finding-is-not}
+
+That last rule is a heuristic, and it has a floor worth stating before you read
+a list rather than after.
+
+**A program dependency whose bottle also ships a library is reported, and
+should not be.** `gnome.org/glib` declares `python.org`, and its recipe says
+why — *"several of the bins are scripts"*. Nothing links `libpython`, but
+python's bottle ships one, so the silence rule does not fire. The same happens
+for `gnu.org/coreutils`, whose bottle contains exactly one `.so`
+(`libstdbuf.so`, an `LD_PRELOAD` helper nobody links). Read those as
+**declared for a program**, not as defects.
+
+**A platform-split dependency is a real finding, not noise.** `gnome.org/glib`
+also declares `gnu.org/gettext: ^0.21` for every platform, and on Linux that is
+dead weight: `libc.so.6` of glibc 2.44 exports `gettext`, `dcgettext`,
+`dgettext`, `bindtextdomain`, `textdomain` and `ngettext` itself, so nothing
+links `-lintl` there. GNU `libintl` is needed where libc lacks those — macOS.
+Ten projects in this pantry declare gettext unsplit; every Linux consumer
+installs it for functions already in libc.
+
+**The check sees `DT_NEEDED`, never `dlopen`.** A plugin host that opens its
+providers at runtime links none of them by design, and will be reported. That
+is the one case where a finding can be both correct and uninteresting.
+
+A short history is worth keeping beside the output, because it bears on how
+much a clean run is worth. The first sweep of a pantry with this command
+produced findings that measured the command: a soname was attributed to one
+owner when two projects shipped a file of that name (fixed in `bk` v0.44.1),
+and a real `libfolly.so.0.58.0-dev` was refused for its non-numeric version
+suffix while a `libstdc++.so.6.0.33-gdb.py` had earlier been counted as a
+library (v0.44.2: the name is a prefilter, the magic number decides). Both were
+caught by a finding that was not merely surprising but **impossible** — C++
+libraries linking no C++ runtime. Use at least v0.44.2, and treat an impossible
+finding as a statement about the instrument.
+
 ## Metadata is not a program, and a key is not a caption {#metadata-is-not-a-program-and-a-key-is-not-a-caption}
 
 Signatures cover the **bytes**. The strings beside them — a project's name, its
