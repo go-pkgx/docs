@@ -218,6 +218,54 @@ emitter treats it as covering nothing, because it reassures a *stranger*, and a
 stale "not affected" stops them looking. *When in doubt do not interrupt
 ourselves; when in doubt do not reassure somebody else.*
 
+### ⛔ All of the above is keyed on a DECLARED dependency {#all-of-the-above-is-keyed-on-a-declared-dependency}
+
+Every number on this page is reached through the dependency graph. A bottle
+declares `openssl.org ^3`, the sweep asks OSV about the openssl version the
+catalogue says we carry, and a fix lands by rebuilding the openssl bottle. The
+whole mechanism rests on one assumption nothing was checking: that a declared
+dependency is the copy the artefact actually uses.
+
+`rpm.org/rpm-sequoia` declares `openssl.org ^3` on linux and links **no
+libssl at all**. A rebuild linked openssl 3.6.4 statically into the library —
+4.2 MB to 12.6 MB, openssl's own version banner inside the `.so`, nothing in
+`DT_NEEDED`.
+
+A broken reference is **visible**: an unresolvable soname is something a sweep
+counts and `bk unresolved` reports. A vendored copy is **invisible**. The
+manifest still reads `openssl.org ^3`, so the scan asks about the right project
+at the right version and gets a true answer about a copy the bottle does not
+load. When openssl ships a fix, updating the openssl bottle does not change the
+bottle that embedded it, and its own version does not move either. There is
+nothing to compare.
+
+`bk unlinked` asks the question backwards — which projects does a bottle
+*declare* and never link?
+
+```sh
+bk unlinked --platform linux/x86-64 rpm.org/rpm-sequoia
+bk unlinked --fail --platform linux/x86-64 < recipes.txt   # as a gate
+```
+
+```
+rpm.org/rpm-sequoia   declares openssl.org, which ships afalg.so, capi.so,
+legacy.so, libcrypto.so, libcrypto.so.3, libssl.so, libssl.so.3,
+loader_attic.so, padlock.so, and links none of them
+```
+
+`--platform` matters more here than anywhere else on this page: the one
+confirmed case is published for linux and not for darwin, so a host-only
+command could not look at the very bottle the check was written for.
+
+A finding is a **candidate**, and the output says so. Two different defects
+leave the same trace — a vendored copy, and an edge that is simply no longer
+needed — and only the second is harmless. The check reports direct edges only:
+a transitive dependency is one nobody promised to link, so a package that
+declares `curl.se` and links no openssl has done nothing wrong. A dependency
+that ships no shared library at all is never reported, because it cannot be
+linked and declaring it says something else — a program run at runtime, a data
+set like `curl.se/ca-certs`, an interpreter.
+
 ## Metadata is not a program, and a key is not a caption {#metadata-is-not-a-program-and-a-key-is-not-a-caption}
 
 Signatures cover the **bytes**. The strings beside them — a project's name, its
