@@ -302,6 +302,56 @@ caught by a finding that was not merely surprising but **impossible** — C++
 libraries linking no C++ runtime. Use at least v0.44.2, and treat an impossible
 finding as a statement about the instrument.
 
+## ⛔ End-of-life is not a CVE, and OSV cannot say so {#end-of-life-is-not-a-cve}
+
+Everything above asks *what is known to be wrong with this version*. A release
+line upstream has abandoned has nothing known about it **yet** — and never
+will, because nobody is looking and no fix is coming. So the daily sweep
+returns a clean zero for a package whose upstream stopped issuing fixes years
+ago. `bk eol` asks the other question:
+
+```sh
+bk eol -product openssl 3.2.6 3.3.7 3.4.7 3.5.8 3.6.4 4.0.2
+```
+
+```text
+3.2.6        end-of-life  line 3.2 ended 2025-11-23
+3.3.7        end-of-life  line 3.3 ended 2026-04-09
+3.4.7        end-of-life  line 3.4 ended 2026-10-22
+3.5.8        supported    line 3.5 supported until 2030-04-08 (LTS)
+3.6.4        expiring     line 3.6 ends 2026-11-01
+4.0.2        supported    line 4.0 supported until 2027-05-14
+
+longest-supported openssl line: 3.5 (LTS), until 2030-04-08
+```
+
+Those are the openssl versions this registry publishes, judged on 2026-10-29.
+A `^3` constraint takes the newest 3.x — **3.6**, three days from the end of
+its line — while 3.5 LTS runs to 2030 and is already in the registry. Nothing
+in the CVE lane could say that.
+
+A finding names its destination, because *"3.6 ends on Sunday"* is a problem
+and *"3.5 is supported to 2030"* is the next step. `-fail` makes it a gate and
+`-within` sets what counts as expiring.
+
+### The field that would have inverted the verdict {#the-field-that-lies}
+
+endoflife.date reports, for openssl:
+
+```json
+{"name":"1.1.1","isEol":true,"eolFrom":"2023-09-11","isMaintained":true}
+{"name":"3.0",  "isEol":true,"eolFrom":"2026-09-07","isMaintained":true}
+```
+
+Both lines have been out of support for a while, and both say
+`isMaintained: true` — it reflects the **paid** extended support openssl sells.
+A check reading that field would report 1.1.1 as healthy, and this pantry has
+32 bottles linking it. `bk eol` reads `isEol` and the date, never
+`isMaintained`; the field is not decoded into the type at all, so no later
+reader can reach for it by accident. An absent date is reported as **unknown**,
+never as supported: nobody committing to a date is not the same as a date far
+away.
+
 ## Metadata is not a program, and a key is not a caption {#metadata-is-not-a-program-and-a-key-is-not-a-caption}
 
 Signatures cover the **bytes**. The strings beside them — a project's name, its
