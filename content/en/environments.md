@@ -167,6 +167,62 @@ $ echo $?
 for later: they state relationships *between* modules, which is a decision for
 the environment that replaces them, not something a converter can infer.
 
+## A head node and compute nodes of different architectures {#heterogeneous-clusters}
+
+This is two failures at once, and the first one is invisible until it is not.
+
+**A store cannot hold two architectures.** A prefix is
+`$PKGX_DIR/<project>/v<version>/…` — there is no platform anywhere in it.
+Measured on one machine, the same project and version staged twice:
+
+```text
+…/openssl.org/v3.6.4/lib/libssl.so.3     ELF 64-bit x86-64
+…/openssl.org/v3.6.4/lib/libssl.3.dylib  Mach-O arm64
+```
+
+Those were kept apart only by being under two different `PKGX_DIR`s. The file
+*names* differ there because the operating systems do — **between linux/x86-64
+and linux/aarch64 they are identical**, `lib/libssl.so.3` both times. A store
+shared over NFS holds whichever architecture was installed last, and the other
+one gets `Exec format error` from the kernel with nothing to explain it.
+
+Give the platform a place in the path (bottle v0.60.0):
+
+```sh
+PKGX_DIR=/shared/pkgx/{platform}     # one tree per architecture, one NFS export
+PKGX_DIR=/shared/pkgx/{os}/{arch}    # the same, split
+```
+
+`{platform}`, `{os}` and `{arch}` expand for the **running** machine, which is
+the point: the same exported string has to mean a different directory on each
+node. ⛔ **Braces, not `$`** — the shell would expand `$PLATFORM` before pkgx
+ever saw it, and a value the shell has already eaten cannot resolve per node. A
+path with no placeholder is used unchanged, so existing stores are untouched.
+
+A store also records what it holds, in `.pkgx-platform`, so a shared tree read
+by the wrong architecture is refused with a sentence rather than by the kernel.
+A store written before that existed says nothing, and silence is read as
+agreement — the question closes the first time somebody installs into it.
+
+**And `srun` carries the head node's `PATH`.** Slurm's `--export` defaults to
+`ALL`: *"All of the user's environment will be loaded from the caller's
+environment."* So this is the wrong shape on a heterogeneous cluster —
+
+```sh
+pkgx +hwloc +gnu.org/bash          # resolves for the HEAD
+srun ./job.sh                      # …and that PATH lands on the node
+```
+
+— because the PATH names the head's binaries. Resolve **on** the node instead:
+
+```sh
+srun pkgx +hwloc +gnu.org/bash -- ./job.sh
+```
+
+`pkgx` itself must then exist for the node's architecture, at a path the node
+can reach. With `{platform}` in `PKGX_DIR`, one export serves every node and
+each resolves its own tree.
+
 ## Two things no code here removes {#two-things-no-code-here-removes}
 
 - **MPI and the interconnect come from the host.** libfabric/UCX, Slurm's PMI
@@ -174,3 +230,5 @@ the environment that replaces them, not something a converter can infer.
   Bind-mount them, as Spack and Apptainer do.
 - **Metadata storms.** Ten thousand ranks walking a shared `$PKGX_DIR` will melt
   a Lustre MDS. Materialise once into a squashfs or SIF and mount it read-only.
+  A read-only store is a deliberate arrangement, so nothing here ever fails
+  because it could not write its platform marker into one.
