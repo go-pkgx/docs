@@ -1,3 +1,12 @@
 /site/
 .venv/
 __pycache__/
+
+# Hugo's own build artefacts. `.hugo_build.lock` is created by any local `hugo`
+# run and is zero bytes, so it reads as nothing and gets committed by a
+# `git add -A` without anyone noticing -- which is how it reached this branch
+# before this rule existed. `public/` and `resources/` are the built site and
+# the asset cache.
+.hugo_build.lock
+public/
+resources/

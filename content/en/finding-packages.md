@@ -537,10 +537,27 @@ other, fetched in one pull — and it is published **per platform**, because
 what is available differs by architecture and a single list would tell most
 readers that packages are available which, for them, are not.
 
-Six lanes publish one each: `linux/x86-64`, `linux/aarch64`, `linux/s390x`,
-`darwin/aarch64`, `darwin/x86-64` and `windows/x86-64`. A platform with no
-catalogue would give you silence, which is not the same answer as "nothing
-is available here".
+Seven lanes publish one each. **Do not read the list from here** — this
+sentence has already been wrong once, when the seventh lane was added and
+nothing in this file knew. Ask the registry, which is the only thing that
+knows:
+
+```console
+$ pkgs catalog platforms
+darwin/aarch64
+darwin/x86-64
+linux/aarch64
+linux/s390x
+linux/x86-64
+wasip1/wasm
+windows/x86-64
+```
+
+A platform with no catalogue would give you silence, which is not the same
+answer as "nothing is available here". `wasip1/wasm` is the odd one and has
+[its own page]({{< relref "wasm.md" >}}): its modules are statically linked, so
+a catalogue entry there names build-time dependencies that are not themselves
+published for that platform.
 
 Signed, and **checked**: forging a catalogue does not get an unsigned bottle
 installed, because the install path verifies anyway. It gets a near-miss
@@ -597,7 +614,8 @@ grew.** `--platform` could be *guessed at* one value at a time — an
 unpublished platform is refused with `platform not in index`, so the index
 plainly knows — and nothing could ask it for the set. The daily vulnerability
 scan carried its list in a workflow file, that list said two, and the registry
-published six; see [Supply chain]({{< relref "supply-chain" >}}).
+published six at the time (seven now, which is the point); see
+[Supply chain]({{< relref "supply-chain" >}}).
 
 The output is an **input**: one platform per line and nothing else, ready to
 hand back to `--platform` from a loop. A failure is **not an empty list** — a
