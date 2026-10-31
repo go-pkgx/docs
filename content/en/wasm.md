@@ -40,6 +40,20 @@ Two consequences follow, and the second is a trap:
   run time, because nothing needs resolving — which is exactly why it went
   unnoticed.
 
+- ⛔ **`provides` is unreliable on this platform too, in both directions, and
+  that one you can trip over.** The same defect loses the lane recipe's
+  `provides`, and `provides` is what `pkgx -Q <command>`, `pkgs search` by
+  command name and the `<TAB>` index are built from. Measured in the catalogue
+  of 2026-10-31: `zlib.net` lists **no** command although its bottle ships
+  `bin/minigzip.wasm`, so `minigzip` is published, runnable and unreachable by
+  name; and `filippo.io/age` lists `age-keygen`, which that bottle does **not**
+  contain, so the command resolves to a project that cannot supply it.
+
+  Until bk#376 is fixed, **the bottle's own `bin/*.wasm` is the authority** for
+  what a wasip1 project provides, not the catalogue. Both cases were found by
+  running every published module — a catalogue consumer that only parses the
+  catalogue cannot see either.
+
 ## Running one
 
 The reference runtime is [wasmtime](https://wasmtime.dev). Every bottle is run
@@ -106,6 +120,53 @@ wasi-libc's `isatty()` answers from the filetype and rights that
 alone. A host that reports a terminal where the reference reports a pipe
 changes the output of programs that format for humans — silently, and only for
 some of them.
+
+## What will not build for wasip1, and why {#what-will-not-build}
+
+A `wasip1/wasm` bottle is only published after the module has been **run** under
+wasmtime, so the lanes carry what works. This section is the other half: the
+candidates that were tried and rejected, with the cause. It is here because a
+documented "no, because X" is worth as much as a published bottle and saves the
+next person the same hours.
+
+Every cause below is a compiler or linker error from a real attempt at the
+project's latest tag, on `GOOS=wasip1 GOARCH=wasm`. They group into five
+families, and the families matter more than the names:
+
+| family | what it needs that wasip1 has not | seen in |
+| --- | --- | --- |
+| **terminals and TTY ioctls** | `unix.Termios`, `unix.IoctlGetWinsize`, winsize ioctls, `isatty`, raw-mode echo control | `moby/term`, `reeflective/readline` (`GetSize`), `vbauerster/mpb`, `cheggaaa/pb` (`termutil.lockEcho`), `muesli/termenv` (`foregroundColor`), `fatih/color`, `logrus` (`isTerminal`), `bubbletea` v2 |
+| **the clipboard** | a desktop selection | `atotto/clipboard` |
+| **missing wasip1 backends** | a file-watching, SQL or socket implementation for this platform | `fsnotify.Watcher` (via `viper`), `modernc.org/libc` (so `modernc.org/sqlite`), `docker/go-connections` (`ForkLock`, `RawSockaddrUnix`) |
+| **file metadata and syscalls** | `Stat_t` fields and calls WASI does not carry | `djherbis/atime` (`Stat_t.Atime`), `u-root/ls` (`Stat_t.Rdev`, `unix.Major`), `go-git` (`isSymlinkWindowsNonAdmin`), `syscall.Mkfifo` |
+| **cgo** | a C toolchain at build time | `smacker/go-tree-sitter` |
+
+Two that belong to no family and are worth knowing:
+
+- **A compiler limit, not a platform limit.** `miller` fails with
+  `function too big … exceeds 65536 blocks` in its *generated* parser. Nothing
+  about WASI is involved; the wasm backend simply refuses a function that large.
+- **`internal/robustio`** and **`azblob`**'s `Mmb` are build-constraint gaps in
+  dependencies rather than anything a recipe can fix.
+
+The practical rule that falls out: **a program that reads files or stdin and
+writes stdout ports almost for free; a program that draws on a terminal does
+not.** `fzf`, `less` and `nano` are terminal programs and should be expected to
+fail, not attempted. Anything in Rust or C++ is a different lane entirely.
+
+### A smoke test that only prints a version proves the module starts
+
+Several lane entries smoke with `--version` or `-h`. That proves the module
+loads, instantiates and exits 0 — which is more than nothing, and less than
+working. Where a project takes real input the lanes pass it (`yq`, `gojq`, `jj`,
+`tomljson`, `json2yaml`, `hcl2json` all run against a fixture), and that is the
+standard to aim for when adding one.
+
+### A tag that is not `v<version>`
+
+The lanes clone `v<version>`. A project tagging `2023.1.7` or `jp/v1.0.0`
+therefore cannot be expressed yet — `staticcheck`, `jmespath/jp` and
+`golang/tools` (for `goimports`) are waiting on a `tag:` field in the matrix.
 
 ## Bibliography
 
