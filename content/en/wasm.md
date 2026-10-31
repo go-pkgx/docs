@@ -72,6 +72,12 @@ Both flags are load-bearing:
 - `--dir=/` grants a filesystem. **WASI has no ambient one**: a module with no
   preopened directory cannot open any path, and the failure looks like a broken
   program rather than a missing grant.
+
+  ⛔ **And `--dir=/` does not make a relative path work.** Granting `/` does not
+  put you in it: `prog data.json` can still fail to find `data.json` while
+  `prog "$PWD/data.json"` succeeds. The factory's own C/C++ smoke tests pass
+  absolute paths for exactly this reason. If a module cannot see a file you are
+  sure you granted, try the absolute path before suspecting the module.
 - `--env PWD="$PWD"` tells Go's `wasip1` runtime which preopen the working
   directory is in — the same thing `$GOROOT/lib/wasm/go_wasip1_wasm_exec` does.
   Without it a relative path resolves against nothing.
@@ -161,6 +167,48 @@ loads, instantiates and exits 0 — which is more than nothing, and less than
 working. Where a project takes real input the lanes pass it (`yq`, `gojq`, `jj`,
 `tomljson`, `json2yaml`, `hcl2json` all run against a fixture), and that is the
 standard to aim for when adding one.
+
+### What wasi-libc does not have, for C and C++ {#wasi-libc-gaps}
+
+The Go rejections above are a Go toolchain's view. C and C++ hit a different
+wall, and these are the ones that cost real hours — each from a build that was
+attempted, not from reading a header:
+
+| the gap | how it shows up |
+| --- | --- |
+| **no `pipe()`** | links, then fails at run time. `xz` reaches `Error creating a pipe: Not supported` from `file_io.c`'s self-pipe — the hardest kind, because the build is green |
+| **`signal.h` refuses to compile** | an `#error` unless `-D_WASI_EMULATED_SIGNAL` is set, and then `struct sigaction` is still *incomplete*: `sigaction`, `sigemptyset`, `sigfillset`, `sigprocmask`, `alarm` are undeclared |
+| **declared but not defined** | `tmpfile`, `tmpnam`, `system` link-fail as "undefined symbol" although the headers declare them (deprecated). They have to be stubbed to fail the way a sandbox would |
+| **defined as `ENOSYS`** | `fchmod`, `utime`, `chown` are already in `libc.a` returning `ENOSYS`, so defining your own gives a **duplicate symbol**. Rename yours with `-D` instead of redefining |
+| **`chown`/`fchown` undeclared** | while `chown` is simultaneously present in `libc.a` as the row above — declaration and definition disagree |
+| **no `dlopen`** | any plugin or dynamic-module feature has to be configured off; it is why `lua` builds its generic `ansi` platform rather than `posix` |
+| **`setjmp`/`longjmp` need a flag** | `-mllvm -wasm-enable-sjlj -mllvm -wasm-use-legacy-eh=false`, per WebAssembly/wasi-sdk's `SetjmpLongjmp.md`. The standard instructions, not the legacy ones |
+| **a 64 KiB default stack** | deep recursion *traps* rather than erroring. `lz4 -d` needed `-Wl,-z,stack-size=8388608` |
+
+The pattern across all of them: **a green build says very little.** Three of the
+eight above pass compilation and linking and fail only when the program runs,
+which is why every bottle on this platform is run under wasmtime before it is
+published.
+
+### ⛔ A bottle's bytes are not stable across a toolchain bump {#bytes-and-toolchain}
+
+The C/C++ lane resolves its toolchain — `llvm.org`, `wasi-libc`,
+`compiler-rt.llvm.org/wasi`, `libcxx.llvm.org/wasi` — **at build time**, and
+pins nothing. So rebuilding an unchanged recipe at an unchanged project version
+can produce a different module, and on 2026-10-31 it did:
+`github.com/simdjson/simdjson` v5.0.5 was republished with different bytes (the
+same 432 531 of them) and identical behaviour.
+
+Measured at the same time, and worth knowing because it bounds the problem:
+`zlib.net`, `lua.org` and `sqlite.org` were rebuilt by the same runs and came
+out **byte-identical**. simdjson is the only C++ project of the four — the only
+one linking the floating `libcxx`.
+
+Tracked in [go-pkgx/packages#393](https://github.com/go-pkgx/packages/issues/393),
+together with the separate finding that the publish step replaced an existing
+`(project, version, platform)` instead of skipping it. Until both are closed,
+**a version does not pin bytes on this platform**; a `bk lock` pins the version,
+and that is a weaker guarantee than it sounds.
 
 ### A tag that is not `v<version>`
 
