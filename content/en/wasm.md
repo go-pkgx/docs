@@ -25,34 +25,39 @@ Two consequences follow, and the second is a trap:
 
 - **One file is enough.** Fetching one bottle gives you something you can run.
   There is nothing else to resolve.
-- **Do not resolve a `wasip1/wasm` closure.** A consumer that walks the deps
-  before running the module will fail on packages it does not need — and, right
-  now, on packages the module does not even contain. `lua.org`'s catalogue entry
-  on this platform names `gnu.org/readline`, which is not published for
-  `wasip1/wasm` at all; and the wasm recipe does not use readline either. It
-  builds Lua on the generic `ansi` platform with no line editor, and its only
-  declared dependency is `gnu.org/make`, at build time.
+- **Do not resolve a `wasip1/wasm` closure.** There is nothing to resolve, and a
+  consumer that walks the deps anyway is doing work whose answer cannot matter.
 
-  That entry is a **defect, not a build-time fact**: `bk catalog` reads the
-  dependencies from the *pantry host* recipe when a platform lane has a recipe
-  of its own, so the wasm entry inherits the host's `deps`. Tracked in
-  [go-pkgx/bk#376](https://github.com/go-pkgx/bk/issues/376). Nothing breaks at
-  run time, because nothing needs resolving — which is exactly why it went
-  unnoticed.
+  Each entry is now read from the **lane's own recipe**, so what it says about
+  this platform is about this platform: `lua.org` declares only
+  `gnu.org/make`, at build time, and the catalogue shows no runtime dep.
+  Confirmed in the catalogue generated `2026-10-31T21:28:42Z`.
 
-- ⛔ **`provides` is unreliable on this platform too, in both directions, and
-  that one you can trip over.** The same defect loses the lane recipe's
-  `provides`, and `provides` is what `pkgx -Q <command>`, `pkgs search` by
-  command name and the `<TAB>` index are built from. Measured in the catalogue
-  of 2026-10-31: `zlib.net` lists **no** command although its bottle ships
-  `bin/minigzip.wasm`, so `minigzip` is published, runnable and unreachable by
-  name; and `filippo.io/age` lists `age-keygen`, which that bottle does **not**
-  contain, so the command resolves to a project that cannot supply it.
+  It was not always so, and the shape of the defect is worth keeping. Until
+  bk v0.46.0, `bk catalog` read a project's fields from the **pantry host**
+  recipe even when a platform lane had its own, so `lua.org` on wasip1/wasm
+  listed `gnu.org/readline` — a package not published for the platform, and one
+  the wasm build does not use at all, because it builds Lua's generic `ansi`
+  platform with no line editor. Nothing broke at run time, because nothing
+  needs resolving, which is exactly why it went unnoticed.
+  ([go-pkgx/bk#376](https://github.com/go-pkgx/bk/issues/376), fixed.)
 
-  Until bk#376 is fixed, **the bottle's own `bin/*.wasm` is the authority** for
-  what a wasip1 project provides, not the catalogue. Both cases were found by
-  running every published module — a catalogue consumer that only parses the
-  catalogue cannot see either.
+- **`provides` is trustworthy again, and it is the half that mattered.** It is
+  what `pkgx -Q <command>`, `pkgs search` by command name and the `<TAB>` index
+  are built from, so the same defect had sharper consequences there: in the
+  catalogue of `2026-10-31T20:13Z`, `zlib.net` listed **no** command although
+  its bottle ships `bin/minigzip.wasm` — `minigzip` was published, runnable and
+  unreachable by name — while `filippo.io/age` listed an `age-keygen` its bottle
+  does not contain, sending anyone who asked for that command to a project that
+  could not supply it. As of `21:28:42Z` `zlib.net` names `minigzip`.
+
+  Two things from that episode are worth copying rather than forgetting. It was
+  found by **running** every published module, not by parsing the catalogue — a
+  consumer that only reads the catalogue cannot see either direction. And
+  `bk provides` now exists to ask the question in the factory: it compares a
+  published bottle's actual `bin/*` against the `provides` the catalogue claims,
+  and reports "listed, no file" and "file, not listed" as the separate failures
+  they are.
 
 ## Running one
 
