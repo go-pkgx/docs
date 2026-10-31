@@ -158,3 +158,13 @@ $ pkge load cfd
 ```
 
 See [Environments and HPC]({{< relref "environments.md" >}}).
+
+## WebAssembly {#webassembly}
+
+`wasip1/wasm` is a platform of the factory like any other, with one property
+that changes everything downstream: a `wasm32-wasip1` module is **statically
+linked**, so one file is the whole program and there is no closure to resolve.
+Do not try to resolve one: a `wasip1/wasm` catalogue entry can name a package
+that is not published for that platform and that the module does not contain.
+
+See [wasip1/wasm]({{< relref "wasm.md" >}}).
