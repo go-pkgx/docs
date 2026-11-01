@@ -325,14 +325,78 @@ bk eol -product openssl 3.2.6 3.3.7 3.4.7 3.5.8 3.6.4 4.0.2
 longest-supported openssl line: 3.5 (LTS), until 2030-04-08
 ```
 
-Those are the openssl versions this registry publishes, judged on 2026-10-29.
-A `^3` constraint takes the newest 3.x — **3.6**, three days from the end of
-its line — while 3.5 LTS runs to 2030 and is already in the registry. Nothing
-in the CVE lane could say that.
+Judged on 2026-10-29, when `^3` took the newest 3.x — **3.6**, three days from
+the end of its line — while 3.5 LTS ran to 2030 and was already in the
+registry. Nothing in the CVE lane could say that.
 
 A finding names its destination, because *"3.6 ends on Sunday"* is a problem
 and *"3.5 is supported to 2030"* is the next step. `-fail` makes it a gate and
 `-within` sets what counts as expiring.
+
+### And then Sunday came {#and-then-sunday-came}
+
+Those six versions are not all this registry publishes. Measured on
+2026-11-01, `openssl.org` carries **72 tags across nine lines** — 1.1.1, 3.0
+and 3.1 as well — of which **seven are end-of-life** and two supported:
+
+| line | verdict |
+| --- | --- |
+| 1.1.1 | ended 2023-09-11 (LTS) |
+| 3.0 | ended 2026-09-07 (LTS) |
+| 3.1 | ended 2025-03-14 |
+| 3.2 | ended 2025-11-23 |
+| 3.3 | ended 2026-04-09 |
+| 3.4 | ended 2026-10-22 |
+| 3.6 | ended 2026-11-01 |
+| **3.5** | **supported to 2030-04-08 (LTS)** |
+| **4.0** | **supported to 2027-05-14** |
+
+A gate that reports a problem on the day it arrives has still left everyone on
+the abandoned line, so since pkgx v0.30.0 the **resolver** acts on the
+verdict:
+
+```console
+$ pkgx --graph --platform linux/x86-64 +openssl.org@^3
+openssl.org 3.5.8
+```
+
+It is a **rank, not a filter**. `=3.6.4`, `^3.6.4`, `~3.6` and every lock
+still resolve to 3.6.4 — nothing supported satisfies them — and say so on
+stderr:
+
+```text
+pkgx: openssl.org 3.6.4 is on end-of-life release line 3.6 and nothing
+      supported satisfies "=3.6.4"; using it
+```
+
+Reproducibility outranks the preference: a lock that stopped resolving would
+be a worse defect than the one this fixes. So the preference changes an answer
+only where a supported candidate *also* satisfies the constraint, which is why
+it can never reach across a soname boundary — `^3` and `^4` share no
+satisfier.
+
+The one answer that moves stays inside `libssl.so.3`, and its ABI cost was
+measured rather than assumed: 3.6.4 exports **6499** symbols and 3.5.8
+**6476**, so 23 symbols are the whole of the risk (the new KEM
+`CMS_RecipientInfo_kemri_*`, the `CRYPTO_*_array` allocators, `EVP_SKEY` and
+friends). Across the ten heaviest consumers — curl.se, openssh.com,
+python.org, ruby-lang.org, postgresql.org, nodejs.org, php.net, erlang.org,
+openldap.org, libssh2.org — **45,601 imported symbols, none of them on that
+list**. A sample of ten out of ~160 runtime dependents, not a proof about all
+of them.
+
+`PKGX_DEPRECATED` names a JSON file that **replaces** the built-in list,
+`{"openssl.org": ["3.6"]}`; `{}` turns the preference off. A named file that
+cannot be read or parsed is an empty list **and a warning**, never a silent
+fall back to the built-in one: naming a file is a statement about what you
+want, and substituting something else would hide the mistake behind behaviour
+that looks like it worked.
+
+The build side is not there yet. `bk` resolves build-time dependencies through
+the same resolver and does not carry the list, so the factory still builds
+against 3.6.4 what pkgx now runs against 3.5.8 (go-pkgx/bk#378). The list also
+still lives in the binary rather than in the signed catalogue, where it would
+be computed instead of committed (go-pkgx/bottle#179).
 
 ### The field that would have inverted the verdict {#the-field-that-lies}
 
