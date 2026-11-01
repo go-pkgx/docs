@@ -43,6 +43,82 @@ than falling through to the next mirror: a build that quietly succeeded from a
 second host after the first served unexpected bytes would hide the one event
 that check exists to surface.
 
+## And what BUILT it, which no digest can show {#and-what-built-it}
+
+A signature says the bytes are ours. A source digest says what went in. Neither
+says **whose compiler produced them** — and on an architecture being brought up
+from nothing, that is the only question that matters.
+
+Bringing one up needs two registries. The first generation takes its compiler
+and shell from the host distribution, because on an architecture with no
+bottles there is nothing else to take them from, so it publishes to a
+**throwaway** registry on the runner and never leaves it. Getting anything out
+of there needs one fact per bottle: *was the host's toolchain involved?*
+
+Measured on 2026-11-01, the registry could not answer:
+
+```console
+$ bk buildenv --platform linux/s390x lz4.org 1.10.0
+buildenv: lz4.org 1.10.0 (linux/s390x): the provenance records no build environment
+```
+
+⛔ **An empty build environment is a hint, not a statement.** A bootstrap build
+resolves no bottles, so its environment is empty — but so is a mirrored
+bottle's, and so is every bottle published by an older `bk`. Three situations,
+one silence, and a gate cannot read a silence.
+
+So the factory records the verdict, and `bk origin` reads it back:
+
+```console
+$ bk origin --platform linux/s390x lz4.org 1.10.0
+lz4.org 1.10.0 linux/s390x
+  host toolchain used: no — built from bottles
+  inputs resolved from: oci://ghcr.io/go-pkgx/packages
+```
+
+`inputs-from` is the second fact, and it is the one no digest or signature can
+show: it distinguishes a bottle built against a seed's loopback registry from
+one built against the production one.
+
+### A gate whose default answer is no {#a-gate-whose-default-answer-is-no}
+
+`bk origin --promotable` is silent and exits 0 **only** when the provenance
+proves the host toolchain was unused. `bk factory --mirror-from …
+--require-origin` applies the same rule to every bottle it would copy, and
+refuses the rest:
+
+```console
+❌ FAIL lz4.org 1.10.0: origin: not promotable: it was built with --bootstrap,
+   so its compiler and shell came from the host distribution rather than from bottles
+```
+
+⛔ **It requires an explicit `0` and treats every other answer as no**, silence
+included. The recorded value is a tri-state rather than a boolean for exactly
+that reason: a boolean's zero is `false`, which reads as "not a bootstrap", so
+every bottle published before this existed would have claimed to be promotable.
+
+The asymmetry is the whole argument. Refusing a good bottle costs a rebuild.
+Promoting a host-built one puts an unpinned distribution compiler's output into
+the production registry **under our signature**. The default answer to "may
+I?" is no.
+
+Three further properties, each a way this could have been built wrong:
+
+- The check runs **before** the download — nothing about having the tarball in
+  hand makes a bottle more promotable.
+- The verdict is **carried, not restated**. The facts belong to the build, and
+  copying an artefact between registries does not change what built it;
+  restating them would launder a verdict the copying run did not make, and
+  would overwrite `inputs-from`.
+- **"I could not ask" is not "the answer was no."** An unreachable source
+  registry is reported as a read failure naming the registry, never as a
+  judgement about the bottle — a gate that folds the two together turns every
+  network blip into a permanent verdict.
+
+A bottle published before `bk` v0.47.0 records no origin and therefore reads as
+**not promotable**. That is the intended answer rather than a regression:
+nothing is promoted that cannot be vouched for.
+
 ## And where a recipe declares nothing, which is 903 of 904 {#and-where-a-recipe-declares-nothing-which-is-903-of-904}
 
 Verifying a declared `sha:` is worth having and reaches almost nothing. Measured
