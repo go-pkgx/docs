@@ -92,6 +92,55 @@ not the full catalog):
 | `gnu.org/tar` | 1.35 |
 | `sourceware.org/bzip2` | 1.0.8 |
 
+## When one version has two builds {#when-one-version-has-two-builds}
+
+A recipe fix can change the binary without changing the upstream version.
+Measured on 2026-11-02: `fftw.org` gained its SIMD codelets, was rebuilt, and
+published as **`3.3.11`** — the tag the scalar build already had. `nm` on the
+two shows **0 → 207** `_neon` symbols in both the single- and
+double-precision libraries. Plainly different bottles, and nothing in the
+registry said so; anyone holding the old one kept it, because the version
+they had and the version on offer were the same string.
+
+So a version may carry a trailing **`_N`** rebuild counter — `3.3.11_1` is
+the same upstream sources built again. It is Homebrew's `rebuild` and
+Debian's `+bN`, and it behaves the way those do:
+
+```text
+3.3.11 < 3.3.11_1 < 3.3.11_2 < 3.3.12
+```
+
+A rebuild **supersedes**, so `pkgx fftw.org` moves to it; a real version bump
+still dominates any number of rebuilds below it. Exact pins tell the two
+apart — `=3.3.11` does **not** match `3.3.11_1`, and the reverse — because a
+lock exists to say that nothing moved.
+
+Absent means **0**, which is Debian's rule for its own revision and, until
+this was minted, the literal state of the registry: 0 of 1371 published
+version strings carried one.
+
+### ⛔ Upstream pkgx cannot read it {#upstream-pkgx-cannot-read-it}
+
+libpkgx's `SemVer` constructor (`src/utils/semver.ts:26-41`, read
+2026-11-02) splits a version on `.` and accepts a part only if it matches
+`/^(\d+)([a-z])$/` — last part only — or `/^\d+$/`; anything else throws
+`invalid version`. `3.3.11_1` has the part `11_1`, which matches neither.
+
+**Pointing an upstream pkgx client at this registry is therefore unsupported
+once a project carries a rebuild.** That was weighed rather than overlooked:
+it throws rather than resolving the wrong bottle, which is the better of the
+two failures. `pkgx`, `pkgs` and `pkgm` from this org read `_N` correctly.
+
+The alternatives were rejected for reasons worth knowing if you are tempted
+by them. A fourth numeric component (`3.3.11.1`) parses upstream but cannot
+be told apart from a genuine four-component release such as ghc `5.64.3.2`. A
+letter suffix (`3.3.11a`) parses upstream but caps at 26 and occupies the
+slot real versions use — openssl ships `1.1.1w`. Build metadata (`3.3.11+neon`)
+cannot be a tag at all: the OCI distribution spec requires
+`[a-zA-Z0-9_][a-zA-Z0-9._-]{0,127}`, and semver itself says build metadata
+"MUST be ignored when determining version precedence", so it could not
+express *supersedes* even if it fitted.
+
 ## A bottle that runs somewhere else {#a-bottle-that-runs-somewhere-else}
 
 `$PKGX_DIR` is wherever you put it. A package that records where it was *built*
