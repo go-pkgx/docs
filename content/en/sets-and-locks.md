@@ -137,6 +137,39 @@ file**, and refuses a project name beside it — naming them twice would let the
 two disagree, and the answer would be about a different question from the one
 the file asks.
 
+## Installing a lock {#installing-a-lock}
+
+A lock that can be checked and built but not **installed** is a record of a
+build rather than a way to repeat it. `pkgm install --lock` is the consumer
+end:
+
+```console
+$ pkgm install --lock seed.lock.hcl
+  installed acme.org/tool v1.0.0
+  installed zlib.net v1.3.2
+linked 2 binaries → /usr/local/bin
+```
+
+**Every pin is installed, not just the roots, and nothing is resolved.** The
+roots are the only part of a lock a resolver could reconstruct — and
+reconstructing them is exactly what makes two installs of the same lock
+differ.
+
+It refuses rather than guesses:
+
+| refused | why |
+| --- | --- |
+| a lock pinning `recipes` versions | those are the newest the recipes can **build**, not the newest **published**: a fresh lock of `curl.se` for linux/aarch64 had 2 of its 5 pins ahead of the published bottles. Write an installable one with `bk lock -runnable`. A lock with no `pinned` field is a `recipes` lock — that is what every file written before the field existed holds |
+| a lock taken on another platform | the platform **changes the answer**, and where versions happen to coincide it would otherwise succeed and give a set nobody locked |
+| `--lock` beside packages, `-f`, `-p` or `-s` | a lock is the whole set, not a floor to add to |
+
+That last row has a cost worth naming: `-s/--from-scratch` materialises the
+implicit `glibc`/`libgcc_s`/`libstdc++`/`libatomic` a scratch tree needs, and
+a lock does not pin them. So a `FROM scratch` image built this way is **not
+yet** reproducible from a lock alone — that needs those libraries pinned in
+the lock, which is a change to `bk lock`, not a flag here. The combination is
+refused instead of quietly installing more than the file describes.
+
 ## What a lock does not pin {#what-a-lock-does-not-pin}
 
 The **output bytes**. The spec hash covers the inputs, as Nix's derivation hash
