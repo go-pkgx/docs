@@ -175,16 +175,16 @@ consumer checks against this exact public key.
 
 ## Verify on install {#verify-on-install}
 
-The [`go-pkgx/bottle`](https://github.com/go-pkgx/bottle) backend that both `pkgx`
-and `pkgm` import performs verification at install time:
+The [`go-zpkg/bottle`](https://github.com/go-zpkg/bottle) backend that both `zpkgx`
+and `zpkgm` import performs verification at install time:
 
 - `bottle.VerifySignature` validates a package's signature against the pinned key.
-- Setting **`PKGX_VERIFY=1`** makes verification **fail-closed**: a package with no
+- Setting **`ZPKG_VERIFY=1`** makes verification **fail-closed**: a package with no
   signature, or one that does not verify, is **refused** rather than installed.
 
 ```sh
 # refuses to install anything that isn't validly signed by the pinned key
-PKGX_DIST=oci://ghcr.io/go-pkgx/packages PKGX_VERIFY=1 pkgm install lz4.org
+ZPKG_DIST=oci://ghcr.io/go-pkgx/packages ZPKG_VERIFY=1 zpkgm install lz4.org
 ```
 
 This closes the loop end to end: the factory signs and attests at publish time, and
@@ -195,7 +195,7 @@ the consumer refuses to run anything it cannot verify.
 Signing says *these are the bytes we built*. It says nothing about whether those
 bytes are known to be vulnerable. That is a second question, and it is asked
 daily, **for every platform we publish**, by a scheduled job in
-[`go-pkgx/packages`](https://github.com/go-pkgx/packages/blob/main/.github/workflows/vulnscan.yml).
+[`go-zpkg/packages`](https://github.com/go-zpkg/packages/blob/main/.github/workflows/vulnscan.yml).
 
 The whole design is in **which** question it asks. Ask OSV about each package
 *as a whole* and it returns every advisory that package has ever carried —
@@ -227,11 +227,11 @@ into a file freezes while the population grows.
 
 The list is now derived. The index has always known which platforms exist — a
 platform that is not published is refused with `platform not in index` — and
-`pkgs catalog platforms` asks it:
+`zpkgs catalog platforms` asks it:
 
 ```sh
-pkgs catalog platforms          # one per line, ready for --platform
-go run ./vulnsweep -pantry pantry -advisories advisories -store "$PKGX_DIR"
+zpkgs catalog platforms          # one per line, ready for --platform
+go run ./vulnsweep -pantry pantry -advisories advisories -store "$ZPKG_DIR"
 ```
 
 A seventh platform is covered the day it is published, by nobody's decision.
@@ -428,11 +428,11 @@ and 3.1 as well — of which **seven are end-of-life** and two supported:
 | **4.0** | **supported to 2027-05-14** |
 
 A gate that reports a problem on the day it arrives has still left everyone on
-the abandoned line, so since pkgx v0.30.0 the **resolver** acts on the
+the abandoned line, so since zpkgx v0.30.0 the **resolver** acts on the
 verdict:
 
 ```console
-$ pkgx --graph --platform linux/x86-64 +openssl.org@^3
+$ zpkgx --graph --platform linux/x86-64 +openssl.org@^3
 openssl.org 3.5.8
 ```
 
@@ -441,7 +441,7 @@ still resolve to 3.6.4 — nothing supported satisfies them — and say so on
 stderr:
 
 ```text
-pkgx: openssl.org 3.6.4 is on end-of-life release line 3.6 and nothing
+zpkgx: openssl.org 3.6.4 is on end-of-life release line 3.6 and nothing
       supported satisfies "=3.6.4"; using it
 ```
 
@@ -461,7 +461,7 @@ openldap.org, libssh2.org — **45,601 imported symbols, none of them on that
 list**. A sample of ten out of ~160 runtime dependents, not a proof about all
 of them.
 
-`PKGX_DEPRECATED` names a JSON file that **replaces** the built-in list,
+`ZPKG_DEPRECATED` names a JSON file that **replaces** the built-in list,
 `{"openssl.org": ["3.6"]}`; `{}` turns the preference off. A named file that
 cannot be read or parsed is an empty list **and a warning**, never a silent
 fall back to the built-in one: naming a file is a statement about what you
@@ -470,9 +470,9 @@ that looks like it worked.
 
 The build side is not there yet. `bk` resolves build-time dependencies through
 the same resolver and does not carry the list, so the factory still builds
-against 3.6.4 what pkgx now runs against 3.5.8 (go-pkgx/bk#378). The list also
+against 3.6.4 what zpkgx now runs against 3.5.8 (go-zpkg/bk#378). The list also
 still lives in the binary rather than in the signed catalogue, where it would
-be computed instead of committed (go-pkgx/bottle#179).
+be computed instead of committed (go-zpkg/bottle#179).
 
 ### The field that would have inverted the verdict {#the-field-that-lies}
 
@@ -498,19 +498,19 @@ Signatures cover the **bytes**. The strings beside them — a project's name, it
 summary, the commands it provides, its versions and platforms — reach your
 terminal before any of that is checked, and they are written by people who are
 not you: an upstream recipe author, whoever wrote the lock you were handed,
-whatever registry `PKGX_DIST` points at.
+whatever registry `ZPKG_DIST` points at.
 
 Measured, with a crafted lock:
 
 ```console
-$ pkgx --lock esc.lock.hcl true | cat -v
-pkgx: no version of zlib.net satisfies "=1.3.2\x1b[2K\r…" (available: 2);
+$ zpkgx --lock esc.lock.hcl true | cat -v
+zpkgx: no version of zlib.net satisfies "=1.3.2\x1b[2K\r…" (available: 2);
   asked for by =1.3.2^[[2K^Mzlib.net  1.9.9  ✓ verified (requested)
 ```
 
 `ESC[2K` erases the line and `\r` returns the cursor, so on a terminal that line
 rubs itself out and reprints as something reassuring. The same hole was in the
-catalogue, where `pkgs ls` printed versions straight through.
+catalogue, where `zpkgs ls` printed versions straight through.
 
 Three treatments, and which one applies depends on **what the field is** and
 **who writes it**:
@@ -520,7 +520,7 @@ Three treatments, and which one applies depends on **what the field is** and
 | project name | the whole file is **refused** | a name becomes a URL and a path; a bad one means somebody wanted something |
 | summary, provides | **cleaned and shown** | cosmetic — refusing a catalogue over one paragraph would deny service for a typo |
 | version, platform **in a lock** | the whole file is **refused** | exactness is the entire point of a lock |
-| version, platform **in a catalogue** | that entry is **dropped**, the file is kept, and the count is printed | these come from an upstream recipe's `versions:`, so refusing would hand any recipe author a switch that turns off `pkgs ls`, `search` and every `<TAB>` for everyone |
+| version, platform **in a catalogue** | that entry is **dropped**, the file is kept, and the count is printed | these come from an upstream recipe's `versions:`, so refusing would hand any recipe author a switch that turns off `zpkgs ls`, `search` and every `<TAB>` for everyone |
 | a tag from the registry | skipped | a registry is a configured endpoint |
 
 A **key** can never be cleaned the way a caption is: a cleaned key would select
@@ -528,7 +528,7 @@ something other than what it says. So it is refused or dropped, never silently
 repaired.
 
 ```console
-$ pkgs catalog
+$ zpkgs catalog
 ~/.pkgx/catalog/darwin-aarch64.json
 1908 project(s), 956 with dependencies, 2 hour(s) old
 ```

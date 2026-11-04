@@ -3,19 +3,19 @@ title: "FROM scratch"
 weight: 20
 ---
 
-# Running pkgx packages on `FROM scratch` {#running-pkgx-packages-on-from-scratch}
+# Running pkgx packages on `FROM scratch` {#running-zpkgx-packages-on-from-scratch}
 
 This document records what it takes to run pkgx packages on a literally-empty
 base image (no libc, no shell, no coreutils), the conformance status of common
-packages, the fixes `pkgm` maintains to get there, and a proposal for the pkgx
+packages, the fixes `zpkgm` maintains to get there, and a proposal for the pkgx
 maintainers. It is a living document — extend it as new packages are tested.
 
 ## Why packages don't "just run" on scratch {#why-packages-dont-just-run-on-scratch}
 
-A pkgx package assumes a host system. Two structural gaps surface on scratch:
+A zpkgx package assumes a host system. Two structural gaps surface on scratch:
 
 1. **The interpreter path.** Every dynamic ELF has `PT_INTERP=/lib/ld-linux-*`
-   — an absolute system path that does not exist on a scratch image. `pkgm run`
+   — an absolute system path that does not exist on a scratch image. `zpkgm run`
    symlinks the pkgx glibc loader to `/lib/ld-linux-*` (and `/bin/sh` to
    itself) so parent and child ELFs resolve natively.
 
@@ -28,13 +28,13 @@ A pkgx package assumes a host system. Two structural gaps surface on scratch:
    | `curl.se` | libz, libzstd, libnghttp2 | (transitive only) |
    | `perl.org` | libcrypt (libxcrypt) | — |
 
-   pkgx compensates with build-time-detected metadata that is **not exposed**
-   on `dist.pkgx.dev` (no `deps.json`; all such URLs 404). So `pkgm` rebuilds
+   zpkgx compensates with build-time-detected metadata that is **not exposed**
+   on `dist.pkgx.dev` (no `deps.json`; all such URLs 404). So `zpkgm` rebuilds
    the closure from the packages' own `DT_NEEDED` — see below.
 
-## What `pkgm` does {#what-pkgm-does}
+## What `zpkgm` does {#what-zpkgm-does}
 
-`pkgm run` (and `pkgm install --from-scratch`) iterate to a fixpoint: scan the
+`zpkgm run` (and `zpkgm install --from-scratch`) iterate to a fixpoint: scan the
 installed packages' ELF `DT_NEEDED` (via Go's `debug/elf`) and, for every soname
 not yet provided by the closure, pull the package that provides it:
 
@@ -42,18 +42,18 @@ not yet provided by the closure, pull the package that provides it:
 - `libgcc_s`, `libstdc++` → `gnu.org/gcc/libstdcxx`
 - `libatomic`, `libgomp` → `gnu.org/gcc`
 - common undeclared libraries → a curated `soname → project` table
-  (see `sonameProject` in [`closure.go`](https://github.com/go-pkgx/bottle/blob/main/closure.go)): libz, libbz2,
+  (see `sonameProject` in [`closure.go`](https://github.com/go-zpkg/bottle/blob/main/closure.go)): libz, libbz2,
   liblzma, libzstd, liblz4, ncurses/libtinfo, readline, libffi, pcre2, gettext,
   libiconv, libidn2, libunistring, libpsl, nghttp2, expat, libxml2, sqlite3,
   gmp, mpfr, **libcrypt → libxcrypt**, …
 
-Wrapper scripts (`#!/bin/sh`, e.g. git) are run under the **pkgx `gnu.org/bash`
-+ `gnu.org/coreutils`**, which pkgm installs and points `/bin/sh` at — pkgm is
-a package manager, so it uses the real pkgx shell rather than reimplementing
+Wrapper scripts (`#!/bin/sh`, e.g. git) are run under the **zpkgx `gnu.org/bash`
++ `gnu.org/coreutils`**, which zpkgm installs and points `/bin/sh` at — zpkgm is
+a package manager, so it uses the real zpkgx shell rather than reimplementing
 one. (An earlier attempt embedded a pure-Go shell, but its `set -e` semantics
 diverged from dash/bash and broke git's wrapper; real bash behaves correctly.)
 
-## Conformance status (linux/aarch64, image = only the pkgm binary) {#conformance-status-linuxaarch64-image-only-the-pkgm-binary}
+## Conformance status (linux/aarch64, image = only the zpkgm binary) {#conformance-status-linuxaarch64-image-only-the-zpkgm-binary}
 
 | package | status | notes |
 | --- | --- | --- |
@@ -68,14 +68,14 @@ diverged from dash/bash and broke git's wrapper; real bash behaves correctly.)
 | nodejs.org | ✅ | C++: libgcc_s + libstdc++ |
 | python.org | ✅ | |
 | perl.org | ✅ | needs libcrypt (undeclared) |
-| git-scm.org | ✅ | `#!/bin/sh` wrapper → pkgm installs pkgx bash + coreutils |
+| git-scm.org | ✅ | `#!/bin/sh` wrapper → zpkgm installs zpkgx bash + coreutils |
 | gnu.org/tar, tukaani.org/xz, facebook.com/zstd, lz4.org | ✅ | compression |
 | rsync.samba.org, gnupg.org, vim.org, htop.dev | ✅ | incl. gnupg's crypto stack |
 
 Across ~20 diverse packages tested, every correctly-named package runs on
 scratch with **no missing-library failures** — the `DT_NEEDED`-driven closure
 plus the `soname → project` table cover the implicit graph, and wrapper
-scripts run under the real pkgx bash.
+scripts run under the real zpkgx bash.
 
 ## Pantry-wide audit {#pantry-wide-audit}
 
@@ -83,16 +83,16 @@ An audit of the whole pantry (linux/aarch64):
 
 - **Availability** — 1818 of 1896 projects (96%) publish a linux package, so
   nearly the entire pantry is a FROM-scratch candidate.
-- **Runtime sample** — a diverse 100-project sample run under `pkgm run … --version`:
+- **Runtime sample** — a diverse 100-project sample run under `zpkgm run … --version`:
   39 PASS, 38 no runnable bin / no `--version` (libraries; harness bias), 20
   non-zero exit on `--version` (mostly tools without a `--version` flag), and
   only **2 missing-library failures** — both `libabsl_*` (abseil), in `grpc.io`
   (`grpc_csharp_plugin`) and `mosh.org`.
 
-Those two are **not** closure gaps pkgm can fill: the packages were built against
+Those two are **not** closure gaps zpkgm can fill: the packages were built against
 an abseil whose soname (`…so.2501`, `…so.2401`) no *declared/available* abseil
 version provides — `grpc.io` pins `abseil.io: ^20250512` (soname `2505`). This
-is a pantry package-vs-declared-dependency drift; pkgx itself would fail there
+is a pantry package-vs-declared-dependency drift; zpkgx itself would fail there
 too. No consumer tool can supply a soname no package ships.
 
 Net: the `DT_NEEDED`-driven closure resolves the implicit graph across the
@@ -110,14 +110,14 @@ package-backed projects. This section records the full run.
 | field | value |
 | --- | --- |
 | pantry ref | `ef7e60a3a2e6e07f7efeaf1e7c765fa670e66584` (2026-07-28T15:42:19Z) |
-| go-pkgx/pkgm commit | `77741ed` (2026-07-28) |
+| go-zpkg/zpkgm commit | `77741ed` (2026-07-28) |
 | sweep date | 2026-07-28 |
 | projects (N) | 1818 (every project with a linux package) |
-| method | `docker run --rm pkgm-scratch run <project> -- --version` on a `FROM scratch` image containing only the pkgm binary |
+| method | `docker run --rm zpkgm-scratch run <project> -- --version` on a `FROM scratch` image containing only the zpkgm binary |
 | verdicts | `PASS` / `NOBIN` / `MISSING:<soname>` / `DLFAIL` / `OTHER:<rc>` (see `phaseB.sh`) |
 
-Each project is run through `pkgm run <project> -- --version` inside a
-`FROM scratch` container whose only content is the static `pkgm` binary; pkgm
+Each project is run through `zpkgm run <project> -- --version` inside a
+`FROM scratch` container whose only content is the static `zpkgm` binary; zpkgm
 assembles the closure from `DT_NEEDED` and executes the project's default
 binary. The verdict is derived from the exit code and stderr.
 
@@ -132,7 +132,7 @@ binary. The verdict is derived from the exit code and stderr.
 | OTHER:2 | 48 | ran, exit 2 — typically needs a subcommand/args. Ran, non-zero; not a confirmed failure. |
 | OTHER:255, :127, :3, … (misc) | 35 | ran, other non-zero rc; ambiguous (needs a subcommand/args). Not confirmed failures. |
 | MISSING:`<soname>` | 41 | a shared library the closure did not provide (`… .so: cannot open shared object`). **Real, actionable.** |
-| DLFAIL | 40 | pkgm hit a package-fetch failure resolving the closure (`GET https://dist… / no package / no version`). **Real, actionable.** |
+| DLFAIL | 40 | zpkgm hit a package-fetch failure resolving the closure (`GET https://dist… / no package / no version`). **Real, actionable.** |
 | OTHER:139 | 4 | **SIGSEGV** — a genuine crash. **Real.** |
 | **total** | **1818** | |
 
@@ -149,7 +149,7 @@ out on `--version` (mostly tools with no `--version` flag, REPLs, or servers)
 **41 MISSING + 40 DLFAIL + 4 SIGSEGV = 85 projects (4.7%)**; the other 1733
 (95.3%) either ran or launched their closure cleanly.
 
-### Fix applied — soname-exact closure completion (pkgm `637f6db`, 2026-07-28) {#fix-applied-soname-exact-closure-completion-pkgm-637f6db-2026-07-28}
+### Fix applied — soname-exact closure completion (zpkgm `637f6db`, 2026-07-28) {#fix-applied-soname-exact-closure-completion-zpkgm-637f6db-2026-07-28}
 
 Re-running the 81 MISSING + DLFAIL projects after the fix, **73 now run FROM
 scratch** (25 exit 0, 48 launch their closure and return non-zero/timeout on
@@ -188,7 +188,7 @@ probe artifact, and the 4 SIGSEGV (a separate crash class, not addressed here).
 The closure did not provide a `.so` the binary needs. Each is actionable: the
 soname either needs a `soname → project` mapping in `closure.go`, or the pantry
 genuinely ships no package providing that exact soname (version-pin drift, as
-with the abseil case above — pkgx itself would fail there too). Grouped by
+with the abseil case above — zpkgx itself would fail there too). Grouped by
 soname, most-common first.
 
 `libssl.so.1.1` — 10 projects link the **OpenSSL 1.1** ABI; the pantry ships
@@ -217,7 +217,7 @@ OpenSSL 3 (`libssl.so.3`), so no package provides `…so.1.1`. Version-pin drift
 - wayland.freedesktop.org → `libxml2.so.2`
 - wireshark.org → `libxml2.so.2`
 
-`libudev.so.1` — 5 projects (systemd/udev; no pkgx package provides it):
+`libudev.so.1` — 5 projects (systemd/udev; no zpkgx package provides it):
 
 - fnox.jdx.dev → `libudev.so.1`
 - open-mpi.org → `libudev.so.1`
@@ -250,9 +250,9 @@ Single-project sonames:
 
 ### DLFAIL — package-fetch failure resolving the closure (40) {#dlfail-package-fetch-failure-resolving-the-closure-40}
 
-pkgm could not fetch a package it needs for the closure (`GET https://dist…` /
+zpkgm could not fetch a package it needs for the closure (`GET https://dist…` /
 `no package` / `no version`). Actionable: either a missing soname→project
-mapping points pkgm at a project/version with no package, or the required
+mapping points zpkgm at a project/version with no package, or the required
 dependency genuinely has no published package. Dominated by large C/C++ apps
 with big plugin closures (gtk, php, ruby, imagemagick, mpv, httpd, …).
 
@@ -324,14 +324,14 @@ rows are dominated by large C/C++ applications with big plugin closures —
 through **`dlopen` at runtime** (image codecs, format plugins, language
 modules) rather than through `DT_NEEDED` at link time. A static closure
 completed from `DT_NEEDED` cannot see edges that only exist when the program
-`dlopen`s a plugin by name during execution, so pkgm neither pulls those
+`dlopen`s a plugin by name during execution, so zpkgm neither pulls those
 packages nor knows the soname to map. This is a known, structural limitation of
 `DT_NEEDED`-derived closures, and it is the single largest source of the
 remaining gaps. A second, smaller source is **version-pin drift** — packages
 built against a soname (`libssl.so.1.1`, the abseil `…so.2401/2501` variants)
-that no currently-published package provides; pkgx itself would fail those too.
+that no currently-published package provides; zpkgx itself would fail those too.
 `libudev.so.1` and `librt.so.1` are a third, minor source: system sonames the
-pkgx package set does not ship standalone.
+zpkgx package set does not ship standalone.
 
 This does not change the earlier conclusion; it quantifies it. The
 `DT_NEEDED`-driven closure resolves the implicit graph for the large majority
@@ -354,7 +354,7 @@ exists at build time but is not published. Two complementary asks:
    implicit system libraries a package links, so `FROM scratch` consumers are
    first-class.
 
-`go-pkgx/pkgm` is a working proof of concept: a single pure-Go, `CGO_ENABLED=0`
+`go-zpkg/zpkgm` is a working proof of concept: a single pure-Go, `CGO_ENABLED=0`
 binary that resolves the closure from `DT_NEEDED` and runs real packages
 (bash, curl, node, python, perl, …) on a `FROM scratch` image with zero system
-dependencies. See <https://github.com/go-pkgx/pkgm>.
+dependencies. See <https://github.com/go-zpkg/zpkgm>.

@@ -5,8 +5,8 @@ weight: 60
 
 # Package registry {#package-registry}
 
-[`ghcr.io/go-pkgx/packages`](https://github.com/go-pkgx/packages) is a pure-Go
-package factory: it builds [pkgx pantry](https://github.com/pkgxdev/pantry)
+[`ghcr.io/go-pkgx/packages`](https://github.com/go-zpkg/packages) is a pure-Go
+package factory: it builds [zpkgx pantry](https://github.com/pkgxdev/pantry)
 recipes and publishes **signed, attested packages** for **every platform** through
 **two channels**.
 
@@ -17,25 +17,25 @@ Every platform — **linux/x86-64**, **linux/aarch64**, **darwin/aarch64**,
 
 - the **signed OCI registry** `ghcr.io/go-pkgx/packages` (each package carrying an
   SBOM, provenance and signature as OCI referrers), and
-- a **GitHub Pages pkgx-dist mirror** at
-  [`https://go-pkgx.github.io/packages`](https://go-pkgx.github.io/packages),
+- a **GitHub Pages zpkgx-dist mirror** at
+  [`https://go-zpkg.github.io/packages`](https://go-zpkg.github.io/packages),
   carrying all platforms side by side (`<project>/<os>/<arch>/…`).
 
 ## The factory {#the-factory}
 
-The [`go-pkgx/packages`](https://github.com/go-pkgx/packages) repo is the factory.
+The [`go-zpkg/packages`](https://github.com/go-zpkg/packages) repo is the factory.
 GitHub Actions workflows build each recipe with
-[`bk`](https://github.com/go-pkgx/bk) — the CGO-free re-implementation of brewkit
+[`bk`](https://github.com/go-zpkg/zbk) — the CGO-free re-implementation of brewkit
 — and publish the result to both channels.
 
 - **Factories:** `build.yml` (linux), `darwin.yml` (macOS), `windows.yml` (Go) +
   `windows-rust.yml` (Rust) + `windows-proof.yml` (e2e), each publishing to the OCI
-  registry and uploading a pkgx dist tree; a single `pages.yml` aggregator unions
+  registry and uploading a zpkgx dist tree; a single `pages.yml` aggregator unions
   the latest run of every build into the combined Pages mirror.
 - **`wasip1/wasm` (pilot):** `wasip1.yml` cross-builds pure-Go projects with
   `GOOS=wasip1 GOARCH=wasm CGO_ENABLED=0`, runs each module under wasmtime, then
   publishes it **to the OCI registry only** (no Pages mirror yet) with the OCI
-  platform `os=wasip1, architecture=wasm` (pkgx slug `wasip1/wasm`). The module is
+  platform `os=wasip1, architecture=wasm` (zpkgx slug `wasip1/wasm`). The module is
   `bin/<name>.wasm`; a recipe's `provides: bin/<name>` stays extension-free and
   `bottle.ResolveBinPath` finds the `.wasm`, as it finds `.exe` on Windows. Pilots:
   `filippo.io/age` 1.3.2, `github.com/cpuguy83/go-md2man` 2.0.7, `mvdan.cc/sh`
@@ -110,7 +110,7 @@ Debian's `+bN`, and it behaves the way those do:
 3.3.11 < 3.3.11_1 < 3.3.11_2 < 3.3.12
 ```
 
-A rebuild **supersedes**, so `pkgx fftw.org` moves to it; a real version bump
+A rebuild **supersedes**, so `zpkgx fftw.org` moves to it; a real version bump
 still dominates any number of rebuilds below it. Exact pins tell the two
 apart — `=3.3.11` does **not** match `3.3.11_1`, and the reverse — because a
 lock exists to say that nothing moved.
@@ -119,17 +119,17 @@ Absent means **0**, which is Debian's rule for its own revision and, until
 this was minted, the literal state of the registry: 0 of 1371 published
 version strings carried one.
 
-### ⛔ Upstream pkgx cannot read it {#upstream-pkgx-cannot-read-it}
+### ⛔ Upstream zpkgx cannot read it {#upstream-zpkgx-cannot-read-it}
 
 libpkgx's `SemVer` constructor (`src/utils/semver.ts:26-41`, read
 2026-11-02) splits a version on `.` and accepts a part only if it matches
 `/^(\d+)([a-z])$/` — last part only — or `/^\d+$/`; anything else throws
 `invalid version`. `3.3.11_1` has the part `11_1`, which matches neither.
 
-**Pointing an upstream pkgx client at this registry is therefore unsupported
+**Pointing an upstream zpkgx client at this registry is therefore unsupported
 once a project carries a rebuild.** That was weighed rather than overlooked:
 it throws rather than resolving the wrong bottle, which is the better of the
-two failures. `pkgx`, `pkgs` and `pkgm` from this org read `_N` correctly.
+two failures. `zpkgx`, `zpkgs` and `zpkgm` from this org read `_N` correctly.
 
 The alternatives were rejected for reasons worth knowing if you are tempted
 by them. A fourth numeric component (`3.3.11.1`) parses upstream but cannot
@@ -143,7 +143,7 @@ express *supersedes* even if it fitted.
 
 ## A bottle that runs somewhere else {#a-bottle-that-runs-somewhere-else}
 
-`$PKGX_DIR` is wherever you put it. A package that records where it was *built*
+`$ZPKG_DIR` is wherever you put it. A package that records where it was *built*
 is not a package, it is a souvenir — so every binary is normalised before it is
 signed, and the two platforms need different work.
 
@@ -160,7 +160,7 @@ with. Two forms of that name cannot work here:
 | install name | why it fails |
 | --- | --- |
 | `/Users/runner/.pkgx/…/libssh2.1.dylib` | absolute — **an absolute reference never consults an rpath**, so no rpath rescues it |
-| `@rpath/libzstd.1.dylib` | bare — a consumer's rpath reaches `$PKGX_DIR`, not the library's own `lib/`, so it resolves nowhere |
+| `@rpath/libzstd.1.dylib` | bare — a consumer's rpath reaches `$ZPKG_DIR`, not the library's own `lib/`, so it resolves nowhere |
 
 The second is CMake's default (`MACOSX_RPATH`) and is the more insidious of the
 two: the package that carries it works perfectly, because its own binaries reach
@@ -170,7 +170,7 @@ Both are normalised to `@rpath/<project>/v<version>/lib/<file>`, with a
 dependency's version reduced to its major so that a dependency's minor upgrade
 does not orphan its dependents.
 
-And the binary must carry an rpath that actually reaches `$PKGX_DIR` from where
+And the binary must carry an rpath that actually reaches `$ZPKG_DIR` from where
 it installs. That one is linked in at build time rather than repaired
 afterwards: its value is how deep the package installs, which is a fact about
 the recipe and cannot be recovered from the binary. A bottle whose references to
@@ -205,7 +205,7 @@ You can tell which is which by looking:
 
 ## Trees the pantry does not have {#trees-the-pantry-does-not-have}
 
-Most of the catalog is a pkgx pantry recipe built here. These are projects
+Most of the catalog is a zpkgx pantry recipe built here. These are projects
 upstream does not carry at all — the HPC and GPU floor an MPI actually needs,
 which the pantry stops just above:
 
@@ -230,19 +230,19 @@ exactly like a missing `libuct_ib.so`.
 
 ## Consuming {#consuming}
 
-Point the go-pkgx tools at the registry and verify against the pinned key:
+Point the go-zpkg tools at the registry and verify against the pinned key:
 
 ```sh
-PKGX_DIST=oci://ghcr.io/go-pkgx/packages PKGX_VERIFY=1 pkgm install lz4.org
+ZPKG_DIST=oci://ghcr.io/go-pkgx/packages ZPKG_VERIFY=1 zpkgm install lz4.org
 ```
 
-`PKGX_VERIFY=1` is fail-closed: an unsigned or badly-signed package is refused, not
+`ZPKG_VERIFY=1` is fail-closed: an unsigned or badly-signed package is refused, not
 installed. See [supply chain]({{< relref "supply-chain.md" >}}) for the verification model.
 
-Or consume the same packages from the GitHub Pages pkgx-dist mirror:
+Or consume the same packages from the GitHub Pages zpkgx-dist mirror:
 
 ```sh
-PKGX_DIST=https://go-pkgx.github.io/packages pkgm install lz4.org
+ZPKG_DIST=https://go-zpkg.github.io/packages zpkgm install lz4.org
 ```
 
 Packages are OCI artifacts, so any OCI client can also pull them directly:

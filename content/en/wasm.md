@@ -12,7 +12,7 @@ one property that changes everything downstream.
 
 ## A wasip1 module is statically linked, so there is no closure
 
-On every other platform a bottle is a node in a dependency graph. `pkgx` walks
+On every other platform a bottle is a node in a dependency graph. `zpkgx` walks
 it, installs the transitive closure, and sets up the environment the dynamic
 loader needs — `DT_NEEDED` on ELF, `@rpath` on Mach-O.
 
@@ -40,10 +40,10 @@ Two consequences follow, and the second is a trap:
   the wasm build does not use at all, because it builds Lua's generic `ansi`
   platform with no line editor. Nothing broke at run time, because nothing
   needs resolving, which is exactly why it went unnoticed.
-  ([go-pkgx/bk#376](https://github.com/go-pkgx/bk/issues/376), fixed.)
+  ([go-zpkg/bk#376](https://github.com/go-zpkg/zbk/issues/376), fixed.)
 
 - **`provides` is trustworthy again, and it is the half that mattered.** It is
-  what `pkgx -Q <command>`, `pkgs search` by command name and the `<TAB>` index
+  what `zpkgx -Q <command>`, `zpkgs search` by command name and the `<TAB>` index
   are built from, so the same defect had sharper consequences there: in the
   catalogue of `2026-10-31T20:13Z`, `zlib.net` listed **no** command although
   its bottle ships `bin/minigzip.wasm` — `minigzip` was published, runnable and
@@ -94,12 +94,12 @@ The arguments come after the module with **no `--` separator**.
 The catalogue is published per platform, so ask for this one:
 
 ```sh
-pkgs catalog update --platform wasip1/wasm
-pkgs ls
-pkgs ls --tree lua.org
+zpkgs catalog update --platform wasip1/wasm
+zpkgs ls
+zpkgs ls --tree lua.org
 ```
 
-As with every other platform, `pkgs` reads the local catalogue and nothing else
+As with every other platform, `zpkgs` reads the local catalogue and nothing else
 — `<TAB>` completion included — so this works offline once the catalogue is
 fetched. See [Finding packages]({{< relref "finding-packages.md" >}}).
 
@@ -107,7 +107,7 @@ fetched. See [Finding packages]({{< relref "finding-packages.md" >}}).
 
 The modules are the same bottles; a browser is just another WASI host. The
 landing page carries a playground that runs them client-side, at
-[/playground/](https://go-pkgx.github.io/playground/).
+[/playground/](https://go-zpkg.github.io/playground/).
 
 Two details of how it is built are worth knowing if you build something
 similar:
@@ -209,7 +209,7 @@ Measured at the same time, and worth knowing because it bounds the problem:
 out **byte-identical**. simdjson is the only C++ project of the four — the only
 one linking the floating `libcxx`.
 
-Tracked in [go-pkgx/packages#393](https://github.com/go-pkgx/packages/issues/393),
+Tracked in [go-zpkg/packages#393](https://github.com/go-zpkg/packages/issues/393),
 together with the separate finding that the publish step replaced an existing
 `(project, version, platform)` instead of skipping it. Until both are closed,
 **a version does not pin bytes on this platform**; a `bk lock` pins the version,

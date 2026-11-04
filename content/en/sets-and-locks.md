@@ -14,7 +14,7 @@ same names resolve differently tomorrow.
 A recipe carrying `members` is a set:
 
 ```hcl
-# go-pkgx/base-toolchain
+# go-zpkg/base-toolchain
 members = {
   # clang, lld, compiler-rt — the compiler itself
   "llvm.org" = "*"
@@ -25,7 +25,7 @@ members = {
 ```
 
 Anything that takes a project name takes a set: `bk closure
-go-pkgx/base-toolchain`, `bk factory --recipes go-pkgx/base-toolchain`. A set
+go-zpkg/base-toolchain`, `bk factory --recipes go-zpkg/base-toolchain`. A set
 is expanded **at the root**, before the dependency walk sees it, so nothing
 downstream has to learn the word.
 
@@ -53,15 +53,15 @@ different package set, so a manifest needs the channel revisions beside it.
 
 **And it matters more here than in Guix.** A Guix manifest resolves
 deterministically once the channel revision is pinned, because the version is
-*in* the checkout. A pkgx recipe's `versions:` asks GitHub for tags **at
+*in* the checkout. A zpkgx recipe's `versions:` asks GitHub for tags **at
 resolve time**, so pinning the pantry commit is not enough: the same pantry
 resolves `gnu.org/binutils` to whatever the newest tag is the day you ask.
 
 `bk lock` writes the answer down:
 
 ```console
-$ bk lock --platform linux/x86-64 -o base-toolchain.lock.hcl go-pkgx/base-toolchain
-set: go-pkgx/base-toolchain names 25 member(s)
+$ bk lock --platform linux/x86-64 -o base-toolchain.lock.hcl go-zpkg/base-toolchain
+set: go-zpkg/base-toolchain names 25 member(s)
 lock: 41 project(s) pinned → base-toolchain.lock.hcl
 ```
 
@@ -72,7 +72,7 @@ platform         = "linux/x86-64"
 generated        = "2026-10-05T09:10:39Z"
 pantry           = "fd646990024e22f5752578cfdcfe2518b20c0797"
 overlay          = "f8f6dcfd7b17410a6de780bdd58c81fbbb38d1b3"
-roots            = ["go-pkgx/base-toolchain"]
+roots            = ["go-zpkg/base-toolchain"]
 
 locked = {
   "curl.se"      = { version = "8.17.0", spec = "sha256:5284d597c180…" }
@@ -140,11 +140,11 @@ the file asks.
 ## Installing a lock {#installing-a-lock}
 
 A lock that can be checked and built but not **installed** is a record of a
-build rather than a way to repeat it. `pkgm install --lock` is the consumer
+build rather than a way to repeat it. `zpkgm install --lock` is the consumer
 end:
 
 ```console
-$ pkgm install --lock seed.lock.hcl
+$ zpkgm install --lock seed.lock.hcl
   installed acme.org/tool v1.0.0
   installed zlib.net v1.3.2
 linked 2 binaries → /usr/local/bin
