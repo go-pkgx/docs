@@ -6,27 +6,27 @@ weight: 30
 # Environments, and HPC {#environments-and-hpc}
 
 A module system does two things: it resolves what a package needs, and it edits
-your shell. `pkgx +a +b` already did the first. `pkge` does the second — a
-front-end shaped like Lmod's, over pkgx's own resolution, with no Lua
+your shell. `zpkgx +a +b` already did the first. `zpkge` does the second — a
+front-end shaped like Lmod's, over zpkgx's own resolution, with no Lua
 interpreter and no modulefile tree.
 
-It ships in the `pkgx` binary; there is nothing else to install.
+It ships in the `zpkgx` binary; there is nothing else to install.
 
 ```console
-$ eval "$(pkgs env init)"          # in a profile
-$ pkge load stedolan.github.io/jq
+$ eval "$(zpkgs env init)"          # in a profile
+$ zpkge load stedolan.github.io/jq
 $ command -v jq
 ~/.pkgx/stedolan.github.io/jq/v1.8.2/bin/jq
-$ pkge list
+$ zpkge list
 stedolan.github.io/jq
-$ pkge unload stedolan.github.io/jq
+$ zpkge unload stedolan.github.io/jq
 $ command -v jq
 /usr/bin/jq                        # back, exactly as it was
 ```
 
-`pkge save <name>` writes the current set to
-`$PKGX_DIR/collections/<name>`; `pkge restore <name>` purges and reloads it.
-`pkge purge` unloads everything.
+`zpkge save <name>` writes the current set to
+`$ZPKG_DIR/collections/<name>`; `zpkge restore <name>` purges and reloads it.
+`zpkge purge` unloads everything.
 
 ## Why unloading is exact {#why-unloading-is-exact}
 
@@ -36,10 +36,10 @@ precisely what `load a c` would have — independent of the order things were
 loaded in.
 
 The state that makes this work lives in the environment, not in the shell, and
-is read back by `pkgx`:
+is read back by `zpkgx`:
 
 - `PKGE_SPECS` — the package set currently loaded.
-- `PKGE_BASE` — the *original* value of every variable pkgx has touched,
+- `PKGE_BASE` — the *original* value of every variable zpkgx has touched,
   base64 of NUL-separated `NAME=value` records.
 
 A variable's base is captured once, the first time something touches it: the
@@ -58,7 +58,7 @@ none here, and an invented value is a lie a script could act on.
 
 ## Named environments {#named-environments}
 
-A site declares environments in HCL2 under `$PKGX_DIR/environments/`:
+A site declares environments in HCL2 under `$ZPKG_DIR/environments/`:
 
 ```hcl
 # ~/.pkgx/environments/site.hcl2
@@ -72,11 +72,11 @@ An `env` block takes `description`, `packages`, and the environment edits
 `prepend_path`, `append_path`, `setenv` and `unsetenv`.
 
 ```console
-$ pkgs env avail
+$ zpkgs env avail
 cfd                      the solver stack, as validated on 2026-09-01
 hdf5                     HDF5 1.14.3
 
-$ pkgs env show cfd
+$ zpkgs env show cfd
 env "cfd"
   description  the solver stack, as validated on 2026-09-01
   declared in  /home/you/.pkgx/environments/site.hcl2
@@ -84,7 +84,7 @@ env "cfd"
   package      hdf5.org
   package      python.org@3.12
 
-$ pkge load cfd
+$ zpkge load cfd
 ```
 
 An environment is not a lockfile: it names constraints, and the closure is
@@ -98,15 +98,15 @@ Generate modulefiles and let the site's own Lmod load them. Nothing about
 Lmod is still the one doing the work.
 
 ```console
-$ pkgx --modulefile +openmpi.org@5 > $MODULEPATH_DIR/openmpi/5.0.8.lua
+$ zpkgx --modulefile +openmpi.org@5 > $MODULEPATH_DIR/openmpi/5.0.8.lua
 ```
 
-`pkgx --json +<pkg>...` emits the same composed environment as data, for a tool
+`zpkgx --json +<pkg>...` emits the same composed environment as data, for a tool
 that wants to compose it some other way.
 
 ## Without one {#without-one}
 
-`pkgs env init --module` also defines `module` and `ml`
+`zpkgs env init --module` also defines `module` and `ml`
 (`load`/`add`, `unload`/`rm`/`del`, `purge`, `list`, `avail`/`av`,
 `show`/`display`/`whatis`, `save`, `restore`, `swap`/`switch`) — for a
 container, a laptop, or a cluster built on this toolchain.
@@ -114,8 +114,8 @@ container, a laptop, or a cluster built on this toolchain.
 It **refuses** to install itself where an Lmod already exists:
 
 ```
-pkgx: an existing module system was found; not defining module().
-pkgx: publish modulefiles to MODULEPATH instead: pkgx --modulefile +pkg
+zpkgx: an existing module system was found; not defining module().
+zpkgx: publish modulefiles to MODULEPATH instead: zpkgx --modulefile +pkg
 ```
 
 Two implementations answering one command is how a support ticket becomes
@@ -123,12 +123,12 @@ unanswerable, and the site's own modulefiles are not ours to interpret.
 
 ## Converting a site's modulefiles {#converting-a-sites-modulefiles}
 
-`pkgs env import` reads Lmod's Lua **and** Environment Modules' TCL, and writes
+`zpkgs env import` reads Lmod's Lua **and** Environment Modules' TCL, and writes
 both into the same HCL2.
 
 ```console
-$ pkgs env import /opt/modulefiles/hdf5
-# imported from /opt/modulefiles/hdf5 by `pkgs env import`.
+$ zpkgs env import /opt/modulefiles/hdf5
+# imported from /opt/modulefiles/hdf5 by `zpkgs env import`.
 # Every statement in that file was recognised; nothing was skipped.
 env "hdf5" {
   description = "HDF5 1.14.3"
@@ -150,7 +150,7 @@ matters — **writes nothing at all** if any file was refused, because a partial
 conversion is the one outcome nobody can check.
 
 ```console
-$ pkgs env import /opt/modulefiles/openmpi.lua /opt/modulefiles/hdf5
+$ zpkgs env import /opt/modulefiles/openmpi.lua /opt/modulefiles/hdf5
 /opt/modulefiles/openmpi.lua: 3 statement(s) this converter will not guess at:
   line 3: not a plain call: this converter reads statements, it does not run Lua
     local root = "/opt/openmpi/5.0.8"
@@ -158,7 +158,7 @@ $ pkgs env import /opt/modulefiles/openmpi.lua /opt/modulefiles/hdf5
     prepend_path("PATH", pathJoin(root, "bin"))
   line 5: depends_on states a RELATIONSHIP between modules, not an environment change: decide it in the environment that replaces this one
     depends_on("hwloc")
-pkgs: 1 of 2 modulefile(s) not converted — nothing written, because a PARTIAL conversion is the one outcome nobody can check
+zpkgs: 1 of 2 modulefile(s) not converted — nothing written, because a PARTIAL conversion is the one outcome nobody can check
 $ echo $?
 1
 ```
@@ -172,7 +172,7 @@ the environment that replaces them, not something a converter can infer.
 This is two failures at once, and the first one is invisible until it is not.
 
 **A store cannot hold two architectures.** A prefix is
-`$PKGX_DIR/<project>/v<version>/…` — there is no platform anywhere in it.
+`$ZPKG_DIR/<project>/v<version>/…` — there is no platform anywhere in it.
 Measured on one machine, the same project and version staged twice:
 
 ```text
@@ -180,7 +180,7 @@ Measured on one machine, the same project and version staged twice:
 …/openssl.org/v3.6.4/lib/libssl.3.dylib  Mach-O arm64
 ```
 
-Those were kept apart only by being under two different `PKGX_DIR`s. The file
+Those were kept apart only by being under two different `ZPKG_DIR`s. The file
 *names* differ there because the operating systems do — **between linux/x86-64
 and linux/aarch64 they are identical**, `lib/libssl.so.3` both times. A store
 shared over NFS holds whichever architecture was installed last, and the other
@@ -189,13 +189,13 @@ one gets `Exec format error` from the kernel with nothing to explain it.
 Give the platform a place in the path (bottle v0.60.0):
 
 ```sh
-PKGX_DIR=/shared/pkgx/{platform}     # one tree per architecture, one NFS export
-PKGX_DIR=/shared/pkgx/{os}/{arch}    # the same, split
+ZPKG_DIR=/shared/zpkgx/{platform}     # one tree per architecture, one NFS export
+ZPKG_DIR=/shared/zpkgx/{os}/{arch}    # the same, split
 ```
 
 `{platform}`, `{os}` and `{arch}` expand for the **running** machine, which is
 the point: the same exported string has to mean a different directory on each
-node. ⛔ **Braces, not `$`** — the shell would expand `$PLATFORM` before pkgx
+node. ⛔ **Braces, not `$`** — the shell would expand `$PLATFORM` before zpkgx
 ever saw it, and a value the shell has already eaten cannot resolve per node. A
 path with no placeholder is used unchanged, so existing stores are untouched.
 
@@ -209,18 +209,18 @@ agreement — the question closes the first time somebody installs into it.
 environment."* So this is the wrong shape on a heterogeneous cluster —
 
 ```sh
-pkgx +hwloc +gnu.org/bash          # resolves for the HEAD
+zpkgx +hwloc +gnu.org/bash          # resolves for the HEAD
 srun ./job.sh                      # …and that PATH lands on the node
 ```
 
 — because the PATH names the head's binaries. Resolve **on** the node instead:
 
 ```sh
-srun pkgx +hwloc +gnu.org/bash -- ./job.sh
+srun zpkgx +hwloc +gnu.org/bash -- ./job.sh
 ```
 
-`pkgx` itself must then exist for the node's architecture, at a path the node
-can reach. With `{platform}` in `PKGX_DIR`, one export serves every node and
+`zpkgx` itself must then exist for the node's architecture, at a path the node
+can reach. With `{platform}` in `ZPKG_DIR`, one export serves every node and
 each resolves its own tree.
 
 ## Two things no code here removes {#two-things-no-code-here-removes}
@@ -228,7 +228,7 @@ each resolves its own tree.
 - **MPI and the interconnect come from the host.** libfabric/UCX, Slurm's PMI
   and a vendor libmpi tied to a kernel driver cannot live in a hermetic tree.
   Bind-mount them, as Spack and Apptainer do.
-- **Metadata storms.** Ten thousand ranks walking a shared `$PKGX_DIR` will melt
+- **Metadata storms.** Ten thousand ranks walking a shared `$ZPKG_DIR` will melt
   a Lustre MDS. Materialise once into a squashfs or SIF and mount it read-only.
   A read-only store is a deliberate arrangement, so nothing here ever fails
   because it could not write its platform marker into one.

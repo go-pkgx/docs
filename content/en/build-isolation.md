@@ -14,16 +14,16 @@ Builds run inside a pinned `debian:stable-slim` container rather than on the dri
 GitHub-runner host. This gives:
 
 - a **controlled, known glibc floor** instead of whatever the runner ships;
-- **no host-tool leakage** into the build — only the declared base plus pkgx-sourced
+- **no host-tool leakage** into the build — only the declared base plus zpkgx-sourced
   dependencies are present;
 - reproducible output across runs.
 
 This is the isolation model in use for every published package today.
 
-## Phase B — FROM-scratch pkgx-glibc toolchain {#phase-b-from-scratch-pkgx-glibc-toolchain-experimental}
+## Phase B — FROM-scratch zpkgx-glibc toolchain {#phase-b-from-scratch-zpkgx-glibc-toolchain-experimental}
 
 Phase A still links against the container's glibc. Phase B goes further: build against
-pkgx's **own** glibc toolchain so packages are truly self-contained and run on a
+zpkgx's **own** glibc toolchain so packages are truly self-contained and run on a
 literally-empty `FROM scratch` base with no system libc at all.
 
 It is **shipped, and it is the default**. The factory's `sovereign` input says
@@ -31,19 +31,19 @@ so in its own description: *blank* builds inside the `FROM scratch` rootfs
 `bk builder` stages, "so neither the host's libc nor its compiler takes
 part", and `0` is what falls back to the runner's distribution.
 
-- `bk build --libc=pkgx` and `bk factory --libc=pkgx` target the
+- `bk build --libc=zpkgx` and `bk factory --libc=zpkgx` target the
   `gnu.org/glibc` bottle — its crt objects, its libc, its dynamic linker —
   instead of the container's;
 - `--glibc <version>` pins that sysroot to an exact glibc line;
 - `bk builder` stages the rootfs itself: static Go binaries plus toolchain
   bottles from the signed registry, nothing else;
 - design note:
-  [`bk/docs/from-scratch-toolchain.md`](https://github.com/go-pkgx/bk/blob/main/docs/from-scratch-toolchain.md).
+  [`bk/docs/from-scratch-toolchain.md`](https://github.com/go-zpkg/zbk/blob/main/docs/from-scratch-toolchain.md).
 
 **Corrected 2026-10-27.** This page previously described Phase B as
-experimental, living on branch `feat/pkgx-glibc-toolchain`, and gated behind
-a `BK_PKGX_LIBC=1` environment variable. All three were out of date: the work
-is on `main`, the gate is the `--libc` flag above, and `BK_PKGX_LIBC` appears
+experimental, living on branch `feat/zpkgx-glibc-toolchain`, and gated behind
+a `BK_ZPKG_LIBC=1` environment variable. All three were out of date: the work
+is on `main`, the gate is the `--libc` flag above, and `BK_ZPKG_LIBC` appears
 nowhere in bk's code — only inside the design note that first proposed it.
 
 ### What a sovereign toolchain does not reach {#what-a-sovereign-toolchain-does-not-reach}
@@ -57,7 +57,7 @@ of it.
 bindings therefore got the container's idea of a libc, or none at all —
 
 ```text
-/pkgx/openssl.org/v3.6.4/include/openssl/asn1.h:27:10:
+/zpkgx/openssl.org/v3.6.4/include/openssl/asn1.h:27:10:
   fatal error: 'stdio.h' file not found
 ```
 

@@ -6,32 +6,32 @@ weight: 40
 # Finding packages {#finding-packages}
 
 A package manager you cannot browse is a package manager you have to already
-know. `pkgs ls` walks the tree; `<TAB>` completes into it.
+know. `zpkgs ls` walks the tree; `<TAB>` completes into it.
 
 ```console
-$ pkgs catalog update
+$ zpkgs catalog update
 1908 project(s) → /home/you/.pkgx/catalog/linux-x86-64.json
 
-$ pkgs ls
+$ zpkgs ls
 curl.se                                  8.17.0, 3 under
 github.com                               452 under
 gnu.org                                  54 under
 zlib.net                                 1.3.2
 
-$ pkgs ls gnu.org
+$ zpkgs ls gnu.org
 gnu.org/autoconf                         2.73
 gnu.org/bash                             5.3
 gnu.org/gcc                              16.2.0, 1 under
 …
 
-$ pkgs ls curl.se
+$ zpkgs ls curl.se
 curl.se — 8.17.0
   curl.se/ca-certs
   nghttp2.org
   openssl.org
   zlib.net
 
-also a namespace, 3 under it: pkgs ls curl.se/
+also a namespace, 3 under it: zpkgs ls curl.se/
 ```
 
 ## A node has two kinds of thing under it {#a-node-has-two-kinds-of-thing-under-it}
@@ -50,7 +50,7 @@ namespace — the only way to reach `curl.se/ca-certs` from `curl.se` — and a
 node that is both says where its other half is rather than hiding it.
 
 ```console
-$ pkgs ls --tree curl.se
+$ zpkgs ls --tree curl.se
 curl.se — 8.17.0
   curl.se/ca-certs
   nghttp2.org
@@ -65,8 +65,8 @@ the first level is what a person reads. A diamond is expanded once and named
 once — and the one expanded is the **direct** dependency, because that is the
 one a reader came for.
 
-**It needs no network** — not once `pkgs catalog update` has run, and never
-again until you run it. `pkgx --graph` answers the same question by
+**It needs no network** — not once `zpkgs catalog update` has run, and never
+again until you run it. `zpkgx --graph` answers the same question by
 resolving against the registry, which is the better answer when you have one
 and no answer at all in a `FROM scratch` image that has not fetched anything
 yet.
@@ -78,10 +78,10 @@ install can hold more than this tree does.
 ## Everything is named; what is here is marked {#everything-is-named-what-is-here-is-marked}
 
 ```console
-$ pkgs ls doxygen.nl
+$ zpkgs ls doxygen.nl
 doxygen.nl — no bottle here
 
-$ pkgs ls --tree curl.se
+$ zpkgs ls --tree curl.se
 curl.se — 8.17.0
   curl.se/ca-certs  2026.09.25
   doxygen.nl  (no bottle here)
@@ -118,7 +118,7 @@ carries.
 
 The mark is not rare. Measured against the published `darwin/aarch64`
 catalogue on 2026-10-23, **567 of 1940 projects** have a recipe and no
-bottle — 29% of the pantry. `pkgs ls` marks each one as you meet it; to see
+bottle — 29% of the pantry. `zpkgs ls` marks each one as you meet it; to see
 them as a list rather than one at a time:
 
 ```console
@@ -131,17 +131,17 @@ agpt.co
 
 A percentage is not a work list: nobody can file, build or triage 29%.
 
-When you want one of them, `pkgs request` turns "this is missing" into a
+When you want one of them, `zpkgs request` turns "this is missing" into a
 report somebody can act on — and **sends nothing**:
 
 ```console
-$ pkgs request aerc-mail.org
+$ zpkgs request aerc-mail.org
 project   aerc-mail.org
 platform  darwin/aarch64
-pkgs      0.26.0
+zpkgs      0.26.0
 state     published for linux/aarch64, NOT for darwin/aarch64
 
-Nothing was sent. `pkgs request --url aerc-mail.org` prints a link that opens this as an issue.
+Nothing was sent. `zpkgs request --url aerc-mail.org` prints a link that opens this as an issue.
 ```
 
 `--url` prints a prefilled issue link you read first. There is no flag that
@@ -154,7 +154,7 @@ or the environment even by accident. That is deliberate. The command that
 prompted all of this was
 
 ```console
-$ pkgx openstack user list --domain stratuslab
+$ zpkgx openstack user list --domain stratuslab
 ```
 
 and a reporter that attached "the command that failed" would have published
@@ -170,16 +170,16 @@ That only helps somebody who knows the command exists, so the failure
 itself names it:
 
 ```console
-$ pkgx +aerc-mail.org -- echo ok
-pkgx: no version of aerc-mail.org is published for darwin/aarch64 (available: 0.22.0; not published here: 0.22.0)
-pkgx: if it should be here: `pkgs request aerc-mail.org` prints a report you can open as an issue (it sends nothing)
+$ zpkgx +aerc-mail.org -- echo ok
+zpkgx: no version of aerc-mail.org is published for darwin/aarch64 (available: 0.22.0; not published here: 0.22.0)
+zpkgx: if it should be here: `zpkgs request aerc-mail.org` prints a report you can open as an issue (it sends nothing)
 ```
 
 The hint fires on a **type**, not on words in a message. An earlier version
 matched the text and turned up on
 
 ```console
-pkgx: command not found in the requested packages: true
+zpkgx: command not found in the requested packages: true
 ```
 
 where the package was published and the *command* was missing — and a hint
@@ -190,18 +190,18 @@ day get none: none of them is something to ask a maintainer to publish.
 ### And it remembers {#and-it-remembers}
 
 The hint fires once, in front of somebody who is in the middle of something
-else. `pkgs request` answers about one project at the moment you ask it.
+else. `zpkgs request` answers about one project at the moment you ask it.
 Neither can tell you that the same package has failed eleven times this
 month, which is the thing worth acting on:
 
 ```console
-$ pkgs journal
+$ zpkgs journal
 2 failure(s) recorded here, 1 of them a package this registry does not have
 
 most asked for and not here:
      1  aerc-mail.org
 
-`pkgs request <project>` turns one of those into a report you can open as
+`zpkgs request <project>` turns one of those into a report you can open as
 an issue. It sends nothing, and neither does this.
 ```
 
@@ -209,15 +209,15 @@ It is a **local file**, and that is the whole design. The useful signal from
 a package manager is which packages people reach for and do not get, and the
 usual way to collect it is to phone home. This does not: it keeps the promise
 `request` already makes a few paragraphs above, and adds the only thing
-`request` cannot — memory. `PKGX_JOURNAL=0` records nothing at all, and
-`pkgs journal --clear` removes it.
+`request` cannot — memory. `ZPKG_JOURNAL=0` records nothing at all, and
+`zpkgs journal --clear` removes it.
 
 A record of failures is still a thing that can go wrong, so three properties
 are tested rather than intended:
 
 | | |
 |---|---|
-| it cannot fail the command it records | a store that cannot be written is a reason for the journal to stay empty, not for `pkgx node` to fail |
+| it cannot fail the command it records | a store that cannot be written is a reason for the journal to stay empty, not for `zpkgx node` to fail |
 | it cannot grow without bound | a failing command in a loop would otherwise fill the disk — one rotation, capped |
 | it cannot carry what it cannot print | the text is an error string quoting names read out of a catalogue, a registry index or a downloaded binary, so it is sanitised on the way **in** |
 
@@ -228,7 +228,7 @@ damaged one — one interrupted write costing two records.
 ## What you already have {#what-you-already-have}
 
 ```console
-$ pkgs ls --tree curl.se
+$ zpkgs ls --tree curl.se
 curl.se — 8.17.0  ✓
   curl.se/ca-certs  2026.09.25  ✓
   doxygen.nl  (no bottle here)
@@ -245,10 +245,10 @@ where a command would fetch something new.
 
 ## And what that has cost you {#and-what-that-has-cost-you}
 
-A `✓` is per project. `pkgs store` is the whole disk:
+A `✓` is per project. `zpkgs store` is the whole disk:
 
 ```console
-$ pkgs store --by-size -n 6
+$ zpkgs store --by-size -n 6
 ~/.pkgx
 llvm.org                                   13.8 GiB  3 versions, 8.5 GiB not the newest here
 android.com/cmdline-tools                   6.4 GiB
@@ -263,7 +263,7 @@ gohugo.io                                1020.5 MiB  13 versions, 934.6 MiB not 
 ```
 
 Every ephemeral run leaves its bottles behind and **nothing removes one**.
-`pkgm list` answers a different question — what you asked to have installed —
+`zpkgm list` answers a different question — what you asked to have installed —
 so a bottle pulled six months ago to run one command is in neither. Those
 figures are one developer's machine on 2026-10-08, and **thirteen versions of
 gohugo.io** is not a number anybody chose.
@@ -285,7 +285,7 @@ it is **not the same as unused**.
 ### Two things about the figures {#two-things-about-the-figures}
 
 It **walks the tree**, so it costs seconds rather than milliseconds — eight
-over 41 GiB. That is why it is its own command and not a line in `pkgx
+over 41 GiB. That is why it is its own command and not a line in `zpkgx
 catalog`: nothing on the `<TAB>` path may cost that.
 
 Sizes are **powers of 1024** and say so with the `i`. `du` counts blocks and
@@ -297,7 +297,7 @@ the least a report can do about that.
 A size is not a decision. `--root` says what a lock needs:
 
 ```console
-$ pkgs store --root seed.lock.hcl
+$ zpkgs store --root seed.lock.hcl
 …
 41.2 GiB over 363 version(s) of 302 project(s)
 
@@ -313,7 +313,7 @@ reports before `gc` removes.
 
 [gc]: https://guix.gnu.org/manual/html_node/Invoking-guix-gc.html
 
-**A lock is already a root set.** `pkgx --lock` pins every project in the
+**A lock is already a root set.** `zpkgx --lock` pins every project in the
 closure, not only what you typed, so membership in it *is* reachability — no
 graph walk and no network. An **environment** would not do: it names
 constraints, which have to be resolved against the registry, and this command
@@ -340,7 +340,7 @@ amount of descending reaches them.
 **Who needs this** — what you ask before *changing* something:
 
 ```console
-$ pkgs ls --dependents openssl.org
+$ zpkgs ls --dependents openssl.org
 openssl.org — 4.0.2  ✓ 3.6.0
   agwa.name/git-crypt  (no bottle here)
   apache.org/arrow  25.0.1
@@ -366,7 +366,7 @@ figure to be quoted bare.
 **Why is this in here** — what you ask when a closure holds a surprise:
 
 ```console
-$ pkgs why git-scm.org zlib.net
+$ zpkgs why git-scm.org zlib.net
 git-scm.org — 2.55.0  ✓ 2.47.1
   → zlib.net — 1.3.2  ✓
 ```
@@ -405,7 +405,7 @@ nobody ran.
 ## You know the command, not the package {#you-know-the-command-not-the-package}
 
 ```console
-$ pkgs search rg
+$ zpkgs search rg
 crates.io/ripgrep                        rg  14.1.1
 aardvark.io/rgbds                        rgbasm  0.9.0
 ```
@@ -422,24 +422,24 @@ PATH and **six** carry a summary. A search over prose would find six
 packages.
 
 Those figures are not a recollection: `go run ./internal/catstat
-~/.pkgx/catalog/*.json` in [go-pkgx/pkgx] prints them from the file you
+~/.pkgx/catalog/*.json` in [go-zpkg/zpkgx] prints them from the file you
 have, through the same parser the client uses, so you can check them
 against your own catalogue rather than against this page. Both published
 platforms agree on the number that matters — six — and differ where you
 would expect them to, 1430 projects with a bottle on linux/aarch64 against
 1371 on darwin/aarch64.
 
-[go-pkgx/pkgx]: https://github.com/go-pkgx/pkgx
+[go-zpkg/zpkgx]: https://github.com/go-zpkg/zpkgx
 
 So the match is on names and on commands, ranked by *how* a thing matched
 rather than by how often — a command named exactly what you typed is what
 you meant, every time. Nothing found exits **non-zero**, so
-`pkgs search x || echo none` works.
+`zpkgs search x || echo none` works.
 
 ## Walking it full-screen {#walking-it-full-screen}
 
 ```console
-$ pkgs browse
+$ zpkgs browse
 gnu.org — 54
 
 > gnu.org/bash                             5.3  ✓
@@ -455,16 +455,16 @@ data read one node at a time is data nobody explores. Descending into a
 **leaf** shows what it needs, rather than making you press `tab`.
 
 `q` prints what you pinned on **stdout** while the screen goes to stderr, so
-`pkgx +$(pkgs browse)` composes. It reads the cached catalogue and nothing
+`zpkgx +$(zpkgs browse)` composes. It reads the cached catalogue and nothing
 else — 0.013 s against the real 1908-project one — and **without a terminal
-it prints the tree and exits**, because `pkgs browse | less`, a CI log and a
+it prints the tree and exits**, because `zpkgs browse | less`, a CI log and a
 scratch image are the same case.
 
 ## Running exactly what a lock pins {#running-exactly-what-a-lock-pins}
 
 ```console
-$ pkgx --lock seed.lock.hcl -- make
-pkgx: seed.lock.hcl, 231 pin(s), 3 hour(s) old
+$ zpkgx --lock seed.lock.hcl -- make
+zpkgx: seed.lock.hcl, 231 pin(s), 3 hour(s) old
 ```
 
 A lock nobody consumes is a record, not a mechanism: cargo's `--locked` and
@@ -487,18 +487,18 @@ resolves it afresh; a lock names *versions*. Two paths, side by side.
 ## Completion {#completion}
 
 ```sh
-eval "$(pkgs completion bash)"     # or zsh, or: pkgs completion fish | source
+eval "$(zpkgs completion bash)"     # or zsh, or: zpkgs completion fish | source
 ```
 
 ```console
-$ pkgx +gnu.org/ba<TAB>
+$ zpkgx +gnu.org/ba<TAB>
 +gnu.org/bash
 
-$ pkgx gnu.o<TAB>
+$ zpkgx gnu.o<TAB>
 gnu.org/          # with the slash, so the next TAB descends
 ```
 
-The snippet is a few lines and does nothing but call `pkgx`. Spack generates
+The snippet is a few lines and does nothing but call `zpkgx`. Spack generates
 `spack-completion.bash` from its command tree and commits it; Guix
 hand-writes one per shell; both then need a check that the file still matches
 the program. Nix took the other road — the binary answers when
@@ -506,7 +506,7 @@ the program. Nix took the other road — the binary answers when
 one followed here.
 
 The reason is specific: what is being completed is not a fixed command tree,
-it is **the registry**, which changes without pkgx changing and which a
+it is **the registry**, which changes without zpkgx changing and which a
 generated file could never be level with. It is also the only shape that
 works in a `FROM scratch` image, where there is no completion framework, no
 python and no generator to run.
@@ -517,13 +517,13 @@ python and no generator to run.
 
 ```
 GET /v2/_catalog                             403   (ghcr issues no token)
-GET /v2/go-pkgx/packages/zlib.net/tags/list  200   ["1.3.2", …]
+GET /v2/go-zpkg/packages/zlib.net/tags/list  200   ["1.3.2", …]
 ```
 
 Versions, yes. Projects, no.
 
 Nix, Guix and Spack all answer this from a **local index** — an eval cache, a
-channel checkout, a package repo. The pkgx-native equivalent is an artefact
+channel checkout, a package repo. The zpkgx-native equivalent is an artefact
 in the registry itself, so the registry carries a **catalogue**:
 
 ```console
@@ -543,7 +543,7 @@ nothing in this file knew. Ask the registry, which is the only thing that
 knows:
 
 ```console
-$ pkgs catalog platforms
+$ zpkgs catalog platforms
 darwin/aarch64
 darwin/x86-64
 linux/aarch64
@@ -566,7 +566,7 @@ is on the reader.
 
 ## One command fetches it {#one-command-fetches-it}
 
-`pkgs catalog update` is the **only** thing on the read path that asks the
+`zpkgs catalog update` is the **only** thing on the read path that asks the
 registry what exists — `catalog platforms` below asks it too, and is the one
 other command that does. `ls`, `search`, `why`, `browse` and `<TAB>` read the
 file `update` wrote, and nothing on that path opens a socket.
@@ -590,7 +590,7 @@ answer is **not the same everywhere** and the question is usually asked from
 whichever machine you happen to be sitting at.
 
 ```console
-$ pkgs catalog update --platform linux/x86-64
+$ zpkgs catalog update --platform linux/x86-64
 1915 project(s) → ~/.pkgx/catalog/linux-x86-64.json
 ```
 
@@ -600,7 +600,7 @@ host's — cannot mistake a foreign catalogue for yours.
 And which platforms are there at all:
 
 ```console
-$ pkgs catalog platforms
+$ zpkgs catalog platforms
 darwin/aarch64
 darwin/x86-64
 linux/aarch64
@@ -626,12 +626,12 @@ platform are each an error with its reason on stderr.
 `--graph` answers the sharper question, the one a recipe author has:
 
 ```console
-$ pkgx --graph +go.dev@^1.27.1
+$ zpkgx --graph +go.dev@^1.27.1
 go.dev 1.27.1
 └─ openssl.org 3.6.4
 
-$ pkgx --graph --platform linux/x86-64 +go.dev@^1.27.1
-pkgx: no version of go.dev satisfies "^1.27.1" AND is published for
+$ zpkgx --graph --platform linux/x86-64 +go.dev@^1.27.1
+zpkgx: no version of go.dev satisfies "^1.27.1" AND is published for
 linux/x86-64 (available: 1.27.1 1.26.8 1.26.5 … (11 in all);
 satisfy but not published here: 1.27.1); asked for by ^1.27.1 (requested)
 ```
@@ -640,20 +640,20 @@ satisfy but not published here: 1.27.1); asked for by ^1.27.1 (requested)
 version exists as a tag and no bottle carries it for that platform. Before
 the flag, `--graph` resolved for the host and said so about everywhere.
 
-⛔ **`PKGX_CATALOG` does not redirect `--graph`.** `ls`, `search` and `why`
+⛔ **`ZPKG_CATALOG` does not redirect `--graph`.** `ls`, `search` and `why`
 read the file that variable names. `--graph` resolves against the
 **registry** and never opens it — so it refuses rather than answering about
 the wrong machine:
 
 ```console
-$ PKGX_CATALOG=~/.pkgx/catalog/linux-x86-64.json pkgx --graph +go.dev
-pkgx: PKGX_CATALOG names …/linux-x86-64.json, and --graph does not read a
+$ ZPKG_CATALOG=~/.pkgx/catalog/linux-x86-64.json zpkgx --graph +go.dev
+zpkgx: ZPKG_CATALOG names …/linux-x86-64.json, and --graph does not read a
 catalogue — it resolves against the registry. To ask about another platform:
 --graph --platform os/arch
 ```
 
 It used to answer the **host's** resolution there, with exit 0 and no sign
-the file was never opened ([go-pkgx/pkgx#110](https://github.com/go-pkgx/pkgx/issues/110)).
+the file was never opened ([go-zpkg/zpkgx#110](https://github.com/go-zpkg/zpkgx/issues/110)).
 A catalogue records what is *published*; `--graph` resolves what *would
 satisfy* a constraint, including versions no bottle carries. Those are
 different questions, and the "satisfy but not published here" line above
@@ -663,16 +663,16 @@ The price is that the index goes stale and nothing tells you by magic, so
 every command that reads it says how old it is:
 
 ```console
-$ pkgs catalog
+$ zpkgs catalog
 /home/you/.pkgx/catalog/linux-x86-64.json
 1908 project(s), 986 with dependencies, 2 hour(s) old
 ```
 
 ## Shipping a catalogue with the image {#shipping-a-catalogue-with-the-image}
 
-`PKGX_CATALOG=<file>` reads one from somewhere else entirely — for an
+`ZPKG_CATALOG=<file>` reads one from somewhere else entirely — for an
 air-gapped image, or to inspect a catalogue before publishing it. An image
-that ships one can also simply drop the file at the path `pkgs catalog`
+that ships one can also simply drop the file at the path `zpkgs catalog`
 prints, and never fetch at all.
 
 Set and unreadable is a **refusal**, not a quiet fall back to the local
@@ -682,18 +682,18 @@ things in one line.
 
 ## When there is none {#when-there-is-none}
 
-`pkgs ls` falls back to **what is installed**, and says so in its header —
+`zpkgs ls` falls back to **what is installed**, and says so in its header —
 with the sentence that fits the case it is actually in:
 
 ```console
-$ pkgs ls                      # never fetched one
-pkgs: showing what is INSTALLED — no catalogue yet; run: pkgs catalog update
+$ zpkgs ls                      # never fetched one
+zpkgs: showing what is INSTALLED — no catalogue yet; run: zpkgs catalog update
 
-$ pkgs ls                      # one is there and will not parse
-pkgs: showing what is INSTALLED — /home/you/.pkgx/catalog/linux-x86-64.json could not be read
+$ zpkgs ls                      # one is there and will not parse
+zpkgs: showing what is INSTALLED — /home/you/.pkgx/catalog/linux-x86-64.json could not be read
 ```
 
-Those two are not the same state, and "run `pkgs catalog update`" is the fix
+Those two are not the same state, and "run `zpkgs catalog update`" is the fix
 for the first and no help at all for the second. Sending somebody to a
 command that cannot work is worse than saying nothing.
 

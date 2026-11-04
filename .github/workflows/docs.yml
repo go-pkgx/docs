@@ -1,7 +1,7 @@
 name: docs
 
 # Every documentation version is a separate Hugo build, published under
-# https://go-pkgx.github.io/docs/<version>/ on the gh-pages branch, where <version> is
+# https://go-zpkg.github.io/docs/<version>/ on the gh-pages branch, where <version> is
 # the minor version of the code the pages describe (params.docs.version in
 # hugo.yaml: v0.3.1 -> 0.3), or "main" while no release is tagged. Each push to
 # main replaces that version's path and leaves the others alone. Pull requests
@@ -24,7 +24,7 @@ env:
   HUGO_VERSION: "0.167.0"
   # sha256 of hugo_${HUGO_VERSION}_linux-amd64.tar.gz, from the release's checksums.txt.
   HUGO_SHA256: "4d84519b9f619e6d4c3fb45a50157abeabeb724f859c60605f44c23def6e1169"
-  DOCS_URL: "https://go-pkgx.github.io/docs"
+  DOCS_URL: "https://go-zpkg.github.io/docs"
 
 jobs:
   build:
@@ -59,7 +59,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: >-
-          go run github.com/go-pkgx/go-pkgx.github.io/tools/versioncheck@v0.0.0-20261020081923-bf7d6b7b13f2
+          go run github.com/go-zpkg/go-zpkg.github.io/tools/versioncheck@v0.0.0-20261020081923-bf7d6b7b13f2
           -root .
 
       - name: Install Hugo ${{ env.HUGO_VERSION }}

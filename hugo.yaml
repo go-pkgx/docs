@@ -1,8 +1,8 @@
-# go-pkgx docs documentation — Hugo + Hextra, built like go-plot/docs and
+# go-zpkg docs documentation — Hugo + Hextra, built like go-plot/docs and
 # go-ndarray/docs.
 #
 # Each documentation version is a separate build under
-# https://go-pkgx.github.io/docs/<version>/, where <version> is the minor version of the
+# https://go-zpkg.github.io/docs/<version>/, where <version> is the minor version of the
 # code the pages describe, or "main" while no release is tagged. The CI sets it
 # through --baseURL, from params.docs.version below; this default is the same
 # build.
@@ -10,8 +10,8 @@
 # ⛔ What this replaced was MkDocs Material plus mike, which needed a Python
 # toolchain, a requirements.txt and a pip install in CI to render a static site
 # for a pure-Go organisation.
-baseURL: "https://go-pkgx.github.io/docs/main/"
-title: "go-pkgx docs"
+baseURL: "https://go-zpkg.github.io/docs/main/"
+title: "go-zpkg docs"
 # ⛔ No languageCode: deprecated in Hugo 0.158 in favour of locale, and the
 # languages block below already says which language this is. The second
 # deprecation the pilot build refused, after cascade._target — both inherited
@@ -84,4 +84,4 @@ params:
     width: normal
   editURL:
     enable: true
-    base: "https://github.com/go-pkgx/pkgm/edit/main/content/en"
+    base: "https://github.com/go-zpkg/zpkgm/edit/main/content/en"
