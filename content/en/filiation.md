@@ -155,10 +155,60 @@ are added. Upstream's recipes are converted to HCL2 rather than forked, so a
 periodic resync stays possible, and an improvement made here can be proposed
 back.
 
-**Not claimed:** go-zpkg does not have Nix's or Guix's functional purity. Its
-builds are not sandboxed to the degree Nix's are, its closure is not
-bit-reproducible by construction, and it has no equivalent of `guix time
-machine`. Those are real distances, and the pages that measure them say so.
+**Not claimed:** go-zpkg does not have Nix's or Guix's functional purity. But
+"not sandboxed" and "no time machine" are both vaguer than the code deserves,
+so here is what is actually there and what is actually missing.
+
+### The build *is* isolated, and here is how much {#isolation}
+
+A factory build does not run on the host. `builder/sovereign-build.sh` enters
+`unshare --mount --pid --fork` and then `chroot`s into a rootfs staged
+entirely from our own bottles — that is what "FROM scratch build" means here:
+neither the host's libc nor the host's compiler takes part, and the toolchain
+is a reviewed, committed list (`builder/toolchain.txt`, now also a `members`
+set in the pantry overlay) rather than whatever the distribution ships.
+
+What that does **not** include, measured by searching for it rather than
+assuming: no network namespace, no user namespace, no seccomp profile. A build
+can reach the network. Nix's sandbox denies it outright and admits only
+fixed-output derivations whose hash is declared in advance.
+
+The gap is narrower than that sounds, because sources are pinned by content:
+an archive by digest, a git recipe by commit (`bk`'s `source.go`,
+`fetch/fetch.go`). What is missing is the *enforcement* — nothing stops a
+build step from fetching something nobody declared.
+
+### What a time machine would still need {#time-machine}
+
+`bk lock` is already most of the way, and it was written against Guix's own
+statement of the problem — *"to reproduce a profile bit-for-bit, manifests
+alone might not be enough"*. It records the pantry revision, the overlay
+revision, every resolved version, a per-project spec hash over
+platform + version + parsed recipe + dependencies, and the version of `bk`
+that produced it.
+
+It records more than a Guix manifest has to, and for a reason: a pkgx recipe's
+`versions:` asks GitHub for tags **at resolve time**, so pinning the pantry
+revision is not enough. The same pantry commit resolved `tcl` to 9.0.4 and
+then to 9.1.0 four hours apart. The resolved version has to be written down or
+it is not pinned at all.
+
+Four things stand between that and `guix time machine`:
+
+1. **The lock pins inputs, not output bytes.** `bk lock`'s own documentation
+   says so rather than implying otherwise: a bottle digest would pin them, and
+   a lock taken before anything is built has no output to name.
+2. **Nothing measures reproducibility.** No build runs twice and compares. Until
+   it does, "the same inputs give the same bottle" is a hope with no instrument
+   behind it — and `SOURCE_DATE_EPOCH` is not set anywhere.
+3. **The lock does not name the builder image** it was built in, only the
+   toolchain list that image is made from.
+4. **Nothing re-executes the recorded `bk`.** The version is written down;
+   fetching that version and running it is still a human step. `guix time
+   machine` does exactly this and it is the part that makes the rest usable.
+
+(1) and (3) are bookkeeping. (2) is the one that decides whether any of it is
+true, and it is the next thing to build.
 
 ## Where the filiation is visible in the code {#visible}
 
