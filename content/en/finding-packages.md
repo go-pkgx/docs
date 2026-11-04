@@ -10,7 +10,7 @@ know. `zpkgs ls` walks the tree; `<TAB>` completes into it.
 
 ```console
 $ zpkgs catalog update
-1908 project(s) → /home/you/.pkgx/catalog/linux-x86-64.json
+1908 project(s) → /home/you/.zpkg/catalog/linux-x86-64.json
 
 $ zpkgs ls
 curl.se                                  8.17.0, 3 under
@@ -122,7 +122,7 @@ bottle — 29% of the pantry. `zpkgs ls` marks each one as you meet it; to see
 them as a list rather than one at a time:
 
 ```console
-$ go run ./internal/catstat -missing ~/.pkgx/catalog/darwin-aarch64.json
+$ go run ./internal/catstat -missing ~/.zpkg/catalog/darwin-aarch64.json
 567 of 1940 project(s) have no bottle here
 aerc-mail.org
 agpt.co
@@ -249,7 +249,7 @@ A `✓` is per project. `zpkgs store` is the whole disk:
 
 ```console
 $ zpkgs store --by-size -n 6
-~/.pkgx
+~/.zpkg
 llvm.org                                   13.8 GiB  3 versions, 8.5 GiB not the newest here
 android.com/cmdline-tools                   6.4 GiB
 swift.org                                   4.6 GiB
@@ -422,7 +422,7 @@ PATH and **six** carry a summary. A search over prose would find six
 packages.
 
 Those figures are not a recollection: `go run ./internal/catstat
-~/.pkgx/catalog/*.json` in [go-zpkg/zpkgx] prints them from the file you
+~/.zpkg/catalog/*.json` in [go-zpkg/zpkgx] prints them from the file you
 have, through the same parser the client uses, so you can check them
 against your own catalogue rather than against this page. Both published
 platforms agree on the number that matters — six — and differ where you
@@ -591,7 +591,7 @@ whichever machine you happen to be sitting at.
 
 ```console
 $ zpkgs catalog update --platform linux/x86-64
-1915 project(s) → ~/.pkgx/catalog/linux-x86-64.json
+1915 project(s) → ~/.zpkg/catalog/linux-x86-64.json
 ```
 
 It writes to that platform's own file, so `ls` and `<TAB>` — which read the
@@ -646,7 +646,7 @@ read the file that variable names. `--graph` resolves against the
 the wrong machine:
 
 ```console
-$ ZPKG_CATALOG=~/.pkgx/catalog/linux-x86-64.json zpkgx --graph +go.dev
+$ ZPKG_CATALOG=~/.zpkg/catalog/linux-x86-64.json zpkgx --graph +go.dev
 zpkgx: ZPKG_CATALOG names …/linux-x86-64.json, and --graph does not read a
 catalogue — it resolves against the registry. To ask about another platform:
 --graph --platform os/arch
@@ -664,7 +664,7 @@ every command that reads it says how old it is:
 
 ```console
 $ zpkgs catalog
-/home/you/.pkgx/catalog/linux-x86-64.json
+/home/you/.zpkg/catalog/linux-x86-64.json
 1908 project(s), 986 with dependencies, 2 hour(s) old
 ```
 
@@ -690,7 +690,7 @@ $ zpkgs ls                      # never fetched one
 zpkgs: showing what is INSTALLED — no catalogue yet; run: zpkgs catalog update
 
 $ zpkgs ls                      # one is there and will not parse
-zpkgs: showing what is INSTALLED — /home/you/.pkgx/catalog/linux-x86-64.json could not be read
+zpkgs: showing what is INSTALLED — /home/you/.zpkg/catalog/linux-x86-64.json could not be read
 ```
 
 Those two are not the same state, and "run `zpkgs catalog update`" is the fix

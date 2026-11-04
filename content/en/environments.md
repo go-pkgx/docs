@@ -16,7 +16,7 @@ It ships in the `zpkgx` binary; there is nothing else to install.
 $ eval "$(zpkgs env init)"          # in a profile
 $ zpkge load stedolan.github.io/jq
 $ command -v jq
-~/.pkgx/stedolan.github.io/jq/v1.8.2/bin/jq
+~/.zpkg/stedolan.github.io/jq/v1.8.2/bin/jq
 $ zpkge list
 stedolan.github.io/jq
 $ zpkge unload stedolan.github.io/jq
@@ -61,7 +61,7 @@ none here, and an invented value is a lie a script could act on.
 A site declares environments in HCL2 under `$ZPKG_DIR/environments/`:
 
 ```hcl
-# ~/.pkgx/environments/site.hcl2
+# ~/.zpkg/environments/site.hcl2
 env "cfd" {
   description = "the solver stack, as validated on 2026-09-01"
   packages    = ["openmpi.org@5", "hdf5.org", "python.org@3.12"]
@@ -79,7 +79,7 @@ hdf5                     HDF5 1.14.3
 $ zpkgs env show cfd
 env "cfd"
   description  the solver stack, as validated on 2026-09-01
-  declared in  /home/you/.pkgx/environments/site.hcl2
+  declared in  /home/you/.zpkg/environments/site.hcl2
   package      openmpi.org@5
   package      hdf5.org
   package      python.org@3.12
@@ -199,7 +199,7 @@ node. ⛔ **Braces, not `$`** — the shell would expand `$PLATFORM` before zpkg
 ever saw it, and a value the shell has already eaten cannot resolve per node. A
 path with no placeholder is used unchanged, so existing stores are untouched.
 
-A store also records what it holds, in `.pkgx-platform`, so a shared tree read
+A store also records what it holds, in `.zpkg-platform`, so a shared tree read
 by the wrong architecture is refused with a sentence rather than by the kernel.
 A store written before that existed says nothing, and silence is read as
 agreement — the question closes the first time somebody installs into it.
