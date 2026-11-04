@@ -529,7 +529,7 @@ repaired.
 
 ```console
 $ zpkgs catalog
-~/.pkgx/catalog/darwin-aarch64.json
+~/.zpkg/catalog/darwin-aarch64.json
 1908 project(s), 956 with dependencies, 2 hour(s) old
 ```
 

@@ -145,9 +145,14 @@ pairing — unsigned distribution, verification off, said out loud.
 
 ## What this costs, and what we keep {#cost}
 
-**Dropped:** path compatibility with an existing `~/.pkgx` tree for bottles
-whose identity is recorded. A hash in the path is not something pkgx can read,
-and the alternative was a store that is wrong by construction.
+**Dropped:** the shared store. go-zpkg installs into `~/.zpkg`, not `~/.pkgx`.
+Two reasons, and the second is the stronger: a hash in the path is not
+something pkgx can read, so the trees could not stay interchangeable anyway —
+and `~/.pkgx` is *pkgx's* directory, which upstream can be installed into on
+the same machine. Sharing it was the collision the rename existed to remove,
+left in the one place it does the most damage. Nothing is migrated: an
+existing `~/.pkgx` is as much upstream's as ours, and `ZPKG_DIR=~/.pkgx` keeps
+using it for anyone who wants that.
 
 **Kept:** the pantry, the bottle format, the dependency grammar, the
 relocatable prefix, and the ability to resynchronise with upstream when recipes

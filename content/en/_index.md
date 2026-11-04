@@ -126,7 +126,7 @@ zpkgm pin          <pkg>@version ...     install pinned to an exact version
 zpkgm run|x        <pkg> [-- args...]    run a pkg (works FROM scratch)
 
 flags: -h/--help  -v/--version  -p/--pin  -P/--prefix DIR  -s/--from-scratch
-env:   ZPKG_DIR     package store (default: ~/.pkgx)
+env:   ZPKG_DIR     package store (default: ~/.zpkg)
        ZPKG_DIST    package source (default: oci://ghcr.io/go-pkgx/packages, signed)
        ZPKG_VERIFY  verify signatures, fail-closed (default: on)
        PKGM_PREFIX  default install prefix (ideal for FROM scratch)
