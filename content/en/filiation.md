@@ -145,7 +145,11 @@ pairing — unsigned distribution, verification off, said out loud.
 
 ## What this costs, and what we keep {#cost}
 
-**Dropped:** the shared store. go-zpkg installs into `~/.zpkg`, not `~/.pkgx`.
+**Dropped:** four inherited decisions, each with the defect that made
+dropping it cheaper than keeping it — [The break]({{< relref "the-break.md" >}})
+goes through them one at a time. The largest:
+
+The shared store. go-zpkg installs into `~/.zpkg`, not `~/.pkgx`.
 Two reasons, and the second is the stronger: a hash in the path is not
 something pkgx can read, so the trees could not stay interchangeable anyway —
 and `~/.pkgx` is *pkgx's* directory, which upstream can be installed into on
