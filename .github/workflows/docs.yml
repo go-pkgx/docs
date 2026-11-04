@@ -59,7 +59,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: >-
-          go run github.com/go-zpkg/go-zpkg.github.io/tools/versioncheck@v0.0.0-20261020081923-bf7d6b7b13f2
+          # ⛔ THE PIN MOVED BECAUSE THE OLD ONE IS UNFETCHABLE, not because
+          # anything needed a newer checker. Go verifies the path a module
+          # DECLARES, and bf7d6b7b predates the go-pkgx → go-zpkg rename:
+          #
+          #   module declares its path as: github.com/go-pkgx/go-pkgx.github.io/tools/versioncheck
+          #           but was required as: github.com/go-zpkg/go-zpkg.github.io/tools/versioncheck
+          #
+          # 1af84cdd is the landing's first main commit after the rename.
+          go run github.com/go-zpkg/go-zpkg.github.io/tools/versioncheck@v0.0.0-20261104142529-1af84cdd2ccf
           -root .
 
       - name: Install Hugo ${{ env.HUGO_VERSION }}
