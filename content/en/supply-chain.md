@@ -229,6 +229,34 @@ builds` prints a **BUILT BY** column beside **SIGNED BY** — *what made this*
 and *who vouches for it* are different questions, and a listing that answered
 only the second would have thrown the first away.
 
+It has two further consequences, and both are handled rather than hoped away.
+
+**A hashed tag is never moved.** A build tool whose output differs produces
+different bytes under the *same* tag, and publishing them would silently
+rewrite what every existing lock, every install and every **signature** refers
+to — the signature worst of all, because the old one still verifies against
+the old bytes and would then sit beside content it was never made for. So the
+factory refuses: before pushing, it compares the bytes it is about to publish
+with the digest already at that tag and stops if they differ, printing both.
+Re-publishing *identical* bytes stays silent, because that is the ordinary
+idempotent case; and anything it cannot check — an unreachable registry, a tag
+that does not exist yet — is never a refusal, since halting a campaign over a
+network blip would be a worse fault than the one being guarded.
+
+**A skip says when it is stale.** Because the publish-check is keyed on the
+identity, a build-tool fix that changes the bytes finds its tag occupied and
+is skipped — which would otherwise be silent, and permanent. It now names the
+factory that made what is already there:
+
+```
+⏭  SKIP fftw.org 3.3.11-h27o3… (linux/x86-64) — already published
+   ⚠ it was built by …/bk@v0.26.0, and this is …/zbk@v0.64.0 — `force` to rebuild it
+```
+
+It does not rebuild on its own: that would spend the fleet's whole build
+capacity on every release of the build tool, for a change that usually alters
+no output. It turns an invisible skip into a fact somebody can act on.
+
 ## Two builders, one bottle {#two-builders-one-bottle}
 
 Two people who build the same inputs get the **same** bottle, hash and all.
