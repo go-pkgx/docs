@@ -162,30 +162,98 @@ key is not on `www.openssl.org` — and honouring it needs a key policy: whose
 key, pinned where, and what happens when a release is signed by a new one. A
 verifier that accepts any key proves only that somebody signed something.
 
-## The pinned key {#the-pinned-key}
+## The trust set {#the-trust-set}
 
-Signatures verify against a single pinned public key:
+Signatures verify against a **set** of keys and a **threshold** of them, not
+against one key. The set contains, by default, the project's own:
 
 ```
 RWQ+rmH+fXy2iYr+gReQAOQtYWtH0A7UlxcAa2hpr+txNBwGqtpFsR6L
 ```
 
-The factory signs with the matching private key (held only as a CI secret); every
-consumer checks against this exact public key.
+The factory signs with the matching private key (held only as a CI secret).
+
+| variable | effect |
+| --- | --- |
+| `ZPKG_TRUSTED_KEYS` | **replaces** the set — `name:KEY`, whitespace separated |
+| `ZPKG_EXTRA_TRUSTED_KEYS` | **adds** to it |
+| `ZPKG_TRUST_THRESHOLD` | how many **distinct** trusted keys must have signed (default `1`) |
+
+The shape is [TUF](https://theupdateframework.github.io/specification/latest/)'s
+— a role's keys and a threshold, §4.3 — with its counting rule: a client *"MUST
+NOT count more than one verified SIGNATURE from that KEYID towards the
+THRESHOLD"* (§5.4.2). Without that rule a threshold of two is met by pushing
+one signature twice, which anyone who can push can do. The spelling of the key
+list is Nix's `trusted-public-keys`, because an operator who has configured a
+binary cache already knows it.
+
+## Two builders, one bottle {#two-builders-one-bottle}
+
+Two people who build the same inputs get the **same** bottle, hash and all.
+That is deliberate: an identity that varied with the builder could never be
+compared, and the collision is precisely the evidence. So you do not tell two
+builders apart by the artefact — you tell them apart by **who signed it**.
+
+The registry holds one bottle and, potentially, several signature referrers
+over it. A threshold of 2 means *I install nothing that a second builder did
+not independently reproduce*.
+
+```sh
+export ZPKG_EXTRA_TRUSTED_KEYS='alice:RWQ…'
+export ZPKG_TRUST_THRESHOLD=2
+zpkgm install lz4.org
+```
+
+Nix requires one signature from one trusted key; Guix likewise checks a single
+authorised signature on a narinfo and compares servers out of band with
+`guix challenge`. A threshold makes that comparison a **precondition of
+installing** instead of an audit somebody runs afterwards.
+
+The rebuilder's side is two commands in `zbk`:
+
+```
+$ zbk reproduce yours.tar.gz theirs.tar.gz    # do they agree, and how not?
+$ zbk sign -key you.sec -project fftw.org -version 3.3.11-h27o3… yours.tar.gz
+```
+
+`zbk sign` pushes **no bottle** — re-publishing to add a signature is how you
+end up with two objects where the point was that there is one — and it
+**refuses when the digests differ**, printing both. That divergence is the
+finding: either the recipe is not reproducible, or one of the two machines is
+not what it claims.
+
+Three rules worth stating, because each is a way the mechanism could have been
+quietly useless:
+
+- A signature from **outside** the trust set is counted and ignored, never an
+  error. Anybody may sign a public artefact; if a stranger's signature
+  invalidated a bottle, invalidating any bottle would cost one push.
+- A **malformed** signature referrer is counted, not skipped. *Unsigned* and
+  *signed, but the referrer is broken* are different facts, and the second
+  names a publishing bug.
+- The signer **name** you read comes from your own trust set, never from the
+  registry. The referrer carries only a key id, which is checkable — and which
+  is used to decide which key to *try first*, never which may succeed.
 
 ## Verify on install {#verify-on-install}
 
 The [`go-zpkg/bottle`](https://github.com/go-zpkg/bottle) backend that both `zpkgx`
 and `zpkgm` import performs verification at install time:
 
-- `bottle.VerifySignature` validates a package's signature against the pinned key.
-- Setting **`ZPKG_VERIFY=1`** makes verification **fail-closed**: a package with no
-  signature, or one that does not verify, is **refused** rather than installed.
+- every signature referrer on the bottle is collected, and the distinct trusted
+  keys among them are counted against the threshold;
+- **`ZPKG_VERIFY`** is on by default and **fail-closed**: a package with no
+  signature, or too few that verify, is **refused** rather than installed.
 
 ```sh
-# refuses to install anything that isn't validly signed by the pinned key
+# refuses to install anything the trust set cannot vouch for
 ZPKG_DIST=oci://ghcr.io/go-pkgx/packages ZPKG_VERIFY=1 zpkgm install lz4.org
 ```
+
+Every path that brings bytes onto the machine goes through that check — not
+"every install": every pull, the store **cache included**. A cache hit is
+re-checked against the signatures the registry advertises, because a cache is
+an optimisation and never an authority.
 
 This closes the loop end to end: the factory signs and attests at publish time, and
 the consumer refuses to run anything it cannot verify.
