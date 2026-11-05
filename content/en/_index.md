@@ -21,7 +21,9 @@ do by design — build options on a specification, two builds of one version in
 one store, a hashed identity for a build, and a distribution that can be
 verified — all four of them ordinary in Nix, Guix and Spack. See
 [Filiation]({{< relref "filiation.md" >}}), which cites every claim against the
-upstream page or manual it was read from.
+upstream page or manual it was read from, and
+[Addressing a build]({{< relref "addressing-a-build.md" >}}) for how a build
+gets an identity and how you name the one you want.
 
 The `z` is ZFS's: the last one you need.
 
