@@ -99,14 +99,27 @@ That refusal is only half a design without a way to answer it:
 
 ```console
 $ zpkgs builds fftw.org@3.3.11
-HASH              INSTALLED  PUBLISHED  WHAT
-27o3ysxva6swayci  -          yes        ⚠ withdrawn: CVE-2026-1234 → rnp44i · go.dev 1.27.3/aaaaaa
-rnp44isdgdtzxcit  -          yes        go.dev 1.27.4/bbbbbb
+HASH              INSTALLED  PUBLISHED  SIGNED BY        WHAT
+27o3ysxva6swayci  -          yes        go-zpkg          ⚠ withdrawn: CVE-2026-1234 → rnp44i · go.dev 1.27.3/aaaaaa
+rnp44isdgdtzxcit  -          yes        go-zpkg, alice   go.dev 1.27.4/bbbbbb
 ```
 
 One list joining the store and the registry, because a list of only what is
 installed cannot answer *what else could I have*, and a list of only what is
 published cannot answer *what do I already have*.
+
+### The SIGNED BY column {#signed-by-column}
+
+Two builders who build the same inputs get the **same** hash — deliberately —
+so what tells them apart is who put their key on the result. The column names
+them *as your own trust set names them*, never as the registry does: a name on
+the artefact is written by whoever pushed it.
+
+A `⚠` marks a row that does not meet your `ZPKG_TRUST_THRESHOLD` and will be
+refused at install time. A `?` means the registry could not be asked, which is
+**not** the same as *nobody signed it* — rendering the two alike is how a
+network failure becomes a claim about the artefact. See
+[Supply chain]({{< relref "supply-chain.md" >}}#two-builders-one-bottle).
 
 ### The WHAT column is the whole point {#what-column}
 
