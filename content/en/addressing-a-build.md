@@ -20,16 +20,19 @@ registry  ghcr.io/…/fftw.org:3.3.11-h7k2mq4xvbnd3rf5c
 
 {{< callout type="info" >}}
 **What ships today.** The identity, the hashed store prefix, the hashed
-registry tag and the spec annotation are in `zbk` v0.62.0 and `bottle`
-v0.76.0, and `zbk factory` publishes with them. The two front-end spellings
-below — listing the builds of a version, and naming one with `/<hash>` — exist
-as library primitives in
-[bottle#205](https://github.com/go-zpkg/bottle/pull/205) and are **not yet
-wired into the `zpkgx` and `zpkgs` commands**
-([zpkgx#142](https://github.com/go-zpkg/zpkgx/issues/142)).
-They will also show nothing useful until the registry has been rebuilt with
-hashed tags, which is in progress. This page describes the model; where a
-command is named, it says whether you can run it yet.
+registry tag and the spec annotation are in `zbk` v0.63.0 and `bottle`
+v0.81.0, and `zbk factory` publishes with them. `zpkgs builds` is in `zpkgx`
+v0.36.0 and runs now.
+
+**What does not.** Naming a build with `@version/<hash>` is **refused** by the
+resolver rather than honoured: carrying the hash down to the store is
+[zpkgx#142](https://github.com/go-zpkg/zpkgx/issues/142). Running *some* build
+of a version under a name that says you chose one would be worse than saying
+no, so it says no and points at `zpkgs builds`.
+
+And until the registry is rebuilt with hashed tags, every published bottle
+answers `nothing recorded` — which is the truth about the registry as it
+stands, not a defect in the command.
 {{< /callout >}}
 
 ## What the hash is of {#what-the-hash-is-of}
@@ -92,21 +95,113 @@ fftw.org 3.3.11 was published as 2 different builds and nothing here says
 which: a variant hash is not a version, so there is no newest one to pick
 ```
 
-That refusal is only half a design without a way to answer it. The other half
-is a single list joining the store and the registry: a list of only what is
+That refusal is only half a design without a way to answer it:
+
+```console
+$ zpkgs builds fftw.org@3.3.11
+HASH              INSTALLED  PUBLISHED  WHAT
+27o3ysxva6swayci  -          yes        ⚠ withdrawn: CVE-2026-1234 → rnp44i · go.dev 1.27.3/aaaaaa
+rnp44isdgdtzxcit  -          yes        go.dev 1.27.4/bbbbbb
+```
+
+One list joining the store and the registry, because a list of only what is
 installed cannot answer *what else could I have*, and a list of only what is
 published cannot answer *what do I already have*.
 
-They are ordered **by hash**, and that is deliberate: there is no newest. Two
-builds of one version differ in their options, not in time. Sorting by hash is
-arbitrary and says so; sorting by anything resembling precedence would invent
-an order that does not exist.
+### The WHAT column is the whole point {#what-column}
+
+A column of bare hashes is unusable. A hash is opaque by construction, so a
+list of two of them hands the reader back the problem the command was asked to
+solve.
+
+So each row says what **differs** — not what the build is. A full spec is
+fifty-odd dependencies identical in all but one, and printing it per row
+buries the one that matters. The axes are computed across all the builds
+first, so two rows cannot describe themselves on different axes and read as
+two unrelated facts rather than a comparison.
+
+When nothing else differs, the **recipe** is named: a rebuild after a pantry
+edit is one of the commonest reasons two builds of a version exist, and it is
+invisible in the closure. With nothing printed those rows would be identical
+and the list would look broken.
+
+A build nothing records says `nothing recorded` rather than showing a blank
+cell, which reads as a rendering fault.
 
 A registry that could not be reached is an **error**, not an empty list — an
 unobtained answer must not read as "nothing is published", because that is how
 you conclude a build does not exist and rebuild it. What is installed is still
 listed alongside the error: it is a true answer to half the question, and it
 needs no network.
+
+## Ordering them {#ordering}
+
+`--sort=status|closure|hash|installed`.
+
+`closure` is the one a reader means by "newer": a build made against a later
+toolchain first. It is the comparison a CVE rebuild creates — a Go patch
+release fixes a standard-library defect, nothing about the recipe or the
+upstream version changes, only `go.dev` in the closure.
+
+It is a **partial** order. One build is later than another only when it is at
+least as new on every dependency they share and strictly newer on one. Two
+builds that each lead on a different dependency are genuinely incomparable,
+and declaring a winner would invent an order; they tie, and the tie falls back
+to the hash. A build that gained a dependency the other does not have is a
+different *shape*, not a later version of it — the CUDA build does not
+supersede the plain one.
+
+{{< callout type="warning" >}}
+**There is no `date` key, and that is a property rather than a gap.** A
+published bottle's timestamp is pinned — `zbk factory` stamps
+`SOURCE_DATE_EPOCH`, or its own fixed epoch, never the wall clock — so that
+re-publishing the same bottle yields byte-identical attestations and the same
+referrer digests, which is what makes a re-push idempotent instead of
+accumulating duplicates.
+
+Every bottle therefore carries the **same instant**. Sorting by it would order
+a list by a constant while looking like it ordered by time, and taking the
+wall clock instead would make every rebuild a new artefact.
+
+`--sort=installed` orders by when *this machine* got them, which is a fact
+about your disk and not about the builds.
+{{< /callout >}}
+
+## Withdrawing a build {#withdrawing}
+
+When a CVE catches a build, `ZPKG_WITHDRAWN` names a JSON file saying so:
+
+```json
+{"fftw.org": [{"version": "3.3.11",
+               "hash": "27o3ysxva6swayci",
+               "because": "CVE-2026-1234",
+               "superseded_by": "rnp44isdgdtzxcit"}]}
+```
+
+**A build, not a version** — and that is the point. When the flaw is in the
+*toolchain* a package was compiled with, the package is fine, the source is
+fine, and the fix is another build of the **same version**. That is only
+nameable because a build has an identity; it is the first thing this layout
+buys that a version-addressed store could not do at all.
+
+**It ranks, it does not filter.** A withdrawn build stays resolvable:
+
+- two builds, one withdrawn → the other, and the withdrawal is announced;
+- one build, withdrawn → that one, loudly, because there is nothing else;
+- several left after the withdrawn ones are set aside → still ambiguous.
+
+The reasoning is the same as for end-of-life release lines: a lock pins a
+build, and a lock that stops resolving is a worse defect than the one being
+fixed. Reproducibility and an explicit request outrank the preference.
+
+An entry with **no hash** withdraws every build of the version — a flaw in the
+source rather than in how it was compiled — and an entry naming one build wins
+over it, so the build that *fixes* the flaw is not reported as carrying it.
+
+The list is read locally and never from the network: the resolver must keep
+working `FROM scratch` and air-gapped. Where the file comes from — `zbk
+advisories` and the VEX documents attached to published bottles — is a
+separate matter.
 
 ## Naming one {#naming-one}
 
