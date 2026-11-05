@@ -187,6 +187,48 @@ one signature twice, which anyone who can push can do. The spelling of the key
 list is Nix's `trusted-public-keys`, because an operator who has configured a
 binary cache already knows it.
 
+## What an artefact says about itself {#what-an-artefact-says-about-itself}
+
+Trust in a supply chain is not a property of a registry; it is what each
+artefact can be made to answer about itself, to someone who has only the
+artefact. Every bottle carries, as OCI referrers travelling with its digest:
+
+| | |
+| --- | --- |
+| **what it is made of** | CycloneDX SBOM |
+| **what built it, and from what** | in-toto SLSA provenance — `runDetails.builder.id` is the factory **with its version**, `resolvedDependencies` the closure it was built against and the source archive's SHA-256 |
+| **what it is, exactly** | the `io.github.go-zpkg.spec` annotation: platform, variants, resolved closure, recipe digest — the inputs its identity hash is computed from, so a reader can **recompute** the hash in its tag rather than take it on faith |
+| **who vouches for it** | one cosign/minisign signature referrer per signer, each carrying that signer's key id |
+
+Read straight off the registry, no download:
+
+```console
+$ zbk attest --platform linux/x86-64 lz4.org 1.10.0
+lz4.org 1.10.0 linux/x86-64: 3 referrer(s)
+  application/vnd.cyclonedx+json        pkg:pkgx/lz4.org@1.10.0
+  …cosign.artifact.sig.v1+json          signed
+  application/vnd.in-toto+json          https://github.com/go-pkgx/bk@v0.26.0
+```
+
+That last line is the builder and its version — here an old one, under the
+organisation's former name, which is the registry being stale rather than the
+field being absent.
+
+### The builder is recorded, and deliberately not in the hash {#the-builder-is-not-in-the-hash}
+
+A build's identity is `{platform, variants, resolved closure, recipe digest}`.
+The **builder is not among them**, and that is the same position Nix and Spack
+take about their own: putting the build tool in the hash re-addresses every
+artefact in the registry on every release of it, spending the whole fleet's
+build capacity on a version bump that changed nothing about any binary.
+
+The consequence has to be stated rather than glossed: **two factories building
+identical inputs produce the same identity**, so the hash cannot tell them
+apart and the provenance is the only thing that can. That is why `zpkgs
+builds` prints a **BUILT BY** column beside **SIGNED BY** — *what made this*
+and *who vouches for it* are different questions, and a listing that answered
+only the second would have thrown the first away.
+
 ## Two builders, one bottle {#two-builders-one-bottle}
 
 Two people who build the same inputs get the **same** bottle, hash and all.
