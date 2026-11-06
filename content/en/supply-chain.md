@@ -305,6 +305,70 @@ quietly useless:
   registry. The referrer carries only a key id, which is checkable — and which
   is used to decide which key to *try first*, never which may succeed.
 
+## Rotating a key, and revoking one {#rotating-and-revoking}
+
+A key is lost, or it leaks. Both need an answer, and they are **opposite**
+answers — which is why there are two lists and not one.
+
+| | signs | counts towards the threshold | reported as |
+| --- | --- | --- | --- |
+| **current** | yes | yes | its name |
+| **retired** | no | **yes** | its name |
+| **revoked** | no | **no** | named, with the reason |
+
+**Retiring** is changing the key you sign *with*. A signature is a statement
+about bytes, made once; replacing the key says nothing about what is already
+signed. So a retired key stays trusted, nothing needs re-signing, and a
+rotation is an edit to two lists — the new key up, the old one down.
+
+That matters more than it sounds: rotation is the answer to a lost or
+compromised key, so a design in which rotating invalidates the registry is
+one in which **nobody rotates**.
+
+A retired key is also **not discounted**. A bottle signed by the current key
+and a retired one counts as *two* — exactly right during an overlap, where
+the publisher deliberately signs with both. Ranking retired keys lower would
+make a threshold of 2 unmeetable precisely while rotating.
+
+**Revoking** says somebody else may hold the key. Nothing it signed can be
+told apart from a forgery, so its signatures count for nothing — *including*
+on bottles it signed legitimately before the compromise. The remedy is to
+rebuild, which is expensive, which is why it is a separate and louder act.
+
+### ⛔ Why "before the compromise" is not a thing we can check {#why-before-is-not-checkable}
+
+The obvious fix is a `signed-at` field. It does not work, and the reason is
+worth stating because it generalises: **whoever holds the key writes that
+field too**, and backdates it. Self-asserted metadata is forgeable by exactly
+the party it is meant to expose.
+
+Nor can the bottle help. Every published bottle carries the same *pinned*
+timestamp — that is what makes a re-publish byte-identical — so the artefact
+has no time on it to read.
+
+The standard answer is a **third party**. RFC 3161 puts it normatively: a
+verifier may accept a signature made before a revocation when
+
+> the date/time of revocation shall be later than the date/time indicated by
+> the TSA
+
+— the time comes from a Time Stamping Authority, whose key the attacker does
+not hold and whose clock they cannot move. Sigstore's Rekor gives the same
+guarantee a different way, as "an immutable, tamper-resistant ledger" that
+auditors can confirm "remains append-only and entries are never mutated or
+removed".
+
+Whether to take on that dependency is open:
+[bottle#215](https://github.com/go-zpkg/bottle/issues/215). Until it is
+settled, a revoked key voids everything it signed, which is the safe reading
+and the expensive one.
+
+A revoked signature is reported **as itself**, never folded into "signed by
+an untrusted key". A stranger's signature on a public artefact is noise
+anybody can make; *your own revoked key* on a bottle is a fact about your
+supply chain that you have to act on. Every revocation carries a reason,
+because a revocation without one is a rumour.
+
 ## Verify on install {#verify-on-install}
 
 The [`go-zpkg/bottle`](https://github.com/go-zpkg/bottle) backend that both `zpkgx`
