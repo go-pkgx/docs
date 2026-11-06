@@ -369,6 +369,48 @@ anybody can make; *your own revoked key* on a bottle is a fact about your
 supply chain that you have to act on. Every revocation carries a reason,
 because a revocation without one is a rumour.
 
+### Where the key lives, and how to check you have the right one {#where-the-key-lives}
+
+⛔ **Write this down before you need it.** On 2026-11-06 nobody could say
+where the signing key was. Two scans of a workstation — 2,167,120 files —
+found no key file, and what had been pasted into the CI secret turned out to
+be the **public** half, which fails with `sign: malformed secret key` and
+sends the reader hunting for a corrupted paste.
+
+| | |
+| --- | --- |
+| **the secret key** | lives wherever this table says it lives. If this row is still a placeholder, that is the defect |
+| **in CI** | `BOTTLE_SIGNING_KEY`, an organisation secret of `go-zpkg`, scoped to the `packages` repository |
+| **the public half** | `bottle.SigningPublicKey`, compiled into every released client |
+
+A GitHub secret **cannot be read back**, ever. It is a write-only copy, not a
+backup — so a key that exists only there is a key you will lose.
+
+Telling the two files apart, since both open with `untrusted comment:` and
+both hold one base64 line:
+
+| | payload line |
+| --- | --- |
+| **public** — safe to read, cannot sign | **56** characters |
+| **secret** — the one CI needs | **96** characters |
+
+### Rotating {#rotating-the-key}
+
+1. Generate the new keypair somewhere durable, and put the secret half in the
+   password manager **first**. The CI secret is a copy, never the original.
+2. Move the old entry from `SigningPublicKey` into
+   `RetiredSigningPublicKeys` as `name:key`, and put the new public key in
+   `SigningPublicKey`. Release `bottle`; the clients pick it up on their next
+   release.
+3. Set `BOTTLE_SIGNING_KEY` to the new **secret** key.
+4. Publish one bottle and read it back from another machine — `pkgs builds
+   <project>@<version>` must show it signed by the new name.
+
+Nothing already published needs re-signing: the old key stays trusted
+because it is retired, not revoked. If instead the key **leaked**, it goes in
+`RevokedSigningKeys` with a reason, and everything it signed has to be
+rebuilt — see above for why no date can spare you that.
+
 ## Verify on install {#verify-on-install}
 
 The [`go-zpkg/bottle`](https://github.com/go-zpkg/bottle) backend that both `zpkgx`
