@@ -6,9 +6,9 @@ weight: 60
 # Package registry {#package-registry}
 
 [`ghcr.io/go-pkgx/packages`](https://github.com/go-zpkg/packages) is a pure-Go
-package factory: it builds [zpkgx pantry](https://github.com/pkgxdev/pantry)
-recipes and publishes **signed, attested packages** for **every platform** through
-**two channels**.
+package factory: it builds pantry recipes and publishes **signed, attested
+packages** for **every platform** through **two channels**.
+
 
 ## Two channels, every platform {#two-channels-every-platform}
 
@@ -205,7 +205,7 @@ You can tell which is which by looking:
 
 ## Trees the pantry does not have {#trees-the-pantry-does-not-have}
 
-Most of the catalog is a zpkgx pantry recipe built here. These are projects
+Most of the catalog is a pantry recipe built here. These are projects
 upstream does not carry at all — the HPC and GPU floor an MPI actually needs,
 which the pantry stops just above:
 

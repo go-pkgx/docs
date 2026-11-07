@@ -16,7 +16,7 @@ A zpkgx package assumes a host system. Two structural gaps surface on scratch:
 
 1. **The interpreter path.** Every dynamic ELF has `PT_INTERP=/lib/ld-linux-*`
    — an absolute system path that does not exist on a scratch image. `zpkgm run`
-   symlinks the pkgx glibc loader to `/lib/ld-linux-*` (and `/bin/sh` to
+   symlinks the glibc bottle's own loader to `/lib/ld-linux-*` (and `/bin/sh` to
    itself) so parent and child ELFs resolve natively.
 
 2. **Incomplete runtime dependency graphs.** A package's `package.yml`
