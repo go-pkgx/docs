@@ -1,9 +1,10 @@
 # go-zpkg docs
 
 Documentation site for the [go-zpkg](https://github.com/go-zpkg) organization —
-the pkgx world in pure, `CGO_ENABLED=0` Go. Built with MkDocs Material,
-versioned with [mike](https://github.com/jimporter/mike), and served at
+a package manager in pure, `CGO_ENABLED=0` Go. Built with Hugo and the
+`tannevaled/hextra` theme fork (`hugo.yaml`, `themes/hextra`), and served at
 <https://go-zpkg.github.io/docs/>.
+
 
 Covers running packages on `FROM scratch`, the signed & attested package
 registry (`ghcr.io/go-pkgx/packages`), the supply-chain model, build isolation,

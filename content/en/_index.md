@@ -5,23 +5,19 @@ weight: 10
 
 # go-zpkg {#go-zpkg}
 
-A **dependency-free, pure-Go** (`CGO_ENABLED=0`) package manager for
-[pkgx](https://pkgx.sh) packages — a single static binary that installs **and
-runs** packages on a `FROM scratch` image, with no runtime dependencies of its
-own.
+A **dependency-free, pure-Go** (`CGO_ENABLED=0`) package manager — a single
+static binary that installs **and runs** packages on a `FROM scratch` image,
+with no runtime dependencies of its own: one static ~9 MB binary, no libc,
+no interpreter.
 
-Upstream's `pkgm` is a Deno/TypeScript script that shells out to `pkgx`,
-`deno`, `curl`, `openssl`, `zlib` and `xz` — roughly **515 MB** of runtime
-closure just to install a package. go-zpkg replaces all of it with one static
-~9 MB binary.
+It descends from pkgx — see [Filiation]({{< relref "filiation.md" >}}) for
+what was taken and what was rewritten — but **it is no longer compatible with
+it**, and no longer tries to be: the pantry, the recipe format and the
+distribution are ours.
 
-**It descends from pkgx and is not a reimplementation of it.** It reads pkgx's
-pantry and speaks pkgx's bottle protocol; it also does four things pkgx cannot
-do by design — build options on a specification, two builds of one version in
-one store, a hashed identity for a build, and a distribution that can be
-verified — all four of them ordinary in Nix, Guix and Spack. See
-[Filiation]({{< relref "filiation.md" >}}), which cites every claim against the
-upstream page or manual it was read from, and
+Four things it does, all four ordinary in Nix, Guix and Spack: build options
+on a specification, two builds of one version in one store, a hashed identity
+for a build, and a distribution that can be verified. See
 [Addressing a build]({{< relref "addressing-a-build.md" >}}) for how a build
 gets an identity and how you name the one you want.
 
@@ -134,9 +130,10 @@ env:   ZPKG_DIR     package store (default: ~/.zpkg)
        PKGM_PREFIX  default install prefix (ideal for FROM scratch)
 ```
 
-The `install`/`uninstall`/`shim`/`list`/`outdated`/`update`/`pin` command
-surface and the `~/.local` vs `/usr/local` prefix logic mirror the reference
-`zpkgm`, so it is a drop-in replacement.
+The command surface is `install`/`uninstall`/`shim`/`list`/`outdated`/
+`update`/`pin`, with `~/.local` for an unprivileged install and `/usr/local`
+otherwise.
+
 
 ## FROM scratch {#from-scratch}
 

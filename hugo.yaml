@@ -69,7 +69,7 @@ cascade:
 params:
   docs:
     version: "main"
-  description: "A dependency-free, pure-Go (CGO=0) package manager for pkgx bottles — runs on FROM scratch."
+  description: "A dependency-free, pure-Go (CGO=0) package manager — runs on FROM scratch."
   navbar:
     displayTitle: true
     displayLogo: false
